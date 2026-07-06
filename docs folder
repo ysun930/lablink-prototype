@@ -14,12 +14,21 @@ Section 3	Max Score	Max_Score = SUM of all positive weights where match_i = 1.
 Section 3	Match Percentage	Match Percentage = Total_Score / Max_Score × 100.
 Section 4	Output	The algorithm returns a ranked list of lab matches for each candidate, sorted by match percentage from highest to lowest.
 Section 4	Display Rule	The system should display the top 5 lab matches with their match percentages.
-Section 5	Test case(strong match)	Molecular biology wet/mixed lab. Required skills include PCR, qPCR, Western Blot, Cell Culture, and RNA-seq. Primary field is Molecular Biology. Lab supports Academic PhD preparation and offers structured feedback. (expected output:Strong Match. The candidate should score 80% or higher because skills, field interest, and career goal align closely with the lab.)
-Section 5	Test case(partial match)	Computational biology / bioinformatics lab. Required skills include Python, R, pandas, BLAST, and scikit-learn. Lab type is dry lab. Lab supports applied research and biotech career paths. (expected output: Good or Partial Match. The candidate should score around 60–79% because the main field and some coding skills match, but some specialized tools are missing.)
-Section 5	Test case(weak match)	Clinical medicine or hospital-affiliated lab. Required skills include clinical research support, patient-facing work, and full-time availability. Lab supports MD/PhD or clinical medicine pathways. (expected output: Weak or Poor Match. The candidate should score below 60% because the field, career pathway, and availability do not align well with the lab.)
-Threshold Rule	Strong Match	Match ≥ 80%. Display with a green badge.
+Section 5	Test case(strong match)	Molecular Biology wet/mixed lab(Expected Output: Strong Match. CAND-001 vs LAB-001 scores above 70% ) Should be Neuroscience lab + Neuroscience candidate
 Threshold Rule	Good Match	Match 60–79%. Display with a blue badge.
 Threshold Rule	Partial Match	Match 40–59%. Display with a yellow badge.
 Threshold Rule	Poor Match	Match < 40%. Do not display, or show with a warning.
 Notes	Future Refinement	These thresholds are starting points and can be refined with real candidate and lab data in Week 4.
 
+Matching Item	                   Match Value	      Weight	         Score
+Neuroscience field interest	      1	                  3	                3
+Academic PhD career goal	        1	                  3	                3
+PCR skill	                        1	                  3	                3
+Cell Culture / wet lab skill	    1	                  3	                3
+Imaging / microscopy skill	      1	                  3  	              3
+Structured feedback preference	 0.5	                2	                1
+Total			16
+Total Score = 16
+Max Score = 17
+Match Percentage = 16 / 17 × 100 = 94.1%
+Expected Output: Strong Match. CAND-001 vs LAB-001 scores above 70%, so the profiles are designed correctly.
