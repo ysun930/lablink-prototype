@@ -35,3 +35,11 @@ function cosineSimilarity(vecA, vecB) {
 
   return dot / (magA * magB);
 }
+async function semanticScore(candidateStatement, labDescription) {
+  const [candVec, labVec] = await Promise.all([
+    getEmbedding(candidateStatement),
+    getEmbedding(labDescription)
+  ]);
+
+  return cosineSimilarity(candVec, labVec);
+}
