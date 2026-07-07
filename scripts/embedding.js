@@ -43,3 +43,21 @@ async function semanticScore(candidateStatement, labDescription) {
 
   return cosineSimilarity(candVec, labVec);
 }
+async function scoreCandidate(candidate, lab, matchingPairs) {
+  const rule = scoreCandidateVsLab(candidate, lab, matchingPairs);
+
+  const semantic = await semanticScore(
+    candidate.Research_Statement_FreeText,
+    lab.Lab_Description_FreeText
+  );
+
+  const semanticPercent = semantic * 100;
+
+  const combined = (rule.rulePercent * 0.7) + (semanticPercent * 0.3);
+
+  return {
+    ...rule,
+    semanticPercent: semanticPercent,
+    combinedPercent: combined
+  };
+}
