@@ -15,6 +15,8 @@ Section 3	Match Percentage	Match Percentage = Total_Score / Max_Score × 100.
 Section 4	Output	The algorithm returns a ranked list of lab matches for each candidate, sorted by match percentage from highest to lowest.
 Section 4	Display Rule	The system should display the top 5 lab matches with their match percentages.
 Section 5	Test case(strong match)	Molecular Biology wet/mixed lab(Expected Output: Strong Match. CAND-001 vs LAB-001 scores above 70% ) Should be Neuroscience lab + Neuroscience candidate
+Section 5	Test case(partial match)	Computational biology / bioinformatics lab. Required skills include Python, R, pandas, BLAST, and scikit-learn. Lab type is dry lab. Lab supports applied research and biotech career paths.
+Section 5	Test case(weak match)	Clinical medicine or hospital-affiliated lab. Required skills include clinical research support, patient-facing work, and full-time availability. Lab supports MD/PhD or clinical medicine pathways.
 Threshold Rule	Good Match	Match 60–79%. Display with a blue badge.
 Threshold Rule	Partial Match	Match 40–59%. Display with a yellow badge.
 Threshold Rule	Poor Match	Match < 40%. Do not display, or show with a warning.
