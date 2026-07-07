@@ -1,3 +1,5 @@
+#algorithm protoype with using code; will probably need to imput the information from the website as a csv but could possibly link to pages.
+#see funcitonal version here on trinket.io: https://trinket.io/python/37e2b8387969
 def calculate_match_score(matching_items):
     total_score = 0
     max_score = 0
