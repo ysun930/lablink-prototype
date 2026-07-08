@@ -1,3 +1,22 @@
+const { semanticScore } = require("./embedding");
+
+function normalize(value) {
+  return String(value).toLowerCase().trim();
+}
+
+function valuesMatch(candidateValue, labValue) {
+  const candidateArray = Array.isArray(candidateValue) ? candidateValue : [candidateValue];
+  const labArray = Array.isArray(labValue) ? labValue : [labValue];
+
+  return candidateArray.some(c =>
+    labArray.some(l =>
+      normalize(c) === normalize(l) ||
+      normalize(c).includes(normalize(l)) ||
+      normalize(l).includes(normalize(c))
+    )
+  );
+}
+
 function scoreCandidateVsLab(candidate, lab, matchingPairs) {
   let ruleScore = 0;
   let ruleMax = 0;
@@ -13,17 +32,7 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
 
     let matchValue = 0;
 
-    if (labValue === candidateValue) {
-      matchValue = 1;
-    } else if (
-      Array.isArray(candidateValue) &&
-      candidateValue.includes(labValue)
-    ) {
-      matchValue = 1;
-    } else if (
-      Array.isArray(labValue) &&
-      labValue.includes(candidateValue)
-    ) {
+    if (valuesMatch(candidateValue, labValue)) {
       matchValue = 1;
     } else {
       matchValue = 0;
@@ -53,3 +62,28 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
     matchedPairs: matchedPairs
   };
 }
+
+async function scoreCandidate(candidate, lab, matchingPairs) {
+  const rule = scoreCandidateVsLab(candidate, lab, matchingPairs);
+
+  const semantic = await semanticScore(
+    candidate.Research_Statement_FreeText,
+    lab.Lab_Description_FreeText
+  );
+
+  const semanticPercent = semantic * 100;
+
+  // Final blend ratio: 80% rule-based + 20% semantic AI
+  const combinedPercent = rule.rulePercent * 0.8 + semanticPercent * 0.2;
+
+  return {
+    ...rule,
+    semanticPercent: semanticPercent,
+    combinedPercent: combinedPercent
+  };
+}
+
+module.exports = {
+  scoreCandidateVsLab,
+  scoreCandidate
+};
