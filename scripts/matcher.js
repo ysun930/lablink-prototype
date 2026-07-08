@@ -17,10 +17,52 @@ function valuesMatch(candidateValue, labValue) {
   );
 }
 
+// Shows which part of the algorithm each matching pair belongs to
+function getScoringComponent(aVariable, bVariable) {
+  const variables = `${aVariable} ${bVariable}`.toLowerCase();
+
+  if (
+    variables.includes("career") ||
+    variables.includes("goal") ||
+    variables.includes("hours") ||
+    variables.includes("timeline") ||
+    variables.includes("compensation") ||
+    variables.includes("remote") ||
+    variables.includes("mentorship") ||
+    variables.includes("education") ||
+    variables.includes("hiree")
+  ) {
+    return "Goal";
+  }
+
+  if (
+    variables.includes("field") ||
+    variables.includes("discipline")
+  ) {
+    return "Field";
+  }
+
+  if (
+    variables.includes("skill") ||
+    variables.includes("technique")
+  ) {
+    return "Technique";
+  }
+
+  return "Other";
+}
+
 function scoreCandidateVsLab(candidate, lab, matchingPairs) {
   let ruleScore = 0;
   let ruleMax = 0;
   let matchedPairs = [];
+
+  let componentScores = {
+    Technique: { score: 0, max: 0 },
+    Field: { score: 0, max: 0 },
+    Goal: { score: 0, max: 0 },
+    Other: { score: 0, max: 0 }
+  };
 
   for (let pair of matchingPairs) {
     let aVariable = pair.datasetAVariable;
@@ -29,6 +71,8 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
 
     let labValue = lab[aVariable];
     let candidateValue = candidate[bVariable];
+
+    let scoringComponent = getScoringComponent(aVariable, bVariable);
 
     let matchValue = 0;
 
@@ -39,11 +83,16 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
     }
 
     let score = matchValue * weight;
+
     ruleScore += score;
     ruleMax += weight;
 
+    componentScores[scoringComponent].score += score;
+    componentScores[scoringComponent].max += weight;
+
     if (matchValue > 0) {
       matchedPairs.push({
+        scoringComponent: scoringComponent,
         datasetAVariable: aVariable,
         datasetBVariable: bVariable,
         weight: weight,
@@ -55,10 +104,21 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
 
   let rulePercent = (ruleScore / ruleMax) * 100;
 
+  let goalPercent =
+    componentScores.Goal.max > 0
+      ? (componentScores.Goal.score / componentScores.Goal.max) * 100
+      : 0;
+
   return {
     ruleScore: ruleScore,
     ruleMax: ruleMax,
     rulePercent: rulePercent,
+
+    goalScore: componentScores.Goal.score,
+    goalMax: componentScores.Goal.max,
+    goalPercent: goalPercent,
+
+    componentScores: componentScores,
     matchedPairs: matchedPairs
   };
 }
