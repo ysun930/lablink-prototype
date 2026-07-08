@@ -1,27 +1,32 @@
 docs/Algorithm_Spec.md
-Section	    Requirement	Content
-Section 1	Overview	The LabLink algorithm matches candidates with labs by comparing lab-side variables from Dataset A with candidate-side variables from Dataset B. It uses matching pairs, weights, and match values to calculate a final match percentage for each lab.
-Section 2	Input: Dataset A	Dataset A includes lab profile variables such as techniques, scientific fields, research aims, publication goals, career pathways, mentorship models, timeline expectations, institution type, funding source, hiree level, GPA requirement, prerequisite coursework, and prior experience requirement.
-Section 2	Input: Dataset B	Dataset B includes candidate profile variables such as candidate skills, proficiency level, field interests, career goals, publication preferences, mentorship preferences, timeline preferences, compensation preferences, education level, GPA range, coursework, and research experience level.
-Section 2	Matching Pair Source	The algorithm uses the B_MatchingPairs tab. Each row in B_MatchingPairs connects one Dataset A variable with one Dataset B variable.
-Section 3	Scoring Formula	Total_Score = SUM(weight_i × match_i) for all rows in B_MatchingPairs.
+Section	Requirement	Content
+Section 1	Overview	The LabLink algorithm matches candidates with labs by comparing lab-side variables from Dataset A with candidate-side variables from Dataset B. It uses matching pairs, weights, rule-based matching, and semantic AI scoring to calculate a final match percentage for each lab.
+Section 2	Input: Dataset A	Dataset A includes lab profile variables such as techniques, scientific fields, research aims, publication goals, career pathways, mentorship models, timeline expectations, institution type, funding source, hiree level, GPA requirement, prerequisite coursework, prior experience requirement, and lab description free text.
+Section 2	Input: Dataset B	Dataset B includes candidate profile variables such as candidate skills, proficiency level, field interests, career goals, publication preferences, mentorship preferences, timeline preferences, compensation preferences, education level, GPA range, coursework, research experience level, and research statement free text.
+Section 2	Matching Pair Source	The algorithm uses the B_MatchingPairs tab. Each row in B_MatchingPairs connects one Dataset A variable with one Dataset B variable and assigns a match weight.
+Section 3	Rule-Based Scoring Formula	Rule_Score = SUM(weight_i × match_i) for all rows in B_MatchingPairs.
 Section 3	Weight Meaning	weight_i is the importance value assigned to each matching pair. Higher weights mean the match is more important.
 Section 3	Exact Match Rule	If Dataset A variable i directly matches Dataset B variable i, then match_i = 1.
 Section 3	No Match Rule	If Dataset A variable i does not match Dataset B variable i, then match_i = 0.
 Section 3	Partial Match Rule	If the match is related but not exact, then match_i = 0.5. For example, a secondary interest may partially match a primary lab field.
 Section 3	Penalty Rule	If there is a major mismatch, then match_i = -1. For example, if a lab requires full-time availability but the candidate is only available part-time.
-Section 3	Max Score	Max_Score = SUM of all positive weights where match_i = 1.
-Section 3	Match Percentage	Match Percentage = Total_Score / Max_Score × 100.
-Section 4	Output	The algorithm returns a ranked list of lab matches for each candidate, sorted by match percentage from highest to lowest.
+Section 3	Max Score	Max_Score = SUM of all possible positive weights in the matching pairs.
+Section 3	Rule Match Percentage	Rule Percent = Rule_Score / Max_Score × 100.
+Section 3	Semantic AI Score	The semantic score compares the candidate research statement with the lab description using embeddings and cosine similarity.
+Section 3	Combined Score Formula	Final Combined Percent = Rule Percent × 0.8 + Semantic Percent × 0.2.
+Section 3	Chosen Blend Ratio	The chosen blend ratio is 80% rule-based score and 20% semantic AI score. This keeps structured matching dominant while allowing AI to add nuance for free-text research statements and lab descriptions.
+Section 4	Output	The algorithm returns a ranked list of lab matches for each candidate, sorted by final combined percentage from highest to lowest.
 Section 4	Display Rule	The system should display the top 5 lab matches with their match percentages.
-Section 5	Test case(strong match)	Molecular Biology wet/mixed lab(Expected Output: Strong Match. CAND-001 vs LAB-001 scores above 70% ) Should be Neuroscience lab + Neuroscience candidate
-Section 5	Test case(partial match)	Computational biology / bioinformatics lab. Required skills include Python, R, pandas, BLAST, and scikit-learn. Lab type is dry lab. Lab supports applied research and biotech career paths.
-Section 5	Test case(weak match)	Clinical medicine or hospital-affiliated lab. Required skills include clinical research support, patient-facing work, and full-time availability. Lab supports MD/PhD or clinical medicine pathways.
+Section 5	Test Case: Good / Strong Neuroscience Match	CAND-001 vs LAB-001 compares a neuroscience candidate with Chen Neuroscience Laboratory. The candidate matches the lab on neuroscience field interest, molecular and cellular neuroscience interests, PCR, Western Blot, cell culture, confocal microscopy, Academic PhD alignment, junior level, part-time availability, for-credit compensation, and in-person preference. Expected Output: Good / Strong neuroscience match.
+Section 5	Test Case: Weak Cross-Field Match	CAND-002 vs LAB-001 compares a computational biology candidate with a neuroscience wet lab. The semantic score correctly lowers the match because the candidate’s computational focus does not strongly align with the wet-lab neuroscience description. Expected Output: Weak or partial match.
+Section 5	Test Case: Strong Computational Match	CAND-002 vs LAB-002 compares a computational biology candidate with a computational biology / bioinformatics lab. The candidate matches on Python, R, pandas, BLAST, scikit-learn, dry lab work, applied research, and biotech career interests. Expected Output: Strong computational match.
+Section 5	Test Case: Poor Cross-Field Match	CAND-001 vs LAB-002 compares a neuroscience wet-lab candidate with a computational biology lab. The candidate has limited overlap with the lab’s computational skills and dry-lab focus. Expected Output: Poor match.
+Section 5	Test Case: Good Cancer Biology Match	CAND-003 vs LAB-003 compares an oncology / cancer biology candidate with Kim Cancer Biology Program. The candidate matches on cancer biology field interest, translational cancer science, cancer genetics, flow cytometry, ELISA, CRISPR-Cas9, RT-PCR, MD/PhD goal, postbac level, full-time availability, paid preference, and in-person preference. Expected Output: Good cancer biology match.
+Threshold Rule	Strong Match	Match ≥ 80%. Display with a green badge.
 Threshold Rule	Good Match	Match 60–79%. Display with a blue badge.
 Threshold Rule	Partial Match	Match 40–59%. Display with a yellow badge.
 Threshold Rule	Poor Match	Match < 40%. Do not display, or show with a warning.
 Notes	Future Refinement	These thresholds are starting points and can be refined with real candidate and lab data in Week 4.
-
 
 
 
