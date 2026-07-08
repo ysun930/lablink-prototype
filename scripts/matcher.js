@@ -4,20 +4,29 @@ function normalize(value) {
   return String(value).toLowerCase().trim();
 }
 
+function isMissing(value) {
+  return value === undefined || value === null || value === "";
+}
+
 function valuesMatch(candidateValue, labValue) {
+  if (isMissing(candidateValue) || isMissing(labValue)) {
+    return false;
+  }
+
   const candidateArray = Array.isArray(candidateValue) ? candidateValue : [candidateValue];
   const labArray = Array.isArray(labValue) ? labValue : [labValue];
 
-  return candidateArray.some(c =>
-    labArray.some(l =>
-      normalize(c) === normalize(l) ||
-      normalize(c).includes(normalize(l)) ||
-      normalize(l).includes(normalize(c))
+  return candidateArray.some(candidateItem =>
+    labArray.some(labItem =>
+      normalize(candidateItem) === normalize(labItem) ||
+      normalize(candidateItem).includes(normalize(labItem)) ||
+      normalize(labItem).includes(normalize(candidateItem))
     )
   );
 }
 
-// Shows which part of the algorithm each matching pair belongs to
+// This function decides whether each matching pair belongs to
+// Technique scoring, Field scoring, Goal scoring, or Other scoring.
 function getScoringComponent(aVariable, bVariable) {
   const variables = `${aVariable} ${bVariable}`.toLowerCase();
 
@@ -30,14 +39,18 @@ function getScoringComponent(aVariable, bVariable) {
     variables.includes("remote") ||
     variables.includes("mentorship") ||
     variables.includes("education") ||
-    variables.includes("hiree")
+    variables.includes("hiree") ||
+    variables.includes("publication") ||
+    variables.includes("experience")
   ) {
     return "Goal";
   }
 
   if (
     variables.includes("field") ||
-    variables.includes("discipline")
+    variables.includes("discipline") ||
+    variables.includes("sub_discipline") ||
+    variables.includes("interest")
   ) {
     return "Field";
   }
@@ -50,6 +63,14 @@ function getScoringComponent(aVariable, bVariable) {
   }
 
   return "Other";
+}
+
+function percent(score, max) {
+  if (max === 0) {
+    return 0;
+  }
+
+  return (score / max) * 100;
 }
 
 function scoreCandidateVsLab(candidate, lab, matchingPairs) {
@@ -65,24 +86,22 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
   };
 
   for (let pair of matchingPairs) {
-    let aVariable = pair.datasetAVariable;
-    let bVariable = pair.datasetBVariable;
-    let weight = pair.weight;
+    const aVariable = pair.datasetAVariable;
+    const bVariable = pair.datasetBVariable;
+    const weight = Number(pair.weight) || 0;
 
-    let labValue = lab[aVariable];
-    let candidateValue = candidate[bVariable];
+    const labValue = lab[aVariable];
+    const candidateValue = candidate[bVariable];
 
-    let scoringComponent = getScoringComponent(aVariable, bVariable);
+    const scoringComponent = getScoringComponent(aVariable, bVariable);
 
     let matchValue = 0;
 
     if (valuesMatch(candidateValue, labValue)) {
       matchValue = 1;
-    } else {
-      matchValue = 0;
     }
 
-    let score = matchValue * weight;
+    const score = matchValue * weight;
 
     ruleScore += score;
     ruleMax += weight;
@@ -95,6 +114,8 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
         scoringComponent: scoringComponent,
         datasetAVariable: aVariable,
         datasetBVariable: bVariable,
+        labValue: labValue,
+        candidateValue: candidateValue,
         weight: weight,
         matchValue: matchValue,
         score: score
@@ -102,20 +123,35 @@ function scoreCandidateVsLab(candidate, lab, matchingPairs) {
     }
   }
 
-  let rulePercent = (ruleScore / ruleMax) * 100;
+  const rulePercent = percent(ruleScore, ruleMax);
 
-  let goalPercent =
-    componentScores.Goal.max > 0
-      ? (componentScores.Goal.score / componentScores.Goal.max) * 100
-      : 0;
+  const techniqueScore = componentScores.Technique.score;
+  const techniqueMax = componentScores.Technique.max;
+  const techniquePercent = percent(techniqueScore, techniqueMax);
+
+  const fieldScore = componentScores.Field.score;
+  const fieldMax = componentScores.Field.max;
+  const fieldPercent = percent(fieldScore, fieldMax);
+
+  const goalScore = componentScores.Goal.score;
+  const goalMax = componentScores.Goal.max;
+  const goalPercent = percent(goalScore, goalMax);
 
   return {
     ruleScore: ruleScore,
     ruleMax: ruleMax,
     rulePercent: rulePercent,
 
-    goalScore: componentScores.Goal.score,
-    goalMax: componentScores.Goal.max,
+    techniqueScore: techniqueScore,
+    techniqueMax: techniqueMax,
+    techniquePercent: techniquePercent,
+
+    fieldScore: fieldScore,
+    fieldMax: fieldMax,
+    fieldPercent: fieldPercent,
+
+    goalScore: goalScore,
+    goalMax: goalMax,
     goalPercent: goalPercent,
 
     componentScores: componentScores,
