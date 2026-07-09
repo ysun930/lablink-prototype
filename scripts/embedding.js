@@ -1,4 +1,18 @@
+const COHERE_API_KEY = process.env.COHERE_API_KEY;
+
+// Cache object: stores embeddings so the same text does not call the API again
+const embeddingCache = {};
+
 async function getEmbedding(text) {
+  if (!text) {
+    return [];
+  }
+
+  // If this text was already embedded before, use the saved version
+  if (embeddingCache[text]) {
+    return embeddingCache[text];
+  }
+
   const response = await fetch("https://api.cohere.ai/v1/embed", {
     method: "POST",
     headers: {
@@ -13,8 +27,17 @@ async function getEmbedding(text) {
   });
 
   const data = await response.json();
-  return data.embeddings[0];
+
+  if (!data.embeddings || !data.embeddings[0]) {
+    throw new Error("Cohere embedding API did not return an embedding.");
+  }
+
+  // Save embedding in cache
+  embeddingCache[text] = data.embeddings[0];
+
+  return embeddingCache[text];
 }
+
 function cosineSimilarity(vecA, vecB) {
   let dot = 0;
   let magA = 0;
@@ -35,29 +58,32 @@ function cosineSimilarity(vecA, vecB) {
 
   return dot / (magA * magB);
 }
+
 async function semanticScore(candidateStatement, labDescription) {
-  const [candVec, labVec] = await Promise.all([
+  const [candidateEmbedding, labEmbedding] = await Promise.all([
     getEmbedding(candidateStatement),
     getEmbedding(labDescription)
   ]);
 
-  return cosineSimilarity(candVec, labVec);
+  return cosineSimilarity(candidateEmbedding, labEmbedding);
 }
-async function scoreCandidate(candidate, lab, matchingPairs) {
-  const rule = scoreCandidateVsLab(candidate, lab, matchingPairs);
 
-  const semantic = await semanticScore(
-    candidate.Research_Statement_FreeText,
-    lab.Lab_Description_FreeText
-  );
+// Precompute all lab embeddings once
+async function precomputeLabEmbeddings(labs) {
+  for (const labId in labs) {
+    const lab = labs[labId];
 
-  const semanticPercent = semantic * 100;
+    if (lab.Lab_Description_FreeText) {
+      await getEmbedding(lab.Lab_Description_FreeText);
+    }
+  }
 
-  const combined = (rule.rulePercent * 0.7) + (semanticPercent * 0.3);
-
-  return {
-    ...rule,
-    semanticPercent: semanticPercent,
-    combinedPercent: combined
-  };
+  console.log("Lab embeddings precomputed and cached.");
 }
+
+module.exports = {
+  getEmbedding,
+  cosineSimilarity,
+  semanticScore,
+  precomputeLabEmbeddings
+};
