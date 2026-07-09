@@ -27,6 +27,39 @@ Threshold Rule	Good Match	Match 60–79%. Display with a blue badge.
 Threshold Rule	Partial Match	Match 40–59%. Display with a yellow badge.
 Threshold Rule	Poor Match	Match < 40%. Do not display, or show with a warning.
 Notes	Future Refinement	These thresholds are starting points and can be refined with real candidate and lab data in Week 4.
+Section 6: AI/ML Component — Semantic Similarity Scoring
+
+6.1 Motivation
+Exact string matching can miss meaningful research alignment when candidates and labs use different words to describe similar interests. For example, a lab may write “protein misfolding in neurodegeneration,” while a candidate may write “protein aggregation in Alzheimer’s disease.” These phrases are not exactly the same, but they are semantically related.
+
+6.2 Tool Used
+The algorithm uses the Cohere Embed API with the embed-english-light-v3.0 model to convert lab descriptions and candidate research statements into numerical embedding vectors. These embeddings allow the algorithm to compare meaning instead of only exact words.
+
+6.3 Method
+The AI/ML component compares the candidate’s Research_Statement_FreeText with the lab’s Lab_Description_FreeText. Each text is converted into an embedding vector, and cosine similarity is used to measure how similar the two vectors are. A higher cosine similarity means the candidate’s research interests are more closely related to the lab’s research focus.
+
+6.4 Blend Ratio
+The final combined score uses an 80/20 blend: 80% rule-based score and 20% AI semantic score.
+
+Combined Percent = Rule Percent × 0.8 + Semantic Percent × 0.2
+
+This ratio was chosen because structured variables such as techniques, fields, goals, timeline, compensation, and education level should remain the main driver of the match. The AI semantic score adds nuance for free-text research statements and lab descriptions, but it should not override clear structured mismatches.
+
+6.5 Ablation Study Results
+The algorithm was tested in three modes: rule-only, semantic-only, and combined scoring. Rule-only scoring performed well on structured matches, while semantic-only scoring helped identify free-text similarity but was less reliable by itself. The combined 80/20 method kept structured matching dominant while still using AI to reduce false positives.
+
+Pair                | Rule % | Semantic %   | Combined % | Expected Match              | Correct?
+CAND-001 vs LAB-001 | 79.2% |    63.0%       | 76.0%     | Good neuroscience match     | Yes
+CAND-002 vs LAB-001 | 64.9% |    35.7%       | 59.1%     | Partial match               | Yes
+CAND-002 vs LAB-002 | 100.0%|    83.1%       | 96.6%     | Strong computational match  | Yes
+CAND-001 vs LAB-002 | 25.9% |    43.6%       | 29.4%     | Poor cross-field match      | Yes
+CAND-003 vs LAB-003 | 79.2% |    57.6%       | 74.9%     | Good cancer biology match   | Yes
+
+6.6 Limitations
+The AI/ML component requires an internet connection and access to the Cohere API. API usage may also be limited by free-tier call limits. Another limitation is that general-purpose embeddings may not fully understand specialized biomedical vocabulary, especially very technical research terms. The semantic score should therefore support the rule-based score, not replace it.
+
+6.7 Future Improvements
+Future versions could improve the AI/ML component by using biomedical-specific embeddings trained on PubMed abstracts or research papers. The system could also collect user feedback on successful and unsuccessful matches, then use that feedback to adjust weights or train a supervised machine learning model.
 
 
 
