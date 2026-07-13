@@ -1,1 +1,1 @@
-window.COHERE_API_KEY = "cohere_xxxxxxxxx";
+window.COHERE_API_KEY = NdwGe0Epl9vuyHdjM14cL0sv0SDKG7CfEyD0v1pG;
