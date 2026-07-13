@@ -1,3 +1,6 @@
+<script src="../scripts/config.js"></script>
+<script src="../scripts/app.js"></script>
+
 let labsData = [];
 let candidatesData = [];
 
