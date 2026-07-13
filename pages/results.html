@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LabLink Results</title>
+</head>
+<body>
+  <h1>LabLink Match Results</h1>
+
+  <div id="results-container"></div>
+
+  <script>
+    const results = JSON.parse(sessionStorage.getItem("lablinkResults")) || [];
+    const container = document.getElementById("results-container");
+
+    results.forEach(result => {
+      const card = document.createElement("div");
+
+      card.innerHTML = `
+        <h2>${result.Lab_ID}: ${result.Lab_Name}</h2>
+        <p>Combined Match: ${result.combinedPercent.toFixed(1)}%</p>
+        <p>Rule Score: ${result.rulePercent.toFixed(1)}%</p>
+        <p>Semantic Score: ${result.semanticPercent.toFixed(1)}%</p>
+        <hr>
+      `;
+
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>
