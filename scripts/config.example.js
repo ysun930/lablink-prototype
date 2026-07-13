@@ -1,1 +1,1 @@
-const COHERE_API_KEY = "your-key-here";
+window.COHERE_API_KEY = NdwGe0Epl9vuyHdjM14cL0sv0SDKG7CfEyD0v1pG;
