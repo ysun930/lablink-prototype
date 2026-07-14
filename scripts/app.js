@@ -410,6 +410,11 @@ async function handleCandidateSubmit(event) {
   // Sort from best match to weakest match
   results.sort((a, b) => b.combinedPercent - a.combinedPercent);
 
+  // Show that rule scorer and AI scorer both fired
+  console.log("Rule scorer fired:", results[0].rulePercent);
+  console.log("AI scorer fired:", results[0].semanticPercent);
+  console.log("Combined score:", results[0].combinedPercent);
+
   // Save results for results page
   sessionStorage.setItem("lablinkResults", JSON.stringify(results));
   sessionStorage.setItem("submittedCandidate", JSON.stringify(candidate));
