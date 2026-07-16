@@ -2,73 +2,214 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>LabLink Results</title>
 </head>
 
 <body>
   <h1>LabLink Match Results</h1>
 
-  <label for="sort-select">Sort results by:</label>
+  <label for="sort-select">
+    Sort results by:
+  </label>
 
   <select id="sort-select">
-    <option value="combinedPercent">Combined Score</option>
-    <option value="rulePercent">Rule-Based Score</option>
-    <option value="semanticPercent">AI Semantic Score</option>
+    <option value="combinedPercent">
+      Combined Score
+    </option>
+
+    <option value="rulePercent">
+      Rule-Based Score
+    </option>
+
+    <option value="semanticPercent">
+      AI Semantic Score
+    </option>
   </select>
 
   <div id="results-container"></div>
 
   <script>
-    // Must match the key used in app.js
-    const storedResults = sessionStorage.getItem("lablinkResults");
+    // Read the results saved by app.js
+    const storedResults =
+      sessionStorage.getItem("labMatchResults");
 
     const results = storedResults
       ? JSON.parse(storedResults)
       : [];
 
-    const container = document.getElementById("results-container");
-    const sortSelect = document.getElementById("sort-select");
+    const container =
+      document.getElementById("results-container");
 
-    // Display all ranked lab cards
-    function displayResults(sortBy = "combinedPercent") {
+    const sortSelect =
+      document.getElementById("sort-select");
+
+    // Safely formats a score as a percentage
+    function safePercent(value) {
+      const number = Number(value);
+
+      return Number.isFinite(number)
+        ? number.toFixed(1)
+        : "0.0";
+    }
+
+    // Displays all lab result cards
+    function displayResults(
+      sortBy = "combinedPercent"
+    ) {
       container.innerHTML = "";
 
       if (results.length === 0) {
-        container.innerHTML =
-          "<p>No results found. Please submit the candidate form first.</p>";
+        container.innerHTML = `
+          <p>
+            No results found. Please submit the
+            candidate form first.
+          </p>
+
+          <p>
+            <a href="index.html">
+              Return to Candidate Form
+            </a>
+          </p>
+        `;
+
         return;
       }
 
-      // Sort highest score to lowest score
-      results.sort((a, b) => b[sortBy] - a[sortBy]);
+      // Make a sorted copy instead of changing
+      // the original sessionStorage order
+      const sortedResults = [...results].sort(
+        (a, b) =>
+          Number(b[sortBy] || 0) -
+          Number(a[sortBy] || 0)
+      );
 
-      results.forEach((result, index) => {
-        const card = document.createElement("div");
+      sortedResults.forEach((result, index) => {
+        const card =
+          document.createElement("section");
 
         card.className = "lab-card";
 
+        const profile =
+          result.labProfile || {};
+
         card.innerHTML = `
           <h2>
-            Rank ${index + 1}: ${result.Lab_ID} — ${result.Lab_Name}
+            Rank ${index + 1}:
+            ${result.Lab_ID || "Unknown Lab"} —
+            ${result.Lab_Name || "Unnamed Lab"}
           </h2>
 
-          <p>
-            <strong>Combined Match:</strong>
-            ${result.combinedPercent.toFixed(1)}%
-          </p>
+          <div class="score-badges">
+            <p>
+              <strong>Combined Match:</strong>
+              ${safePercent(
+                result.combinedPercent
+              )}%
+            </p>
 
-          <p>
-            <strong>Rule-Based Score:</strong>
-            ${result.rulePercent.toFixed(1)}%
-          </p>
+            <p>
+              <strong>Rule-Based Score:</strong>
+              ${safePercent(
+                result.rulePercent
+              )}%
+            </p>
 
-          <p>
-            <strong>AI Semantic Score:</strong>
-            ${result.semanticPercent.toFixed(1)}%
-          </p>
+            <p>
+              <strong>AI Semantic Score:</strong>
+              ${safePercent(
+                result.semanticPercent
+              )}%
+            </p>
+          </div>
 
-          <p>
-            AI semantic similarity was generated using Cohere embeddings.
+          <div class="score-breakdown">
+            <h3>Rule-Based Score Breakdown</h3>
+
+            <p>
+              <strong>Field Score:</strong>
+              ${safePercent(
+                result.fieldPercent
+              )}%
+            </p>
+
+            <p>
+              <strong>Technique Score:</strong>
+              ${safePercent(
+                result.techniquePercent
+              )}%
+            </p>
+
+            <p>
+              <strong>Goal Score:</strong>
+              ${safePercent(
+                result.goalPercent
+              )}%
+            </p>
+          </div>
+
+          <div class="lab-information">
+            <h3>Lab Information</h3>
+
+            <p>
+              <strong>Primary Field:</strong>
+              ${profile.Primary_Field ||
+                "Not available"}
+            </p>
+
+            <p>
+              <strong>Sub-disciplines:</strong>
+              ${
+                Array.isArray(
+                  profile.Sub_discipline
+                )
+                  ? profile.Sub_discipline.join(", ")
+                  : profile.Sub_discipline ||
+                    "Not available"
+              }
+            </p>
+
+            <p>
+              <strong>Lab Aim:</strong>
+              ${profile.Lab_Aim ||
+                "Not available"}
+            </p>
+
+            <p>
+              <strong>Institution Type:</strong>
+              ${profile.Institution_Type ||
+                "Not available"}
+            </p>
+
+            <p>
+              <strong>Required Techniques:</strong>
+              ${
+                profile.Required_Techniques ||
+                "Not available"
+              }
+            </p>
+
+            <p>
+              <strong>Lab Description:</strong>
+              ${
+                profile.Lab_Description_FreeText ||
+                "Not available"
+              }
+            </p>
+          </div>
+
+          <p class="ai-attribution">
+            <small>
+              AI semantic similarity was generated
+              using Cohere embeddings. The final
+              combined score uses 80% rule-based
+              scoring and 20% AI semantic scoring.
+            </small>
           </p>
 
           <hr>
@@ -78,12 +219,16 @@
       });
     }
 
-    // Re-sort cards whenever the dropdown changes
-    sortSelect.addEventListener("change", event => {
-      displayResults(event.target.value);
-    });
+    // Re-sort the visible lab cards when
+    // the dropdown selection changes
+    sortSelect.addEventListener(
+      "change",
+      event => {
+        displayResults(event.target.value);
+      }
+    );
 
-    // Initially display results by combined score
+    // Initially sort by combined score
     displayResults();
   </script>
 </body>
