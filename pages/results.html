@@ -9,6 +9,63 @@
   >
 
   <title>LabLink Results</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f5f7fb;
+    }
+
+    h1 {
+      color: #1f4e99;
+    }
+
+    #sort-select {
+      margin: 10px 0 25px;
+      padding: 8px;
+    }
+
+    .lab-card {
+      background-color: white;
+      border: 1px solid #d9dfe8;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+
+    .score-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 15px 0;
+    }
+
+    .score-badge {
+      background-color: #eef3fb;
+      border-radius: 6px;
+      padding: 10px 14px;
+    }
+
+    .profile-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 9px 14px;
+      background-color: #1f4e99;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .profile-link:hover {
+      background-color: #163b75;
+    }
+
+    .ai-attribution {
+      color: #555;
+      margin-top: 16px;
+    }
+  </style>
 </head>
 
 <body>
@@ -35,7 +92,7 @@
   <div id="results-container"></div>
 
   <script>
-    // Read the results saved by app.js
+    // Read the ranked results saved by app.js
     const storedResults =
       sessionStorage.getItem("labMatchResults");
 
@@ -49,7 +106,7 @@
     const sortSelect =
       document.getElementById("sort-select");
 
-    // Safely formats a score as a percentage
+    // Safely formats score values as percentages
     function safePercent(value) {
       const number = Number(value);
 
@@ -58,7 +115,16 @@
         : "0.0";
     }
 
-    // Displays all lab result cards
+    // Converts arrays into readable text
+    function formatList(value) {
+      if (Array.isArray(value)) {
+        return value.join(", ");
+      }
+
+      return value || "Not available";
+    }
+
+    // Displays all ranked lab cards
     function displayResults(
       sortBy = "combinedPercent"
     ) {
@@ -81,8 +147,7 @@
         return;
       }
 
-      // Make a sorted copy instead of changing
-      // the original sessionStorage order
+      // Sort a copy from highest score to lowest score
       const sortedResults = [...results].sort(
         (a, b) =>
           Number(b[sortBy] || 0) -
@@ -98,34 +163,39 @@
         const profile =
           result.labProfile || {};
 
+        const labId =
+          result.Lab_ID || "Unknown Lab";
+
+        const labName =
+          result.Lab_Name || "Unnamed Lab";
+
         card.innerHTML = `
           <h2>
             Rank ${index + 1}:
-            ${result.Lab_ID || "Unknown Lab"} —
-            ${result.Lab_Name || "Unnamed Lab"}
+            ${labId} — ${labName}
           </h2>
 
           <div class="score-badges">
-            <p>
-              <strong>Combined Match:</strong>
+            <div class="score-badge">
+              <strong>Combined Match</strong><br>
               ${safePercent(
                 result.combinedPercent
               )}%
-            </p>
+            </div>
 
-            <p>
-              <strong>Rule-Based Score:</strong>
+            <div class="score-badge">
+              <strong>Rule-Based Score</strong><br>
               ${safePercent(
                 result.rulePercent
               )}%
-            </p>
+            </div>
 
-            <p>
-              <strong>AI Semantic Score:</strong>
+            <div class="score-badge">
+              <strong>AI Semantic Score</strong><br>
               ${safePercent(
                 result.semanticPercent
               )}%
-            </p>
+            </div>
           </div>
 
           <div class="score-breakdown">
@@ -164,14 +234,9 @@
 
             <p>
               <strong>Sub-disciplines:</strong>
-              ${
-                Array.isArray(
-                  profile.Sub_discipline
-                )
-                  ? profile.Sub_discipline.join(", ")
-                  : profile.Sub_discipline ||
-                    "Not available"
-              }
+              ${formatList(
+                profile.Sub_discipline
+              )}
             </p>
 
             <p>
@@ -190,7 +255,9 @@
               <strong>Required Techniques:</strong>
               ${
                 profile.Required_Techniques ||
-                "Not available"
+                formatList(
+                  profile.Required_Skills
+                )
               }
             </p>
 
@@ -203,6 +270,17 @@
             </p>
           </div>
 
+          <p>
+            <a
+              class="profile-link"
+              href="lab-profile.html?labId=${encodeURIComponent(
+                labId
+              )}"
+            >
+              View Lab Profile
+            </a>
+          </p>
+
           <p class="ai-attribution">
             <small>
               AI semantic similarity was generated
@@ -211,16 +289,13 @@
               scoring and 20% AI semantic scoring.
             </small>
           </p>
-
-          <hr>
         `;
 
         container.appendChild(card);
       });
     }
 
-    // Re-sort the visible lab cards when
-    // the dropdown selection changes
+    // Re-sort cards when the dropdown changes
     sortSelect.addEventListener(
       "change",
       event => {
@@ -228,7 +303,7 @@
       }
     );
 
-    // Initially sort by combined score
+    // Initially display by combined score
     displayResults();
   </script>
 </body>
