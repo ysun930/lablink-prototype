@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LabLink Lab Profile</title>
+</head>
+
+<body>
+  <p>
+    <a href="results.html">← Back to Results</a>
+  </p>
+
+  <h1 id="lab-name">Lab Profile</h1>
+
+  <section id="lab-information">
+    <p>Loading lab information...</p>
+  </section>
+
+  <!-- Hidden when the user has not submitted a candidate profile -->
+  <section id="score-section" hidden>
+    <h2>Your Match Score</h2>
+
+    <p>
+      <strong>Combined Match:</strong>
+      <span id="combined-score">0.0%</span>
+    </p>
+
+    <p>
+      <strong>Rule-Based Score:</strong>
+      <span id="rule-score">0.0%</span>
+    </p>
+
+    <p>
+      <strong>AI Semantic Score:</strong>
+      <span id="semantic-score">0.0%</span>
+    </p>
+
+    <h3>Rule-Based Score Breakdown</h3>
+
+    <p>
+      <strong>Field Score:</strong>
+      <span id="field-score">0.0%</span>
+    </p>
+
+    <p>
+      <strong>Technique Score:</strong>
+      <span id="technique-score">0.0%</span>
+    </p>
+
+    <p>
+      <strong>Goal Score:</strong>
+      <span id="goal-score">0.0%</span>
+    </p>
+
+    <p>
+      <small>
+        AI semantic similarity was generated using Cohere embeddings.
+        The final combined score uses 80% rule-based scoring and
+        20% AI semantic scoring.
+      </small>
+    </p>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const labId = params.get("labId");
+
+    const labNameElement =
+      document.getElementById("lab-name");
+
+    const labInformationElement =
+      document.getElementById("lab-information");
+
+    const scoreSection =
+      document.getElementById("score-section");
+
+    function safePercent(value) {
+      const number = Number(value);
+
+      return Number.isFinite(number)
+        ? `${number.toFixed(1)}%`
+        : "0.0%";
+    }
+
+    function displayLabProfile(profile) {
+      if (!profile) {
+        labInformationElement.innerHTML =
+          "<p>Lab profile not found.</p>";
+
+        return;
+      }
+
+      labNameElement.textContent =
+        `${profile.Lab_ID || labId}: ${profile.Lab_Name || "Lab Profile"}`;
+
+      const subDisciplines =
+        Array.isArray(profile.Sub_discipline)
+          ? profile.Sub_discipline.join(", ")
+          : profile.Sub_discipline ||
+            profile.Sub_disciplines ||
+            "Not available";
+
+      const requiredTechniques =
+        profile.Required_Techniques ||
+        (
+          Array.isArray(profile.Required_Skills)
+            ? profile.Required_Skills.join(", ")
+            : profile.Required_Skills
+        ) ||
+        "Not available";
+
+      labInformationElement.innerHTML = `
+        <h2>Lab Information</h2>
+
+        <p>
+          <strong>Primary Field:</strong>
+          ${profile.Primary_Field || "Not available"}
+        </p>
+
+        <p>
+          <strong>Sub-disciplines:</strong>
+          ${subDisciplines}
+        </p>
+
+        <p>
+          <strong>Lab Aim:</strong>
+          ${profile.Lab_Aim || "Not available"}
+        </p>
+
+        <p>
+          <strong>Institution Type:</strong>
+          ${profile.Institution_Type || "Not available"}
+        </p>
+
+        <p>
+          <strong>Lab Size:</strong>
+          ${profile.Lab_Size || "Not available"}
+        </p>
+
+        <p>
+          <strong>Required Techniques:</strong>
+          ${requiredTechniques}
+        </p>
+
+        <p>
+          <strong>Preferred Techniques:</strong>
+          ${profile.Preferred_Techniques || "Not available"}
+        </p>
+
+        <p>
+          <strong>Career Pathways:</strong>
+          ${profile.Career_Pathways_Supported || "Not available"}
+        </p>
+
+        <p>
+          <strong>Hours:</strong>
+          ${profile.Hours_Per_Week || profile.Hours || "Not available"}
+        </p>
+
+        <p>
+          <strong>Compensation:</strong>
+          ${profile.Compensation || "Not available"}
+        </p>
+
+        <p>
+          <strong>Remote Option:</strong>
+          ${profile.Remote_Option || profile.Remote || "Not available"}
+        </p>
+
+        <p>
+          <strong>Description:</strong>
+          ${profile.Lab_Description_FreeText || "Not available"}
+        </p>
+      `;
+    }
+
+    function displayScores(result) {
+      if (!result) {
+        // Direct navigation with no candidate match:
+        // keep the score section hidden.
+        scoreSection.hidden = true;
+        return;
+      }
+
+      scoreSection.hidden = false;
+
+      document.getElementById("combined-score").textContent =
+        safePercent(result.combinedPercent);
+
+      document.getElementById("rule-score").textContent =
+        safePercent(result.rulePercent);
+
+      document.getElementById("semantic-score").textContent =
+        safePercent(result.semanticPercent);
+
+      document.getElementById("field-score").textContent =
+        safePercent(result.fieldPercent);
+
+      document.getElementById("technique-score").textContent =
+        safePercent(result.techniquePercent);
+
+      document.getElementById("goal-score").textContent =
+        safePercent(result.goalPercent);
+    }
+
+    async function loadProfile() {
+      if (!labId) {
+        labInformationElement.innerHTML =
+          "<p>No Lab_ID was provided.</p>";
+
+        scoreSection.hidden = true;
+        return;
+      }
+
+      // Look for the selected lab and score in sessionStorage.
+      const storedResults =
+        sessionStorage.getItem("labMatchResults");
+
+      const results = storedResults
+        ? JSON.parse(storedResults)
+        : [];
+
+      const matchedResult = results.find(
+        result => result.Lab_ID === labId
+      );
+
+      if (matchedResult) {
+        displayLabProfile(
+          matchedResult.labProfile || matchedResult
+        );
+
+        displayScores(matchedResult);
+        return;
+      }
+
+      // If opened directly, load the basic lab profile from labs.json.
+      // No candidate scores will be displayed.
+      try {
+        const response =
+          await fetch("../data/labs.json");
+
+        if (!response.ok) {
+          throw new Error(
+            `Could not load labs.json: ${response.status}`
+          );
+        }
+
+        const labs = await response.json();
+
+        const rawLab = labs.find(lab => {
+          const currentId =
+            lab["Lab_ID (LAB-001 to LAB-005)"] ||
+            lab.Lab_ID;
+
+          return currentId === labId;
+        });
+
+        if (!rawLab) {
+          displayLabProfile(null);
+          return;
+        }
+
+        const profile = {
+          Lab_ID:
+            rawLab["Lab_ID (LAB-001 to LAB-005)"] ||
+            rawLab.Lab_ID,
+
+          Lab_Name: rawLab.Lab_Name,
+          Primary_Field: rawLab.Primary_Field,
+          Sub_disciplines: rawLab.Sub_disciplines,
+          Lab_Aim: rawLab.Lab_Aim,
+          Institution_Type: rawLab.Institution_Type,
+          Lab_Size: rawLab.Lab_Size,
+          Required_Techniques: rawLab.Required_Techniques,
+          Preferred_Techniques: rawLab.Preferred_Techniques,
+
+          Career_Pathways_Supported:
+            rawLab.Career_Pathways_Supported,
+
+          Hours_Per_Week: rawLab.Hours_Per_Week,
+          Compensation: rawLab.Compensation,
+          Remote_Option: rawLab.Remote_Option,
+
+          Lab_Description_FreeText:
+            rawLab.Lab_Description_FreeText
+        };
+
+        displayLabProfile(profile);
+
+        // No candidate has matched yet, so scores remain hidden.
+        displayScores(null);
+      } catch (error) {
+        console.error("Error loading lab profile:", error);
+
+        labInformationElement.innerHTML =
+          "<p>Unable to load this lab profile.</p>";
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
