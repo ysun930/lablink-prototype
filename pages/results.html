@@ -13,8 +13,11 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 30px;
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
       background-color: #f5f7fb;
+      color: #222;
     }
 
     h1 {
@@ -45,9 +48,16 @@
       background-color: #eef3fb;
       border-radius: 6px;
       padding: 10px 14px;
+      min-width: 150px;
     }
 
-    .profile-link {
+    .score-breakdown,
+    .lab-information {
+      margin-top: 18px;
+    }
+
+    .profile-link,
+    .form-link {
       display: inline-block;
       margin-top: 10px;
       padding: 9px 14px;
@@ -57,7 +67,8 @@
       border-radius: 5px;
     }
 
-    .profile-link:hover {
+    .profile-link:hover,
+    .form-link:hover {
       background-color: #163b75;
     }
 
@@ -65,11 +76,25 @@
       color: #555;
       margin-top: 16px;
     }
+
+    footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      color: #555;
+      border-top: 1px solid #ccc;
+    }
   </style>
 </head>
 
 <body>
   <h1>LabLink Match Results</h1>
+
+  <p>
+    <a class="form-link" href="index.html">
+      Return to Candidate Form
+    </a>
+  </p>
 
   <label for="sort-select">
     Sort results by:
@@ -91,8 +116,14 @@
 
   <div id="results-container"></div>
 
+  <footer>
+    <p>
+      Semantic matching powered by Cohere Embed AI.
+    </p>
+  </footer>
+
   <script>
-    // Read the ranked results saved by app.js
+    // Read the ranked results saved by app.js.
     const storedResults =
       sessionStorage.getItem("labMatchResults");
 
@@ -106,7 +137,7 @@
     const sortSelect =
       document.getElementById("sort-select");
 
-    // Safely formats score values as percentages
+    // Safely formats a score as a percentage.
     function safePercent(value) {
       const number = Number(value);
 
@@ -115,7 +146,7 @@
         : "0.0";
     }
 
-    // Converts arrays into readable text
+    // Converts array values into readable text.
     function formatList(value) {
       if (Array.isArray(value)) {
         return value.join(", ");
@@ -124,7 +155,7 @@
       return value || "Not available";
     }
 
-    // Displays all ranked lab cards
+    // Displays all ranked lab cards.
     function displayResults(
       sortBy = "combinedPercent"
     ) {
@@ -133,21 +164,22 @@
       if (results.length === 0) {
         container.innerHTML = `
           <p>
-            No results found. Please submit the
+            No results were found. Please submit the
             candidate form first.
           </p>
 
           <p>
-            <a href="index.html">
-              Return to Candidate Form
+            <a class="form-link" href="index.html">
+              Go to Candidate Form
             </a>
           </p>
         `;
 
+        sortSelect.disabled = true;
         return;
       }
 
-      // Sort a copy from highest score to lowest score
+      // Sort a copy from highest score to lowest score.
       const sortedResults = [...results].sort(
         (a, b) =>
           Number(b[sortBy] || 0) -
@@ -295,7 +327,7 @@
       });
     }
 
-    // Re-sort cards when the dropdown changes
+    // Re-sort cards when the dropdown changes.
     sortSelect.addEventListener(
       "change",
       event => {
@@ -303,13 +335,8 @@
       }
     );
 
-       // Initially display by combined score
+    // Initially display by combined score.
     displayResults();
   </script>
-
-  <footer>
-    <p>Semantic matching powered by Cohere Embed AI.</p>
-  </footer>
-
 </body>
 </html>
