@@ -1,31 +1,45 @@
+// app.js
+// Handles data loading, form submission, rule-based scoring,
+// AI semantic scoring, ranking, and sessionStorage.
+
 let labsData = [];
 let candidatesData = [];
 
-// Cache object to reduce repeated Cohere API calls
+// Stores embeddings so identical text does not call Cohere repeatedly
 const embeddingCache = {};
 
-// Run after the webpage finishes loading
+// Run after the candidate form page finishes loading
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Load JSON files from the data folder
+    // Load candidate and lab JSON data
     const [labsResponse, candidatesResponse] = await Promise.all([
       fetch("../data/labs.json"),
       fetch("../data/candidates.json")
     ]);
 
+    if (!labsResponse.ok) {
+      throw new Error(`Could not load labs.json: ${labsResponse.status}`);
+    }
+
+    if (!candidatesResponse.ok) {
+      throw new Error(
+        `Could not load candidates.json: ${candidatesResponse.status}`
+      );
+    }
+
     const labsRaw = await labsResponse.json();
     const candidatesRaw = await candidatesResponse.json();
 
-    // Normalize raw data before scoring
+    // Convert raw JSON records into the algorithm's standard format
     labsData = labsRaw.map(normalizeLab);
     candidatesData = candidatesRaw.map(normalizeCandidate);
 
-    // Precompute lab embeddings once on page load
+    // Compute every lab embedding once when the page loads
     await precomputeLabEmbeddings(labsData);
 
     console.log("Data loaded. Lab embeddings precomputed.");
 
-    // Connect the candidate form to the submit handler
+    // Connect the HTML form to handleCandidateSubmit()
     const form = document.getElementById("candidate-form");
 
     if (form) {
@@ -39,9 +53,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Standardizes text for easier matching
+// Standardizes text before comparisons
 function normalizeText(value) {
-  return String(value)
+  return String(value ?? "")
     .toLowerCase()
     .replace(/\([^)]*\)/g, "")
     .replace(/[–—-]/g, " ")
@@ -70,7 +84,7 @@ function splitList(value) {
     .filter(Boolean);
 }
 
-// Checks whether candidate value and lab value match exactly or partially
+// Checks exact and partial matches between candidate and lab values
 function valuesMatch(candidateValue, labValue) {
   const candidateArray = Array.isArray(candidateValue)
     ? candidateValue
@@ -82,15 +96,23 @@ function valuesMatch(candidateValue, labValue) {
 
   return candidateArray.some(candidateItem =>
     labArray.some(labItem => {
-      const c = normalizeText(candidateItem);
-      const l = normalizeText(labItem);
+      const candidateText = normalizeText(candidateItem);
+      const labText = normalizeText(labItem);
 
-      return c === l || c.includes(l) || l.includes(c);
+      if (!candidateText || !labText) {
+        return false;
+      }
+
+      return (
+        candidateText === labText ||
+        candidateText.includes(labText) ||
+        labText.includes(candidateText)
+      );
     })
   );
 }
 
-// Standardizes education level labels
+// Standardizes education-level values
 function normalizeEducation(value) {
   const text = normalizeText(value);
 
@@ -99,40 +121,61 @@ function normalizeEducation(value) {
   if (text.includes("junior")) return "Junior";
   if (text.includes("senior")) return "Senior";
   if (text.includes("post")) return "Postbac";
-  if (text.includes("ms")) return "MS";
+  if (text.includes("master") || text === "ms") return "MS";
   if (text.includes("phd")) return "PhD";
 
   return value;
 }
 
-// Standardizes availability labels
+// Standardizes candidate and lab availability
 function normalizeHours(value) {
   const text = normalizeText(value);
 
-  if (text.includes("less than 10")) return "Less than 10 hours";
-  if (text.includes("10 20") || text.includes("part time")) return "Part-time";
-  if (text.includes("20+") || text.includes("full time")) return "Full-time";
+  if (text.includes("less than 10")) {
+    return "Less than 10 hours";
+  }
+
+  if (text.includes("10 20") || text.includes("part time")) {
+    return "Part-time";
+  }
+
+  if (text.includes("20+") || text.includes("full time")) {
+    return "Full-time";
+  }
 
   return value;
 }
 
-// Standardizes compensation labels
+// Standardizes compensation values
 function normalizeCompensation(value) {
   const text = normalizeText(value);
 
-  if (text.includes("paid")) return "Paid";
-  if (text.includes("credit") || text.includes("for credit")) return "For-credit";
+  if (text.includes("paid")) {
+    return "Paid";
+  }
+
+  if (text.includes("credit") || text.includes("for credit")) {
+    return "For-credit";
+  }
 
   return value;
 }
 
-// Standardizes remote / hybrid / in-person preference
+// Standardizes location and remote-work values
 function normalizeRemote(value) {
   const text = normalizeText(value);
 
-  if (text.includes("in person")) return "In-person only";
-  if (text.includes("hybrid") || text.includes("flexible")) return "Hybrid";
-  if (text.includes("remote")) return "Remote";
+  if (text.includes("in person")) {
+    return "In-person only";
+  }
+
+  if (text.includes("hybrid") || text.includes("flexible")) {
+    return "Hybrid";
+  }
+
+  if (text.includes("remote")) {
+    return "Remote";
+  }
 
   return value;
 }
@@ -145,14 +188,16 @@ function cleanSkill(skill) {
     .trim();
 }
 
-// Converts raw candidate JSON into algorithm format
+// Converts raw candidate data into algorithm format
 function normalizeCandidate(raw) {
   return {
     Candidate_ID: raw.Candidate_ID,
     Candidate_Name: raw.Candidate_Name,
 
     Primary_Field_Interest: raw.Primary_Field_Interest,
-    Sub_discipline_Interests: splitList(raw.Sub_discipline_Interests),
+    Sub_discipline_Interests: splitList(
+      raw.Sub_discipline_Interests
+    ),
     Confirmed_Skills: splitList(raw.Confirmed_Skills).map(cleanSkill),
 
     Career_Goal: raw.Career_Goal,
@@ -165,62 +210,113 @@ function normalizeCandidate(raw) {
   };
 }
 
-// Converts raw lab JSON into algorithm format
+// Converts raw lab data into algorithm format
 function normalizeLab(raw) {
   const requiredSkills = splitList(raw.Required_Techniques);
   const preferredSkills = splitList(raw.Preferred_Techniques);
 
   return {
-    Lab_ID: raw["Lab_ID (LAB-001 to LAB-005)"] || raw.Lab_ID,
+    Lab_ID:
+      raw["Lab_ID (LAB-001 to LAB-005)"] ||
+      raw.Lab_ID,
+
     Lab_Name: raw.Lab_Name,
 
     Primary_Field: raw.Primary_Field,
     Sub_discipline: splitList(raw.Sub_disciplines),
 
-    Required_Skills: [...requiredSkills, ...preferredSkills].map(cleanSkill),
+    // Required and preferred skills are included in technique scoring
+    Required_Skills: [
+      ...requiredSkills,
+      ...preferredSkills
+    ].map(cleanSkill),
 
     Career_Goal: splitList(raw.Career_Pathways_Supported),
-    Hiree_Level: splitList(raw.Hiree_Level_Sought).map(normalizeEducation),
+    Hiree_Level: splitList(raw.Hiree_Level_Sought).map(
+      normalizeEducation
+    ),
+
     Hours: normalizeHours(raw.Hours_Per_Week),
     Compensation: normalizeCompensation(raw.Compensation),
     Remote: normalizeRemote(raw.Remote_Option),
 
-    Lab_Description_FreeText: raw.Lab_Description_FreeText
+    Lab_Description_FreeText: raw.Lab_Description_FreeText,
+
+    // Additional fields retained for results and profile pages
+    Lab_Aim: raw.Lab_Aim,
+    Institution_Type: raw.Institution_Type,
+    Lab_Size: raw.Lab_Size,
+    Required_Techniques: raw.Required_Techniques,
+    Preferred_Techniques: raw.Preferred_Techniques,
+    Career_Pathways_Supported: raw.Career_Pathways_Supported,
+    Hiree_Level_Sought: raw.Hiree_Level_Sought,
+    Hours_Per_Week: raw.Hours_Per_Week,
+    Remote_Option: raw.Remote_Option
   };
 }
 
-// Gets input value safely from the form
+// Safely reads a form input value
 function getInputValue(id) {
   const element = document.getElementById(id);
-  return element ? element.value.trim() : "";
+
+  return element
+    ? element.value.trim()
+    : "";
 }
 
-// Builds a candidate object from form input
+// Creates a candidate object from the submitted form
 function buildCandidateFromForm() {
   return {
     Candidate_ID: "USER-CANDIDATE",
     Candidate_Name: getInputValue("candidate-name"),
 
     Primary_Field_Interest: getInputValue("primary-field"),
-    Sub_discipline_Interests: splitList(getInputValue("sub-discipline")),
-    Confirmed_Skills: splitList(getInputValue("skills")).map(cleanSkill),
+
+    Sub_discipline_Interests: splitList(
+      getInputValue("sub-discipline")
+    ),
+
+    Confirmed_Skills: splitList(
+      getInputValue("skills")
+    ).map(cleanSkill),
 
     Career_Goal: getInputValue("career-goal"),
-    Education_Level: normalizeEducation(getInputValue("education-level")),
-    Hours_Available: normalizeHours(getInputValue("hours-available")),
-    Compensation_Need: normalizeCompensation(getInputValue("compensation-need")),
-    Remote_Preference: normalizeRemote(getInputValue("remote-preference")),
 
-    Research_Statement_FreeText: getInputValue("research-statement")
+    Education_Level: normalizeEducation(
+      getInputValue("education-level")
+    ),
+
+    Hours_Available: normalizeHours(
+      getInputValue("hours-available")
+    ),
+
+    Compensation_Need: normalizeCompensation(
+      getInputValue("compensation-need")
+    ),
+
+    Remote_Preference: normalizeRemote(
+      getInputValue("remote-preference")
+    ),
+
+    Research_Statement_FreeText:
+      getInputValue("research-statement")
   };
 }
 
-// Calculates partial technique score
+// Calculates technique points based on matched skills
 function skillScore(candidateSkills, labSkills, weight) {
+  if (!Array.isArray(labSkills) || labSkills.length === 0) {
+    return 0;
+  }
+
   let matchedCount = 0;
 
   for (const labSkill of labSkills) {
-    if (candidateSkills.some(skill => valuesMatch(skill, labSkill))) {
+    const matched = candidateSkills.some(candidateSkill =>
+      valuesMatch(candidateSkill, labSkill)
+    );
+
+    if (matched) {
       matchedCount++;
     }
   }
@@ -228,13 +324,16 @@ function skillScore(candidateSkills, labSkills, weight) {
   return weight * (matchedCount / labSkills.length);
 }
 
-// Converts score / max into percentage
+// Converts a score into a percentage
 function percent(score, max) {
-  if (max === 0) return 0;
+  if (max === 0) {
+    return 0;
+  }
+
   return (score / max) * 100;
 }
 
-// Calculates rule-based field, technique, and goal scores
+// Calculates field, technique, goal, and total rule-based scores
 function calculateRuleScores(candidate, lab) {
   let fieldScore = 0;
   let fieldMax = 0;
@@ -247,6 +346,7 @@ function calculateRuleScores(candidate, lab) {
 
   function addFieldMatch(candidateValue, labValue, weight) {
     fieldMax += weight;
+
     if (valuesMatch(candidateValue, labValue)) {
       fieldScore += weight;
     }
@@ -254,28 +354,74 @@ function calculateRuleScores(candidate, lab) {
 
   function addGoalMatch(candidateValue, labValue, weight) {
     goalMax += weight;
+
     if (valuesMatch(candidateValue, labValue)) {
       goalScore += weight;
     }
   }
 
   // Field scoring
-  addFieldMatch(candidate.Primary_Field_Interest, lab.Primary_Field, 3);
-  addFieldMatch(candidate.Sub_discipline_Interests, lab.Sub_discipline, 2);
+  addFieldMatch(
+    candidate.Primary_Field_Interest,
+    lab.Primary_Field,
+    3
+  );
+
+  addFieldMatch(
+    candidate.Sub_discipline_Interests,
+    lab.Sub_discipline,
+    2
+  );
 
   // Technique scoring
   techniqueMax += 18;
-  techniqueScore += skillScore(candidate.Confirmed_Skills, lab.Required_Skills, 18);
+
+  techniqueScore += skillScore(
+    candidate.Confirmed_Skills,
+    lab.Required_Skills,
+    18
+  );
 
   // Goal scoring
-  addGoalMatch(candidate.Career_Goal, lab.Career_Goal, 3);
-  addGoalMatch(candidate.Education_Level, lab.Hiree_Level, 3);
-  addGoalMatch(candidate.Hours_Available, lab.Hours, 3);
-  addGoalMatch(candidate.Compensation_Need, lab.Compensation, 2);
-  addGoalMatch(candidate.Remote_Preference, lab.Remote, 3);
+  addGoalMatch(
+    candidate.Career_Goal,
+    lab.Career_Goal,
+    3
+  );
 
-  const ruleScore = fieldScore + techniqueScore + goalScore;
-  const ruleMax = fieldMax + techniqueMax + goalMax;
+  addGoalMatch(
+    candidate.Education_Level,
+    lab.Hiree_Level,
+    3
+  );
+
+  addGoalMatch(
+    candidate.Hours_Available,
+    lab.Hours,
+    3
+  );
+
+  addGoalMatch(
+    candidate.Compensation_Need,
+    lab.Compensation,
+    2
+  );
+
+  addGoalMatch(
+    candidate.Remote_Preference,
+    lab.Remote,
+    3
+  );
+
+  const ruleScore =
+    fieldScore +
+    techniqueScore +
+    goalScore;
+
+  const ruleMax =
+    fieldMax +
+    techniqueMax +
+    goalMax;
 
   return {
     fieldScore,
@@ -284,7 +430,10 @@ function calculateRuleScores(candidate, lab) {
 
     techniqueScore,
     techniqueMax,
-    techniquePercent: percent(techniqueScore, techniqueMax),
+    techniquePercent: percent(
+      techniqueScore,
+      techniqueMax
+    ),
 
     goalScore,
     goalMax,
@@ -296,79 +445,124 @@ function calculateRuleScores(candidate, lab) {
   };
 }
 
-// Gets embedding from Cohere API with cache
+// Calls the Cohere Embed API and caches the returned embedding
 async function getEmbedding(text) {
-  if (!text) return [];
+  if (!text) {
+    return [];
+  }
 
   if (embeddingCache[text]) {
     return embeddingCache[text];
   }
 
-  const response = await fetch("https://api.cohere.ai/v1/embed", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer " + window.COHERE_API_KEY,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      texts: [text],
-      model: "embed-english-light-v3.0",
-      input_type: "search_document"
-    })
-  });
+  if (!window.COHERE_API_KEY) {
+    throw new Error("Cohere API key is missing.");
+  }
+
+  const response = await fetch(
+    "https://api.cohere.ai/v1/embed",
+    {
+      method: "POST",
+
+      headers: {
+        Authorization:
+          "Bearer " + window.COHERE_API_KEY,
+
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        texts: [text],
+        model: "embed-english-light-v3.0",
+        input_type: "search_document"
+      })
+    }
+  );
 
   const data = await response.json();
 
+  if (!response.ok) {
+    throw new Error(
+      data.message ||
+      `Cohere API request failed: ${response.status}`
+    );
+  }
+
   if (!data.embeddings || !data.embeddings[0]) {
-    throw new Error("Cohere API did not return an embedding.");
+    throw new Error(
+      "Cohere API did not return an embedding."
+    );
   }
 
   embeddingCache[text] = data.embeddings[0];
+
   return embeddingCache[text];
 }
 
-// Calculates cosine similarity between two embedding vectors
+// Calculates cosine similarity between two vectors
 function cosineSimilarity(vecA, vecB) {
-  let dot = 0;
-  let magA = 0;
-  let magB = 0;
-
-  for (let i = 0; i < vecA.length; i++) {
-    dot += vecA[i] * vecB[i];
-    magA += vecA[i] * vecA[i];
-    magB += vecB[i] * vecB[i];
-  }
-
-  magA = Math.sqrt(magA);
-  magB = Math.sqrt(magB);
-
-  if (magA === 0 || magB === 0) {
+  if (
+    !Array.isArray(vecA) ||
+    !Array.isArray(vecB) ||
+    vecA.length === 0 ||
+    vecA.length !== vecB.length
+  ) {
     return 0;
   }
 
-  return dot / (magA * magB);
-}
+  let dot = 0;
+  let magnitudeA = 0;
+  let magnitudeB = 0;
 
-// AI semantic scoring between candidate statement and lab description
-async function semanticScore(candidateStatement, labDescription) {
-  const [candidateEmbedding, labEmbedding] = await Promise.all([
-    getEmbedding(candidateStatement),
-    getEmbedding(labDescription)
-  ]);
-
-  return cosineSimilarity(candidateEmbedding, labEmbedding);
-}
-
-// Precomputes all lab embeddings once on page load
-async function precomputeLabEmbeddings(labs) {
-  for (const lab of labs) {
-    await getEmbedding(lab.Lab_Description_FreeText);
+  for (let i = 0; i < vecA.length; i++) {
+    dot += vecA[i] * vecB[i];
+    magnitudeA += vecA[i] * vecA[i];
+    magnitudeB += vecB[i] * vecB[i];
   }
 
-  console.log("Lab embeddings precomputed and cached.");
+  magnitudeA = Math.sqrt(magnitudeA);
+  magnitudeB = Math.sqrt(magnitudeB);
+
+  if (magnitudeA === 0 || magnitudeB === 0) {
+    return 0;
+  }
+
+  return dot / (magnitudeA * magnitudeB);
 }
 
-// Combines rule-based score and AI semantic score
+// Compares candidate and lab free-text research descriptions
+async function semanticScore(
+  candidateStatement,
+  labDescription
+) {
+  const [candidateEmbedding, labEmbedding] =
+    await Promise.all([
+      getEmbedding(candidateStatement),
+      getEmbedding(labDescription)
+    ]);
+
+  return cosineSimilarity(
+    candidateEmbedding,
+    labEmbedding
+  );
+}
+
+// Computes and caches all lab embeddings when the page loads
+async function precomputeLabEmbeddings(labs) {
+  for (const lab of labs) {
+    if (lab.Lab_Description_FreeText) {
+      await getEmbedding(
+        lab.Lab_Description_FreeText
+      );
+    }
+  }
+
+  console.log(
+    "Lab embeddings precomputed and cached."
+  );
+}
+
+// Runs rule-based and AI scoring for one candidate-lab pair
 async function scoreCandidate(candidate, lab) {
   const rule = calculateRuleScores(candidate, lab);
 
@@ -379,14 +573,20 @@ async function scoreCandidate(candidate, lab) {
 
   const semanticPercent = semantic * 100;
 
-  // Final combined score: 80% rule-based + 20% AI semantic
-  const combinedPercent = rule.rulePercent * 0.8 + semanticPercent * 0.2;
+  // Final score: 80% rule-based + 20% AI semantic
+  const combinedPercent =
+    rule.rulePercent * 0.8 +
+    semanticPercent * 0.2;
 
   return {
     Candidate_ID: candidate.Candidate_ID,
     Candidate_Name: candidate.Candidate_Name,
+
     Lab_ID: lab.Lab_ID,
     Lab_Name: lab.Lab_Name,
+
+    // Save the full lab profile for dynamic results/profile pages
+    labProfile: lab,
 
     ...rule,
 
@@ -395,33 +595,75 @@ async function scoreCandidate(candidate, lab) {
   };
 }
 
-// Handles form submit and ranks all labs for the submitted candidate
+// Runs when the candidate form is submitted
 async function handleCandidateSubmit(event) {
   event.preventDefault();
 
   const candidate = buildCandidateFromForm();
   const results = [];
 
-  for (const lab of labsData) {
-    const result = await scoreCandidate(candidate, lab);
-    results.push(result);
+  try {
+    // Compare the submitted candidate with every lab
+    for (const lab of labsData) {
+      const result = await scoreCandidate(
+        candidate,
+        lab
+      );
+
+      results.push(result);
+    }
+
+    // Sort best match to weakest match
+    results.sort(
+      (a, b) =>
+        b.combinedPercent -
+        a.combinedPercent
+    );
+
+    if (results.length > 0) {
+      console.log(
+        "Rule scorer fired:",
+        results[0].rulePercent
+      );
+
+      console.log(
+        "AI scorer fired:",
+        results[0].semanticPercent
+      );
+
+      console.log(
+        "Combined score:",
+        results[0].combinedPercent
+      );
+    }
+
+    // Save results for results.html
+    sessionStorage.setItem(
+      "labMatchResults",
+      JSON.stringify(results)
+    );
+
+    sessionStorage.setItem(
+      "submittedCandidate",
+      JSON.stringify(candidate)
+    );
+
+    console.log(
+      "Ranking results saved to sessionStorage."
+    );
+
+    console.table(results);
+
+    // Navigate from pages/index.html to pages/results.html
+    window.location.href = "results.html";
+  } catch (error) {
+    console.error(
+      "Error calculating match results:",
+      error
+    );
+
+    alert(
+      "The match results could not be calculated. Check the browser console."
+    );
   }
-
-  // Sort from best match to weakest match
-  results.sort((a, b) => b.combinedPercent - a.combinedPercent);
-
-  // Show that rule scorer and AI scorer both fired
-  console.log("Rule scorer fired:", results[0].rulePercent);
-  console.log("AI scorer fired:", results[0].semanticPercent);
-  console.log("Combined score:", results[0].combinedPercent);
-
-  // Save results for results page
-  sessionStorage.setItem("lablinkResults", JSON.stringify(results));
-  sessionStorage.setItem("submittedCandidate", JSON.stringify(candidate));
-
-  console.log("Ranking results saved to sessionStorage.");
-  console.table(results);
-
-  // Navigate to results page
-  window.location.href = "results.html";
 }
