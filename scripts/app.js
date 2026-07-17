@@ -870,3 +870,261 @@ async function runFullCandidateTest() {
 
   return summary;
 }
+async function runFullMatrixTest() {
+  // Make sure all data has loaded
+  if (!Array.isArray(candidatesData) || candidatesData.length === 0) {
+    console.error("Candidate data has not loaded.");
+    return;
+  }
+
+  if (!Array.isArray(labsData) || labsData.length === 0) {
+    console.error("Lab data has not loaded.");
+    return;
+  }
+
+  console.log(
+    `Starting full matrix test: ` +
+    `${candidatesData.length} candidates × ` +
+    `${labsData.length} labs`
+  );
+
+  if (candidatesData.length !== 11 || labsData.length !== 11) {
+    console.warn(
+      `Expected 11 candidates and 11 labs, but found ` +
+      `${candidatesData.length} candidates and ` +
+      `${labsData.length} labs.`
+    );
+  }
+
+  const allResults = [];
+
+  // Run every candidate against every lab
+  for (let candidateIndex = 0;
+       candidateIndex < candidatesData.length;
+       candidateIndex++) {
+
+    const candidate = candidatesData[candidateIndex];
+
+    console.log(
+      `Testing ${candidate.Candidate_ID} ` +
+      `(${candidateIndex + 1}/${candidatesData.length})`
+    );
+
+    for (const lab of labsData) {
+      try {
+        const result = await scoreCandidate(candidate, lab);
+
+        allResults.push({
+          Candidate: result.Candidate_ID,
+          CandidateName: result.Candidate_Name,
+          Lab: result.Lab_ID,
+          LabName: result.Lab_Name,
+          rulePercent: result.rulePercent,
+          semanticPercent: result.semanticPercent,
+          combinedPercent: result.combinedPercent,
+          semanticReason: result.semanticReason
+        });
+      } catch (error) {
+        console.error(
+          `Failed: ${candidate.Candidate_ID} vs ${lab.Lab_ID}`,
+          error
+        );
+      }
+    }
+  }
+
+  console.log(
+    `Completed ${allResults.length} combinations.`
+  );
+
+  // Full 121-combination table
+  const fullMatrixTable = allResults.map(result => ({
+    Candidate: result.Candidate,
+    Lab: result.Lab,
+    "Rule %": `${result.rulePercent.toFixed(1)}%`,
+    "AI %": `${result.semanticPercent.toFixed(1)}%`,
+    "Combined %": `${result.combinedPercent.toFixed(1)}%`
+  }));
+
+  console.log("FULL 11 × 11 MATRIX");
+  console.table(fullMatrixTable);
+
+  // Find the top lab for every candidate
+  const candidateTopMatches = candidatesData.map(candidate => {
+    const matches = allResults
+      .filter(
+        result =>
+          result.Candidate === candidate.Candidate_ID
+      )
+      .sort(
+        (a, b) =>
+          b.combinedPercent - a.combinedPercent
+      );
+
+    const top = matches[0];
+
+    return {
+      Candidate: candidate.Candidate_ID,
+      "Top Match Lab": top?.Lab || "No result",
+      "Rule %": top
+        ? `${top.rulePercent.toFixed(1)}%`
+        : "N/A",
+      "AI %": top
+        ? `${top.semanticPercent.toFixed(1)}%`
+        : "N/A",
+      "Combined %": top
+        ? `${top.combinedPercent.toFixed(1)}%`
+        : "N/A"
+    };
+  });
+
+  console.log("TOP LAB FOR EACH CANDIDATE");
+  console.table(candidateTopMatches);
+
+  // Find the top candidate for every lab
+  const labTopCandidates = labsData.map(lab => {
+    const matches = allResults
+      .filter(
+        result =>
+          result.Lab === lab.Lab_ID
+      )
+      .sort(
+        (a, b) =>
+          b.combinedPercent - a.combinedPercent
+      );
+
+    const top = matches[0];
+
+    return {
+      Lab: lab.Lab_ID,
+      "Top Candidate": top?.Candidate || "No result",
+      "Rule %": top
+        ? `${top.rulePercent.toFixed(1)}%`
+        : "N/A",
+      "AI %": top
+        ? `${top.semanticPercent.toFixed(1)}%`
+        : "N/A",
+      "Combined %": top
+        ? `${top.combinedPercent.toFixed(1)}%`
+        : "N/A"
+    };
+  });
+
+  console.log("TOP CANDIDATE FOR EACH LAB");
+  console.table(labTopCandidates);
+
+  // Intended pairs:
+  // CAND-001 vs LAB-001, CAND-002 vs LAB-002, etc.
+  const intendedPairs = allResults.filter(result => {
+    const candidateNumber =
+      result.Candidate.match(/\d+$/)?.[0];
+
+    const labNumber =
+      result.Lab.match(/\d+$/)?.[0];
+
+    return candidateNumber === labNumber;
+  });
+
+  // Every combination that is not an intended pair
+  const crossPairs = allResults.filter(result => {
+    const candidateNumber =
+      result.Candidate.match(/\d+$/)?.[0];
+
+    const labNumber =
+      result.Lab.match(/\d+$/)?.[0];
+
+    return candidateNumber !== labNumber;
+  });
+
+  function average(values) {
+    if (values.length === 0) {
+      return 0;
+    }
+
+    return (
+      values.reduce(
+        (total, value) => total + value,
+        0
+      ) / values.length
+    );
+  }
+
+  const intendedSemanticAverage = average(
+    intendedPairs.map(
+      result => result.semanticPercent
+    )
+  );
+
+  const crossPairSemanticAverage = average(
+    crossPairs.map(
+      result => result.semanticPercent
+    )
+  );
+
+  const semanticDifference =
+    intendedSemanticAverage -
+    crossPairSemanticAverage;
+
+  const intendedPairTable = intendedPairs.map(result => ({
+    Candidate: result.Candidate,
+    Lab: result.Lab,
+    "Rule %": `${result.rulePercent.toFixed(1)}%`,
+    "AI %": `${result.semanticPercent.toFixed(1)}%`,
+    "Combined %": `${result.combinedPercent.toFixed(1)}%`
+  }));
+
+  console.log("11 INTENDED PAIRS");
+  console.table(intendedPairTable);
+
+  const averageTable = [
+    {
+      Group: "Intended pairs",
+      Combinations: intendedPairs.length,
+      "Average AI %":
+        `${intendedSemanticAverage.toFixed(1)}%`
+    },
+    {
+      Group: "Random cross-pairs",
+      Combinations: crossPairs.length,
+      "Average AI %":
+        `${crossPairSemanticAverage.toFixed(1)}%`
+    },
+    {
+      Group: "Difference",
+      Combinations: "—",
+      "Average AI %":
+        `${semanticDifference.toFixed(1)} percentage points`
+    }
+  ];
+
+  console.log("SEMANTIC SCORE COMPARISON");
+  console.table(averageTable);
+
+  if (intendedSemanticAverage > crossPairSemanticAverage) {
+    console.log(
+      "PASS: Intended pairs have a higher average " +
+      "semantic score than cross-pairs."
+    );
+  } else {
+    console.warn(
+      "FLAG FOR MEMO: Intended pairs do not have a " +
+      "higher average semantic score. Some research " +
+      "statements or lab descriptions may be too generic."
+    );
+  }
+
+  const finalResults = {
+    all121Combinations: allResults,
+    candidateTopMatches,
+    labTopCandidates,
+    intendedPairs,
+    intendedSemanticAverage,
+    crossPairSemanticAverage,
+    semanticDifference
+  };
+
+  // Save results so they can be inspected later
+  window.fullMatrixTestResults = finalResults;
+
+  return finalResults;
+}
