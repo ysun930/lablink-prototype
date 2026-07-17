@@ -37,14 +37,14 @@
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin: 15px 0;
+      margin-bottom: 20px;
     }
 
     .score-badge {
+      min-width: 150px;
+      padding: 10px 14px;
       background-color: #eef3fb;
       border-radius: 6px;
-      padding: 10px 14px;
-      min-width: 150px;
     }
 
     .back-link {
@@ -59,6 +59,11 @@
 
     .back-link:hover {
       background-color: #163b75;
+    }
+
+    .ai-note {
+      margin-top: 20px;
+      color: #555;
     }
 
     footer {
@@ -84,13 +89,14 @@
     <p>Loading lab information...</p>
   </section>
 
-  <!-- Hidden if no candidate has submitted a match request. -->
+  <!-- Hidden when no candidate match result exists -->
   <section id="score-section" hidden>
     <h2>Your Match Scores</h2>
 
     <div class="score-badges">
       <div class="score-badge">
-        <strong>Combined Match</strong><br>
+        <strong>Combined Match</strong>
+        <br>
 
         <span id="combined-score">
           0.0%
@@ -98,7 +104,8 @@
       </div>
 
       <div class="score-badge">
-        <strong>Rule-Based Score</strong><br>
+        <strong>Rule-Based Score</strong>
+        <br>
 
         <span id="rule-score">
           0.0%
@@ -106,7 +113,8 @@
       </div>
 
       <div class="score-badge">
-        <strong>AI Semantic Score</strong><br>
+        <strong>AI Semantic Score</strong>
+        <br>
 
         <span id="semantic-score">
           0.0%
@@ -140,12 +148,10 @@
       </span>
     </p>
 
-    <p>
+    <p class="ai-note">
       <small>
-        AI semantic similarity was generated using
-        Cohere embeddings. The final combined score
-        uses 80% rule-based scoring and 20% AI
-        semantic scoring.
+        The final combined score uses 80% rule-based scoring
+        and 20% Cohere semantic scoring.
       </small>
     </p>
   </section>
@@ -157,7 +163,8 @@
   </footer>
 
   <script>
-    // Read the selected Lab_ID from the URL.
+    // Get Lab_ID from a URL such as:
+    // lab-profile.html?labId=LAB-001
     const params =
       new URLSearchParams(window.location.search);
 
@@ -168,15 +175,12 @@
       document.getElementById("lab-name");
 
     const labInformationElement =
-      document.getElementById(
-        "lab-information"
-      );
+      document.getElementById("lab-information");
 
     const scoreSection =
-      document.getElementById(
-        "score-section"
-      );
+      document.getElementById("score-section");
 
+    // Safely formats score values
     function safePercent(value) {
       const number = Number(value);
 
@@ -185,6 +189,7 @@
         : "0.0%";
     }
 
+    // Converts arrays into readable text
     function formatList(value) {
       if (Array.isArray(value)) {
         return value.join(", ");
@@ -193,19 +198,39 @@
       return value || "Not available";
     }
 
-    // Displays the selected lab's profile information.
+    // Prevents data values from being interpreted as HTML
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Displays information for one selected lab
     function displayLabProfile(profile) {
       if (!profile) {
+        labNameElement.textContent =
+          "Lab Profile Not Found";
+
         labInformationElement.innerHTML =
           "<p>Lab profile not found.</p>";
 
         return;
       }
 
+      const displayedLabId =
+        profile.Lab_ID ||
+        labId ||
+        "Unknown Lab";
+
+      const displayedLabName =
+        profile.Lab_Name ||
+        "Unnamed Lab";
+
       labNameElement.textContent =
-        `${profile.Lab_ID || labId}: ${
-          profile.Lab_Name || "Lab Profile"
-        }`;
+        `${displayedLabId}: ${displayedLabName}`;
 
       const subDisciplines =
         formatList(
@@ -217,96 +242,119 @@
         profile.Required_Techniques ||
         formatList(profile.Required_Skills);
 
+      const preferredTechniques =
+        profile.Preferred_Techniques ||
+        "Not available";
+
+      const careerPathways =
+        profile.Career_Pathways_Supported ||
+        formatList(profile.Career_Goal);
+
+      const hireeLevel =
+        profile.Hiree_Level_Sought ||
+        formatList(profile.Hiree_Level);
+
+      const hours =
+        profile.Hours_Per_Week ||
+        profile.Hours ||
+        "Not available";
+
+      const remoteOption =
+        profile.Remote_Option ||
+        profile.Remote ||
+        "Not available";
+
       labInformationElement.innerHTML = `
         <h2>Lab Information</h2>
 
         <p>
           <strong>Primary Field:</strong>
-          ${profile.Primary_Field ||
-            "Not available"}
+          ${escapeHtml(
+            profile.Primary_Field ||
+            "Not available"
+          )}
         </p>
 
         <p>
           <strong>Sub-disciplines:</strong>
-          ${subDisciplines}
+          ${escapeHtml(subDisciplines)}
         </p>
 
         <p>
           <strong>Lab Aim:</strong>
-          ${profile.Lab_Aim ||
-            "Not available"}
+          ${escapeHtml(
+            profile.Lab_Aim ||
+            "Not available"
+          )}
         </p>
 
         <p>
           <strong>Institution Type:</strong>
-          ${profile.Institution_Type ||
-            "Not available"}
+          ${escapeHtml(
+            profile.Institution_Type ||
+            "Not available"
+          )}
         </p>
 
         <p>
           <strong>Lab Size:</strong>
-          ${profile.Lab_Size ||
-            "Not available"}
+          ${escapeHtml(
+            profile.Lab_Size ||
+            "Not available"
+          )}
         </p>
 
         <p>
           <strong>Required Techniques:</strong>
-          ${requiredTechniques}
+          ${escapeHtml(requiredTechniques)}
         </p>
 
         <p>
           <strong>Preferred Techniques:</strong>
-          ${profile.Preferred_Techniques ||
-            "Not available"}
+          ${escapeHtml(preferredTechniques)}
         </p>
 
         <p>
           <strong>Career Pathways:</strong>
-          ${profile.Career_Pathways_Supported ||
-            formatList(profile.Career_Goal)}
+          ${escapeHtml(careerPathways)}
         </p>
 
         <p>
           <strong>Hiree Level:</strong>
-          ${profile.Hiree_Level_Sought ||
-            formatList(profile.Hiree_Level)}
+          ${escapeHtml(hireeLevel)}
         </p>
 
         <p>
           <strong>Hours:</strong>
-          ${profile.Hours_Per_Week ||
-            profile.Hours ||
-            "Not available"}
+          ${escapeHtml(hours)}
         </p>
 
         <p>
           <strong>Compensation:</strong>
-          ${profile.Compensation ||
-            "Not available"}
+          ${escapeHtml(
+            profile.Compensation ||
+            "Not available"
+          )}
         </p>
 
         <p>
           <strong>Remote Option:</strong>
-          ${profile.Remote_Option ||
-            profile.Remote ||
-            "Not available"}
+          ${escapeHtml(remoteOption)}
         </p>
 
         <p>
           <strong>Description:</strong>
-          ${
+          ${escapeHtml(
             profile.Lab_Description_FreeText ||
             "Not available"
-          }
+          )}
         </p>
       `;
     }
 
-    // Displays scores for the selected candidate-lab match.
+    // Displays the three main scores and rule breakdown
     function displayScores(result) {
       if (!result) {
-        // Hide score section if the page was opened directly
-        // without a submitted candidate.
         scoreSection.hidden = true;
         return;
       }
@@ -344,28 +392,56 @@
         safePercent(result.goalPercent);
     }
 
-    async function loadProfile() {
-      if (!labId) {
-        labInformationElement.innerHTML =
-          "<p>No Lab_ID was provided.</p>";
-
-        scoreSection.hidden = true;
-        return;
-      }
-
-      // Search sessionStorage for this lab's result.
+    // Safely reads saved results from sessionStorage
+    function readStoredResults() {
       const storedResults =
         sessionStorage.getItem(
           "labMatchResults"
         );
 
-      const results = storedResults
-        ? JSON.parse(storedResults)
-        : [];
+      if (!storedResults) {
+        return [];
+      }
 
-      const matchedResult = results.find(
-        result => result.Lab_ID === labId
-      );
+      try {
+        const parsedResults =
+          JSON.parse(storedResults);
+
+        return Array.isArray(parsedResults)
+          ? parsedResults
+          : [];
+      } catch (error) {
+        console.error(
+          "Could not parse labMatchResults:",
+          error
+        );
+
+        return [];
+      }
+    }
+
+    async function loadProfile() {
+      if (!labId) {
+        labNameElement.textContent =
+          "Lab Profile";
+
+        labInformationElement.innerHTML =
+          "<p>No Lab_ID was provided in the URL.</p>";
+
+        scoreSection.hidden = true;
+        return;
+      }
+
+      // Look for this lab in the submitted candidate results
+      const results =
+        readStoredResults();
+
+      const matchedResult =
+        results.find(
+          result =>
+            String(result.Lab_ID) ===
+            String(labId)
+        );
 
       if (matchedResult) {
         displayLabProfile(
@@ -377,32 +453,34 @@
         return;
       }
 
-      // If opened directly, load the lab profile from labs.json.
-      // Scores remain hidden because no candidate match exists.
+      // If the page was opened directly, load the lab from labs.json
+      // without showing candidate scores
       try {
         const response =
           await fetch("../data/labs.json");
 
         if (!response.ok) {
           throw new Error(
-            `Could not load labs.json: ${
-              response.status
-            }`
+            `Could not load labs.json: ${response.status}`
           );
         }
 
         const labs =
           await response.json();
 
-        const rawLab = labs.find(lab => {
-          const currentId =
-            lab[
-              "Lab_ID (LAB-001 to LAB-005)"
-            ] ||
-            lab.Lab_ID;
+        const rawLab =
+          labs.find(lab => {
+            const currentId =
+              lab[
+                "Lab_ID (LAB-001 to LAB-005)"
+              ] ||
+              lab.Lab_ID;
 
-          return currentId === labId;
-        });
+            return (
+              String(currentId) ===
+              String(labId)
+            );
+          });
 
         if (!rawLab) {
           displayLabProfile(null);
@@ -462,13 +540,16 @@
 
         displayLabProfile(profile);
 
-        // No submitted candidate, so keep scores hidden.
+        // Direct navigation means no submitted candidate score
         displayScores(null);
       } catch (error) {
         console.error(
           "Error loading lab profile:",
           error
         );
+
+        labNameElement.textContent =
+          "Lab Profile";
 
         labInformationElement.innerHTML =
           "<p>Unable to load this lab profile.</p>";
