@@ -87,7 +87,6 @@ function splitList(value) {
     .filter(Boolean);
 }
 
-// Checks exact or partial matches
 function valuesMatch(candidateValue, labValue) {
   const candidateArray = Array.isArray(candidateValue)
     ? candidateValue
@@ -106,8 +105,21 @@ function valuesMatch(candidateValue, labValue) {
         return false;
       }
 
+      // Exact matches are always accepted
+      if (candidateText === labText) {
+        return true;
+      }
+
+      // Prevent short values such as "R" or "MS"
+      // from matching parts of longer words
+      if (
+        candidateText.length < 4 ||
+        labText.length < 4
+      ) {
+        return false;
+      }
+
       return (
-        candidateText === labText ||
         candidateText.includes(labText) ||
         labText.includes(candidateText)
       );
@@ -808,4 +820,53 @@ async function handleCandidateSubmit(event) {
       "Check the browser console."
     );
   }
+}
+async function runFullCandidateTest() {
+  const summary = [];
+
+  for (const candidate of candidatesData) {
+    const candidateResults = [];
+
+    for (const lab of labsData) {
+      const result = await scoreCandidate(candidate, lab);
+      candidateResults.push(result);
+    }
+
+    candidateResults.sort(
+      (a, b) => b.combinedPercent - a.combinedPercent
+    );
+
+    const top = candidateResults[0];
+
+    summary.push({
+      Candidate: candidate.Candidate_ID,
+      "Top Match Lab": top.Lab_ID,
+      "Rule %": `${top.rulePercent.toFixed(1)}%`,
+      "AI %": `${top.semanticPercent.toFixed(1)}%`,
+      "Combined %": `${top.combinedPercent.toFixed(1)}%`
+    });
+  }
+
+  console.table(summary);
+
+  const csvRows = [
+    ["Candidate", "Top Match Lab", "Rule %", "AI %", "Combined %"],
+    ...summary.map(row => [
+      row.Candidate,
+      row["Top Match Lab"],
+      row["Rule %"],
+      row["AI %"],
+      row["Combined %"]
+    ])
+  ];
+
+  const csv = csvRows
+    .map(row => row.join("\t"))
+    .join("\n");
+
+  await navigator.clipboard.writeText(csv);
+
+  console.log("Complete table copied to clipboard.");
+
+  return summary;
 }
