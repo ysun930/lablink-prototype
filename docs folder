@@ -48,6 +48,13 @@ This ratio was chosen because structured variables such as techniques, fields, g
 6.5 Ablation Study Results
 The algorithm was tested in three modes: rule-only, semantic-only, and combined scoring. Rule-only scoring performed well on structured matches, while semantic-only scoring helped identify free-text similarity but was less reliable by itself. The combined 80/20 method kept structured matching dominant while still using AI to reduce false positives.
 
+
+
+
+
+
+
+
 Pair                | Rule % | Semantic %   | Combined % | Expected Match              | Correct?
 CAND-001 vs LAB-001 | 79.2% |    63.0%       | 76.0%     | Good neuroscience match     | Yes
 CAND-002 vs LAB-001 | 64.9% |    35.7%       | 59.1%     | Partial match               | Yes
@@ -61,7 +68,18 @@ The AI/ML component requires an internet connection and access to the Cohere API
 6.7 Future Improvements
 Future versions could improve the AI/ML component by using biomedical-specific embeddings trained on PubMed abstracts or research papers. The system could also collect user feedback on successful and unsuccessful matches, then use that feedback to adjust weights or train a supervised machine learning model.
 
+Section 7: Where AI Is Most Helpful
 
+The full candidate test identified three notable cases where the semantic score differed significantly from the rule-based score.
+
+Case A — CAND-006 and LAB-010:
+CAND-006 received a rule-based score of 44.6% but an AI semantic score of 60.0%. The candidate did not match many exact structured fields or technique names, but the research statement was semantically related to LAB-010’s research focus. This demonstrates that AI can identify meaningful relationships even when candidates and laboratories use different terminology.
+
+Case B — CAND-003 and LAB-003:
+CAND-003 received a rule-based score of 79.2% but an AI semantic score of 57.6%. Although the candidate matched the lab’s structured qualifications, the research statement showed weaker alignment with the lab’s specific research description.
+
+Case B — CAND-001 and LAB-001:
+CAND-001 received a rule-based score of 79.2% but an AI semantic score of 61.1%. The candidate had strong field, skill, and career-goal matches, but the semantic score indicated that the research statement was less closely related to the lab’s work.
 
 Test case: for CAND-001 vs LAB-001
 
