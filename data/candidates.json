@@ -1,387 +1,274 @@
 [
   {
-    "Candidate_ID": "CAND-001",
-    "Candidate_Name": "Marcus Webb, USC Junior",
-    "Education_Level": "Currently a college junior",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Neuroscience",
-    "Sub_discipline_Interests": [
-      "Molecular & Cellular Neuroscience",
-      "Synapses & Neural Circuits"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "PCR",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "Western Blot",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "Confocal Microscopy",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "Cell Culture - mammalian",
-        "proficiency": "Intermediate"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "High-impact journals",
-    "Mentorship_Preference": "Structured feedback",
-    "Hours_Available": "Available 10-20 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Fully in-person only",
-    "Experience_Level": "One semester of lab experience",
-    "Research_Statement_FreeText": "I'm fascinated by how neural circuits form and change during development, especially the synaptic mechanisms that go wrong in neurodevelopmental disorders. I've spent the last semester in a cell culture and confocal microscopy rotation, running PCR and Western blots on mouse cortical neuron samples. I'm hoping to join a basic-science neuroscience lab where I can keep building these wet-lab skills toward a PhD in neurobiology."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-001",
+    "Lab_Name": "Chen Neuroscience Laboratory, USC",
+    "Primary_Field": "Neuroscience",
+    "Sub_disciplines": "Molecular & Cellular Neuroscience, Neurodevelopment, Synapses & Neural Circuits",
+    "Required_Techniques": "Mammalian cell culture, PCR, Western blot, Confocal microscopy",
+    "Preferred_Techniques": "Immunofluorescence, Flow Cytometry, CRISPR-Cas9",
+    "Lab_Aim": "Basic Science Discovery",
+    "Career_Pathways_Supported": "Academic PhD, MD/PhD",
+    "Institution_Type": "R1 University",
+    "Lab_Size": "16+",
+    "Hiree_Level_Sought": "Junior, Senior",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "For-credit",
+    "Remote_Option": "In-person only",
+    "Lab_Description_FreeText": "We investigate how neuronal signaling contributes to neurodevelopment and neurodegenerative disease using cell culture, molecular biology, and advanced microscopy. Undergraduate researchers participate in PCR, western blotting, confocal imaging, and data analysis while preparing for graduate or medical school."
   },
   {
-    "Candidate_ID": "CAND-002",
-    "Candidate_Name": "Priya Sharma, UCLA Sophomore",
-    "Education_Level": "Currently a college sophomore",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Computational Biology / Bioinformatics",
-    "Sub_discipline_Interests": [
-      "Genome Analysis & Variant Calling",
-      "Machine Learning in Biology"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Python",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "R",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "BLAST",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "DESeq2",
-        "proficiency": "Advanced"
-      }
-    ],
-    "Career_Goal": "Pharma or biotech industry",
-    "Publication_Preference": "Short publication timeline",
-    "Mentorship_Preference": "Graduate student mentorship",
-    "Hours_Available": "Available less than 10 hours per week",
-    "Compensation_Need": "Paid position preferred",
-    "Remote_Preference": "Hybrid or flexible schedule",
-    "Experience_Level": "No prior lab experience",
-    "Research_Statement_FreeText": "I love turning messy genomic datasets into a clear biological story - most of my coursework has been in Python and R, and I recently used DESeq2 and BLAST to look for differentially expressed genes in a public RNA-seq dataset. I'm interested in genome analysis and machine learning approaches to biology, and I'd love to bring those skills to a computational genomics lab as I think about a career in biotech."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-002",
+    "Lab_Name": "Garcia Computational Genomics Lab, UCLA",
+    "Primary_Field": "Computational Biology / Bioinformatics",
+    "Sub_disciplines": "Genome Analysis & Variant Calling, Systems Biology, Machine Learning in Biology, Single-Cell Analysis",
+    "Required_Techniques": "Python, R, BLAST, DESeq2",
+    "Preferred_Techniques": "Seurat (R), Scanpy, STAR, HISAT2",
+    "Lab_Aim": "Computational Biology & Bioinformatics",
+    "Career_Pathways_Supported": "Academic PhD, Biotechnology Industry",
+    "Institution_Type": "R1 University",
+    "Lab_Size": "6–15",
+    "Hiree_Level_Sought": "Sophomore, Junior, Senior",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "Paid",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "Our laboratory develops computational methods to analyze genomic and transcriptomic datasets, including single-cell sequencing and machine learning approaches. Students gain experience in Python, R, bioinformatics workflows, and large-scale biological data analysis."
   },
   {
-    "Candidate_ID": "CAND-003",
-    "Candidate_Name": "Daniel Okafor, Postbac",
-    "Education_Level": "Post-baccalaureate student",
-    "GPA_Range": "GPA above 3.8",
-    "Primary_Field_Interest": "Oncology / Cancer Biology",
-    "Sub_discipline_Interests": [
-      "Translational & Clinical Cancer Sciences",
-      "Cancer Genetics"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Flow Cytometry",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "ELISA",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "CRISPR-Cas9",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "RT-PCR",
-        "proficiency": "Intermediate"
-      }
-    ],
-    "Career_Goal": "MD or MD/PhD pathway",
-    "Publication_Preference": "First authorship",
-    "Mentorship_Preference": "Independent project",
-    "Hours_Available": "Available 20+ hours per week",
-    "Compensation_Need": "Paid position preferred",
-    "Remote_Preference": "Fully in-person only",
-    "Experience_Level": "Two or more years of lab experience",
-    "Research_Statement_FreeText": "I want to understand how tumors evade the immune system, which is what pulled me toward translational cancer research after graduation. I've run flow cytometry, ELISA, and CRISPR-Cas9 knockouts in a cancer immunology lab for the past two years, and I'm now looking for a lab connected to clinical cancer research as I apply to MD/PhD programs."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-003",
+    "Lab_Name": "Kim Cancer Biology Program, Keck School of Medicine",
+    "Primary_Field": "Oncology / Cancer Biology",
+    "Sub_disciplines": "Tumor Microenvironment, Cancer Genetics, Translational & Clinical Cancer Sciences",
+    "Required_Techniques": "Flow Cytometry, ELISA, CRISPR-Cas9, RT-PCR",
+    "Preferred_Techniques": "RNA-seq, Immunoprecipitation (IP), Confocal microscopy",
+    "Lab_Aim": "Translational Medicine",
+    "Career_Pathways_Supported": "MD/PhD, Clinical Research, Biotechnology Industry",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "16+",
+    "Hiree_Level_Sought": "Postbac, MS, PhD",
+    "Hours_Per_Week": "Full-time",
+    "Compensation": "Paid",
+    "Remote_Option": "In-person only",
+    "Lab_Description_FreeText": "We study how the tumor microenvironment and genetic alterations influence cancer progression and response to therapy. Researchers work with flow cytometry, CRISPR gene editing, molecular biology techniques, and translational models to develop new therapeutic strategies."
   },
   {
-    "Candidate_ID": "CAND-004",
-    "Candidate_Name": "Emily Zhang, USC Senior",
-    "Education_Level": "Currently a college senior",
-    "GPA_Range": "GPA above 3.8",
-    "Primary_Field_Interest": "Structural Biology",
-    "Sub_discipline_Interests": [
-      "Drug Target Structural Analysis",
-      "Protein-Protein Interaction Studies"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "HPLC",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "AlphaFold2",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "PyMOL",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "Protein Purification",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "NMR",
-        "proficiency": "Intermediate"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "High-impact journals",
-    "Mentorship_Preference": "Direct PI mentorship",
-    "Hours_Available": "Available 10-20 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Fully in-person only",
-    "Experience_Level": "Two or more years of lab experience",
-    "Research_Statement_FreeText": "I'm interested in how a protein's 3D structure determines whether a drug can bind it, which is why I've spent the last two years learning HPLC-based protein purification and using AlphaFold2 and PyMOL to model candidate drug targets. I'd like to join a structural biology lab where I can connect computational structure prediction with hands-on protein work, on my way to a PhD in basic science."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-004",
+    "Lab_Name": "Patel Structural Biochemistry Laboratory, USC",
+    "Primary_Field": "Structural Biology",
+    "Sub_disciplines": "Drug Target Structural Analysis, Protein-Protein Interaction Studies, X-ray Crystallography",
+    "Required_Techniques": "HPLC, AlphaFold2, PyMOL, Protein purification",
+    "Preferred_Techniques": "LC-MS, ChimeraX, Molecular Docking (AutoDock Vina), NMR Spectroscopy",
+    "Lab_Aim": "Basic Science Discovery",
+    "Career_Pathways_Supported": "Academic PhD, Biotechnology Industry",
+    "Institution_Type": "R1 University",
+    "Lab_Size": "6–15",
+    "Hiree_Level_Sought": "Junior, Senior, Postbac",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "Paid",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "We investigate the three-dimensional structures of proteins involved in human disease to better understand their function and identify new therapeutic targets. Students gain experience with protein purification, structural modeling, visualization software, and biochemical analysis."
   },
   {
-    "Candidate_ID": "CAND-005",
-    "Candidate_Name": "Sofia Ramirez, USC Sophomore",
-    "Education_Level": "Currently a college sophomore",
-    "GPA_Range": "GPA 3.0 to 3.49",
-    "Primary_Field_Interest": "Epidemiology & Public Health",
-    "Sub_discipline_Interests": [
-      "Health Disparities Research",
-      "Global Health",
-      "Biostatistics"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "R",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "Statistical Analysis",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "Systematic Literature Review",
-        "proficiency": "Beginner"
-      },
-      {
-        "skill": "REDCap",
-        "proficiency": "Beginner"
-      }
-    ],
-    "Career_Goal": "Government research",
-    "Publication_Preference": "Short publication timeline",
-    "Mentorship_Preference": "Graduate student mentorship",
-    "Hours_Available": "Available less than 10 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Hybrid or flexible schedule",
-    "Experience_Level": "No prior lab experience",
-    "Research_Statement_FreeText": "I care about health disparities and how research can actually change public health policy, not just describe a problem. I've done statistical analysis in R and helped manage a REDCap database for a systematic literature review during a summer internship, and I'm hoping to find a public health research lab connected to government or population health work."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-005",
+    "Lab_Name": "Rodriguez Population Health Research Center, USC",
+    "Primary_Field": "Epidemiology & Public Health",
+    "Sub_disciplines": "Infectious Disease Epidemiology, Biostatistics, Global Health, Health Disparities Research",
+    "Required_Techniques": "R, Statistical analysis, Systematic literature review, REDCap",
+    "Preferred_Techniques": "Python, ggplot2, Logistic regression, Survival analysis (Cox PH)",
+    "Lab_Aim": "Population & Public Health Research",
+    "Career_Pathways_Supported": "Public Health, Government Research, Clinical Research",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "16+",
+    "Hiree_Level_Sought": "Freshman, Sophomore, Junior, Senior",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "For-credit",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "Our research examines infectious diseases, health disparities, and population-level health outcomes using epidemiological methods and advanced statistical analysis. Students contribute to data management, literature reviews, REDCap databases, and public health research projects."
   },
   {
-    "Candidate_ID": "CAND-006",
-    "Candidate_Name": "Alex Kim, UCLA Junior",
-    "Education_Level": "Currently a college junior",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Neuroscience",
-    "Sub_discipline_Interests": [
-      "Computational Neuroscience",
-      "Systems & Cognitive Neuroscience"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Python",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "MATLAB",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "R",
-        "proficiency": "Beginner"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "High-impact journals",
-    "Mentorship_Preference": "Independent project",
-    "Hours_Available": "Available 10-20 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Hybrid or flexible schedule",
-    "Experience_Level": "One semester of lab experience",
-    "Research_Statement_FreeText": "I'm drawn to the intersection of computation and neuroscience - specifically how machine learning models can make sense of large-scale neural recordings instead of analyzing one neuron at a time. I've built Python and MATLAB pipelines to process EEG and calcium-imaging data for a computational neuroscience course project. I'm looking for a lab where computational modeling and real neural data come together, and I'm ultimately aiming for a PhD in computational neuroscience."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-006",
+    "Lab_Name": "Nguyen Molecular Pharmacology & Drug Discovery Laboratory, USC",
+    "Primary_Field": "Pharmacology",
+    "Sub_disciplines": "Molecular Pharmacology, Drug Discovery & Development, Toxicology",
+    "Required_Techniques": "HPLC, Cell Culture, ELISA, PCR",
+    "Preferred_Techniques": "LC-MS, Flow Cytometry, Python, GraphPad Prism",
+    "Lab_Aim": "Drug Discovery",
+    "Career_Pathways_Supported": "Pharmaceutical Industry, Biotechnology Industry, Academic PhD",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "6–15",
+    "Hiree_Level_Sought": "Junior, Senior, Postbac",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "Paid",
+    "Remote_Option": "In-person only",
+    "Lab_Description_FreeText": "We develop and evaluate small-molecule therapeutics for inflammatory and metabolic diseases using molecular pharmacology, cell-based assays, and biochemical techniques. Students gain hands-on experience in drug screening, protein analysis, pharmacological testing, and experimental design while preparing for careers in pharmaceutical research or graduate school."
   },
   {
-    "Candidate_ID": "CAND-007",
-    "Candidate_Name": "Jordan Lee, USC Senior",
-    "Education_Level": "Currently a college senior",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Genetics & Genomics",
-    "Sub_discipline_Interests": [
-      "Human Genetics & Disease",
-      "Functional Genomics"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Python",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "DESeq2",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "STAR",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "GATK HaplotypeCaller",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "RNA-seq",
-        "proficiency": "Advanced"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "High-impact journals",
-    "Mentorship_Preference": "Independent project",
-    "Hours_Available": "Available 10-20 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Hybrid or flexible schedule",
-    "Experience_Level": "One semester of lab experience",
-    "Research_Statement_FreeText": "I am interested in understanding how genetic variants contribute to complex disease. I have experience with RNA-seq data analysis in Python using DESeq2 and STAR. I want to pursue a PhD in computational genomics."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-007",
+    "Lab_Name": "Patel Functional Genomics Laboratory",
+    "Primary_Field": "Genetics & Genomics",
+    "Sub_disciplines": "Functional Genomics; Human Genetics & Disease; Genome Analysis & Variant Calling",
+    "Required_Techniques": "NGS; RNA-seq; Python; GATK HaplotypeCaller; BLAST",
+    "Preferred_Techniques": "DESeq2; R; STAR; Git/GitHub",
+    "Lab_Aim": "Identify disease-causing genetic variants and characterize gene function using next-generation sequencing and computational genomics.",
+    "Career_Pathways_Supported": "Academic PhD; Biotechnology Industry; Genomics Research",
+    "Institution_Type": "Research University (R1)",
+    "Lab_Size": "Medium (10–20 members)",
+    "Hiree_Level_Sought": "Undergraduate; Junior; Senior; Postbac",
+    "Hours_Per_Week": "10–20 hrs/week",
+    "Compensation": "Paid",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "The laboratory studies the genetic basis of human disease through next-generation sequencing, functional genomics, and computational analysis. Students assist with RNA-seq analysis, variant calling, and bioinformatics workflows while contributing to translational genomics research."
   },
   {
-    "Candidate_ID": "CAND-008",
-    "Candidate_Name": "Maya Torres, UCLA Junior",
-    "Education_Level": "Currently a college junior",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Immunology",
-    "Sub_discipline_Interests": [
-      "Innate Immunity"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Flow Cytometry",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "ELISA",
-        "proficiency": "Advanced"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "High-impact journals",
-    "Mentorship_Preference": "Structured feedback",
-    "Hours_Available": "Available 10-20 hours per week",
-    "Compensation_Need": "Paid position preferred",
-    "Remote_Preference": "Fully in-person only",
-    "Experience_Level": "One semester of lab experience",
-    "Research_Statement_FreeText": "My research interest is in how the innate immune system detects and responds to viral pathogens. I have worked with primary human PBMCs and am proficient in flow cytometry and ELISA. I'm aiming for a PhD in basic immunology, with an eventual focus on how innate immune signaling could be leveraged for antiviral therapies."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-008",
+    "Lab_Name": "Lee Immunology & Host Defense Laboratory",
+    "Primary_Field": "Immunology",
+    "Sub_disciplines": "Innate Immunity; Adaptive Immunity; Tumor Immunology",
+    "Required_Techniques": "Flow Cytometry; ELISA; Mammalian Cell Culture; Western Blot; qPCR",
+    "Preferred_Techniques": "Immunoprecipitation (IP); Confocal Microscopy; CRISPR-Cas9",
+    "Lab_Aim": "Investigate immune responses to infection and cancer to identify novel therapeutic targets.",
+    "Career_Pathways_Supported": "Academic PhD; MD/PhD; Biotechnology Industry; Clinical Research",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "Large (20+ members)",
+    "Hiree_Level_Sought": "Undergraduate; Junior; Senior; Postbac",
+    "Hours_Per_Week": "10–20 hrs/week",
+    "Compensation": "Paid",
+    "Remote_Option": "In-person Only",
+    "Lab_Description_FreeText": "The laboratory investigates innate and adaptive immune responses during infection and cancer progression. Undergraduate researchers gain experience with mammalian cell culture, flow cytometry, ELISA, qPCR, and immunological assays while contributing to studies focused on immunotherapy and host-pathogen interactions."
   },
   {
-    "Candidate_ID": "CAND-009",
-    "Candidate_Name": "Rachel Kim, Postbac",
-    "Education_Level": "Post-baccalaureate student",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Immunology",
-    "Sub_discipline_Interests": [
-      "Tumor Immunology"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Flow Cytometry",
-        "proficiency": "Advanced"
-      },
-      {
-        "skill": "ELISA",
-        "proficiency": "Advanced"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "High-impact journals",
-    "Mentorship_Preference": "Independent project",
-    "Hours_Available": "Available 20+ hours per week",
-    "Compensation_Need": "Paid position preferred",
-    "Remote_Preference": "Fully in-person only",
-    "Experience_Level": "Two or more years of lab experience",
-    "Research_Statement_FreeText": "I am passionate about cancer immunotherapy and specifically want to understand why some patients respond to checkpoint inhibitors while others do not. I have experience with flow cytometry and ELISA and am comfortable working with patient-derived samples. My goal is to pursue a PhD in tumor immunology and contribute to the next generation of immunotherapy research."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-009",
+    "Lab_Name": "Chen Tumor Immunology Laboratory, UCLA",
+    "Primary_Field": "Immunology",
+    "Sub_disciplines": "Tumor Immunology, Adaptive Immunity, Innate Immunity",
+    "Required_Techniques": "Flow Cytometry, Single-Cell RNA-seq, Mammalian Cell Culture, ELISA",
+    "Preferred_Techniques": "Seurat (R), CRISPR-Cas9, Confocal Microscopy",
+    "Lab_Aim": "Translational Medicine",
+    "Career_Pathways_Supported": "Academic PhD, MD/PhD, Biotechnology Industry",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "16+",
+    "Hiree_Level_Sought": "Junior, Senior, Postbac",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "Paid",
+    "Remote_Option": "In-person only",
+    "Lab_Description_FreeText": "We investigate how tumors evade immune destruction by studying T-cell exhaustion, immune checkpoint signaling, and the tumor microenvironment. Undergraduate researchers perform flow cytometry, mammalian cell culture, ELISA, and single-cell transcriptomic analysis to identify new immunotherapy targets."
   },
   {
-    "Candidate_ID": "CAND-010",
-    "Candidate_Name": "Tyler Nguyen, USC Sophomore",
-    "Education_Level": "Currently a college sophomore",
-    "GPA_Range": "GPA 3.0 to 3.49",
-    "Primary_Field_Interest": "Computational Biology / Bioinformatics",
-    "Sub_discipline_Interests": [
-      "Single-Cell Analysis"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "Python",
-        "proficiency": "Beginner"
-      },
-      {
-        "skill": "R",
-        "proficiency": "Beginner"
-      },
-      {
-        "skill": "RNA-seq",
-        "proficiency": "Beginner"
-      }
-    ],
-    "Career_Goal": "Academic PhD in basic science",
-    "Publication_Preference": "Short publication timeline",
-    "Mentorship_Preference": "Graduate student mentorship",
-    "Hours_Available": "Available less than 10 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Hybrid or flexible schedule",
-    "Experience_Level": "No prior lab experience",
-    "Research_Statement_FreeText": "I want to use computational approaches to understand how single cells make decisions during development. I am learning Python and R independently and have completed an online course in RNA-seq analysis. I'm excited by the intersection of biology and data science and hope to eventually pursue a PhD in computational biology focused on developmental genomics."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-010",
+    "Lab_Name": "Davis Single-Cell Computational Biology Lab, USC",
+    "Primary_Field": "Computational Biology / Bioinformatics",
+    "Sub_disciplines": "Single-Cell Analysis, Machine Learning in Biology, Systems Biology",
+    "Required_Techniques": "Python, R, Scanpy, Seurat (R)",
+    "Preferred_Techniques": "DESeq2, STAR, HISAT2, Git/GitHub",
+    "Lab_Aim": "Computational Biology & Bioinformatics",
+    "Career_Pathways_Supported": "Academic PhD, Biotechnology Industry",
+    "Institution_Type": "R1 University",
+    "Lab_Size": "6–15",
+    "Hiree_Level_Sought": "Sophomore, Junior, Senior",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "Paid",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "Our laboratory develops computational approaches for analyzing single-cell transcriptomic datasets and building machine learning models to classify cell types and developmental trajectories. Students gain experience with Python, R, bioinformatics pipelines, and large-scale genomic data analysis."
   },
   {
-    "Candidate_ID": "CAND-011",
-    "Candidate_Name": "Jasmine Bell, USC Senior",
-    "Education_Level": "Currently a college senior",
-    "GPA_Range": "GPA 3.5 to 3.79",
-    "Primary_Field_Interest": "Epidemiology & Public Health",
-    "Sub_discipline_Interests": [
-      "Health Disparities Research",
-      "Chronic Disease Epidemiology"
-    ],
-    "Confirmed_Skills": [
-      {
-        "skill": "SPSS",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "REDCap",
-        "proficiency": "Intermediate"
-      },
-      {
-        "skill": "Statistical Analysis",
-        "proficiency": "Intermediate"
-      }
-    ],
-    "Career_Goal": "Government research",
-    "Publication_Preference": "Short publication timeline",
-    "Mentorship_Preference": "Structured feedback",
-    "Hours_Available": "Available 10-20 hours per week",
-    "Compensation_Need": "Academic credit acceptable",
-    "Remote_Preference": "Hybrid or flexible schedule",
-    "Experience_Level": "One semester of lab experience",
-    "Research_Statement_FreeText": "I am interested in health disparities research and how social determinants affect chronic disease outcomes in marginalised communities. I have experience with REDCap and SPSS and want to pursue a career in public health research or government agencies like the CDC."
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-011",
+    "Lab_Name": "Martinez Public Health Epidemiology Lab, Keck School of Medicine",
+    "Primary_Field": "Epidemiology & Public Health",
+    "Sub_disciplines": "Health Disparities Research, Global Health, Biostatistics, Infectious Disease Epidemiology",
+    "Required_Techniques": "REDCap, Statistical analysis, Systematic literature review, R",
+    "Preferred_Techniques": "Python, Logistic regression, Survival analysis (Cox PH), ggplot2",
+    "Lab_Aim": "Population & Public Health Research",
+    "Career_Pathways_Supported": "Public Health, Government Research, Clinical Research",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "16+",
+    "Hiree_Level_Sought": "Freshman, Sophomore, Junior, Senior",
+    "Hours_Per_Week": "Part-time",
+    "Compensation": "For-credit",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "We study the social and environmental determinants of chronic disease and health inequities using epidemiological methods, administrative health datasets, and REDCap-based surveys. Students contribute to statistical analyses, literature reviews, database management, and community health research focused on improving population outcomes."
+  },
+  {
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-012",
+    "Lab_Name": "Structural Biology and Protein Dynamics Laboratory",
+    "Primary_Field": "Structural Biology",
+    "Sub_disciplines": "Protein Structure, Cryo-Electron Microscopy, X-ray Crystallography, Computational Structural Biology",
+    "Required_Techniques": "Protein Purification, Molecular Cloning, SDS-PAGE, Cryo-EM Sample Preparation",
+    "Preferred_Techniques": "PyMOL, ChimeraX, Python, Image Analysis",
+    "Lab_Aim": "Determine three-dimensional protein structures to understand disease mechanisms and identify therapeutic targets.",
+    "Career_Pathways_Supported": "Academic PhD, Biotechnology, Pharmaceutical Research",
+    "Institution_Type": "University",
+    "Lab_Size": "Medium",
+    "Hiree_Level_Sought": "Sophomore, Junior, Senior",
+    "Hours_Per_Week": "10–15",
+    "Compensation": "Paid or For Credit",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "We investigate protein structure and conformational dynamics using cryo-electron microscopy, X-ray crystallography, and computational structural biology. Students gain experience in recombinant protein expression, purification, molecular cloning, structural visualization with PyMOL and ChimeraX, and interpreting high-resolution macromolecular structures relevant to neurodegenerative disease and cancer."
+  },
+  {
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-013",
+    "Lab_Name": "Translational Pharmacology Laboratory",
+    "Primary_Field": "Pharmacology",
+    "Sub_disciplines": "Drug Discovery, Drug Delivery, Pharmacokinetics, Medicinal Chemistry",
+    "Required_Techniques": "Cell Culture, Dose Response Assays, ELISA, PCR",
+    "Preferred_Techniques": "Flow Cytometry, ImageJ, Western Blot",
+    "Lab_Aim": "Develop and evaluate therapeutic compounds targeting inflammatory and neurodegenerative diseases.",
+    "Career_Pathways_Supported": "Medical School, Pharmaceutical Industry, Academic PhD",
+    "Institution_Type": "Medical School",
+    "Lab_Size": "Large",
+    "Hiree_Level_Sought": "Junior, Senior, Graduate Student",
+    "Hours_Per_Week": "12–15",
+    "Compensation": "Paid",
+    "Remote_Option": "In Person",
+    "Lab_Description_FreeText": "Our laboratory evaluates small molecule therapeutics through pharmacodynamic and pharmacokinetic studies using mammalian cell culture, ELISA, PCR, flow cytometry, and quantitative imaging. Students participate in drug efficacy experiments, toxicity screening, and translational research aimed at developing treatments for inflammatory disorders and neurodegenerative disease."
+  },
+  {
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-014",
+    "Lab_Name": "Environmental Systems and Climate Laboratory",
+    "Primary_Field": "Environmental Science",
+    "Sub_disciplines": "Environmental Toxicology, Climate Science, Microbial Ecology, Water Quality",
+    "Required_Techniques": "PCR, DNA Extraction, Field Sampling, Microscopy",
+    "Preferred_Techniques": "GIS, R, Python",
+    "Lab_Aim": "Investigate how environmental stressors influence ecosystem health and biodiversity.",
+    "Career_Pathways_Supported": "Environmental Research, Government, Academic PhD",
+    "Institution_Type": "University",
+    "Lab_Size": "Medium",
+    "Hiree_Level_Sought": "Sophomore, Junior, Senior",
+    "Hours_Per_Week": "8–12",
+    "Compensation": "Volunteer or For Credit",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "We study microbial communities, environmental DNA, water quality, and ecosystem responses to climate change using molecular biology, environmental sampling, microscopy, GIS, and statistical analysis in R. Students participate in field research and laboratory analyses addressing biodiversity conservation and environmental resilience."
+  },
+  {
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-015",
+    "Lab_Name": "Biomedical Imaging and Device Innovation Laboratory",
+    "Primary_Field": "Biomedical Engineering",
+    "Sub_disciplines": "Medical Devices, Biomaterials, Tissue Engineering, Biomedical Imaging",
+    "Required_Techniques": "CAD, 3D Printing, Cell Culture, Image Analysis",
+    "Preferred_Techniques": "MATLAB, Python, SolidWorks",
+    "Lab_Aim": "Design biomedical devices and tissue-engineered platforms that improve patient care.",
+    "Career_Pathways_Supported": "Biomedical Engineering Industry, Medical Devices, Academic PhD",
+    "Institution_Type": "Engineering School",
+    "Lab_Size": "Medium",
+    "Hiree_Level_Sought": "Junior, Senior",
+    "Hours_Per_Week": "10–15",
+    "Compensation": "Paid or For Credit",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "Our laboratory develops biomaterials, tissue-engineered constructs, and medical devices for regenerative medicine. Students gain experience with CAD modeling, 3D printing, mammalian cell culture, fluorescence microscopy, quantitative image analysis, and prototype development while collaborating across engineering and clinical disciplines."
+  },
+  {
+    "Lab_ID (LAB-001 to LAB-005)": "LAB-016",
+    "Lab_Name": "Clinical Outcomes and Precision Medicine Laboratory",
+    "Primary_Field": "Clinical Medicine",
+    "Sub_disciplines": "Clinical Research, Precision Medicine, Internal Medicine, Clinical Informatics",
+    "Required_Techniques": "Electronic Health Record Review, Clinical Data Analysis, Literature Review, Statistics",
+    "Preferred_Techniques": "REDCap, R, Python",
+    "Lab_Aim": "Improve patient outcomes through evidence-based clinical research and precision medicine.",
+    "Career_Pathways_Supported": "Medical School, Clinical Research, Academic Medicine",
+    "Institution_Type": "Hospital or Medical Center",
+    "Lab_Size": "Large",
+    "Hiree_Level_Sought": "Junior, Senior, Graduate Student",
+    "Hours_Per_Week": "10–20",
+    "Compensation": "Paid",
+    "Remote_Option": "Hybrid",
+    "Lab_Description_FreeText": "We conduct clinical outcomes research using electronic health records, precision medicine approaches, and biostatistical modeling. Students assist with REDCap databases, retrospective chart review, clinical data analysis in R, literature synthesis, and multidisciplinary projects focused on improving evidence-based patient care."
   }
 ]
