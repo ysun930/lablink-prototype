@@ -8,121 +8,181 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>LabLink Results</title>
+  <title>LabLink Match Results</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 0 20px;
       background-color: #f5f7fb;
       color: #222;
     }
 
-    h1 {
-      color: #1f4e99;
+    header {
+      padding: 18px 30px;
+      background-color: #123f88;
+      color: white;
     }
 
-    #sort-select {
-      margin: 10px 0 25px;
+    header h1 {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .back-link {
+      color: #123f88;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    select {
       padding: 8px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
     }
 
     .lab-card {
+      margin-bottom: 22px;
+      padding: 22px;
       background-color: white;
       border: 1px solid #d9dfe8;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
+      border-radius: 9px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
     }
 
-    .score-badges {
-      display: flex;
-      flex-wrap: wrap;
+    .lab-card h2 {
+      margin-top: 0;
+      color: #123f88;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin: 15px 0;
+      margin: 18px 0;
     }
 
-    .score-badge {
-      min-width: 150px;
-      padding: 10px 14px;
+    .score-box {
+      padding: 13px;
       background-color: #eef3fb;
       border-radius: 6px;
+      text-align: center;
     }
 
-    .semantic-score {
-      background-color: #f0e8ff;
+    .score-box strong {
+      display: block;
+      margin-bottom: 5px;
     }
 
     .match-reason {
       margin: 18px 0;
-      padding: 14px;
+      padding: 15px;
       background-color: #faf7ff;
       border-left: 4px solid #7048a8;
     }
 
+    .breakdown {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .breakdown div {
+      padding: 10px;
+      background-color: #f7f8fa;
+      border-radius: 5px;
+    }
+
     .profile-link {
       display: inline-block;
-      padding: 9px 14px;
-      background-color: #1f4e99;
+      margin-top: 10px;
+      padding: 10px 15px;
+      background-color: #123f88;
       color: white;
       text-decoration: none;
       border-radius: 5px;
     }
 
-    .profile-link:hover {
-      background-color: #163b75;
-    }
-
-    .form-link {
-      display: inline-block;
-      margin-bottom: 15px;
-    }
-
-    .ai-note {
-      margin-top: 16px;
-      color: #555;
-    }
-
     footer {
       margin-top: 40px;
-      padding: 15px;
+      padding: 20px;
       text-align: center;
       color: #555;
       border-top: 1px solid #ccc;
+    }
+
+    @media (max-width: 700px) {
+      .score-grid,
+      .breakdown {
+        grid-template-columns: 1fr;
+      }
+
+      .top-controls {
+        display: block;
+      }
+
+      .top-controls div {
+        margin-top: 15px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <h1>LabLink Match Results</h1>
+  <header>
+    <h1>LabLink Match Results</h1>
+  </header>
 
-  <p>
-    <a class="form-link" href="index.html">
-      Return to Candidate Form
-    </a>
-  </p>
+  <main>
+    <div class="top-controls">
+      <a class="back-link" href="index.html">
+        ← Return to Candidate Form
+      </a>
 
-  <label for="sort-select">
-    Sort results by:
-  </label>
+      <div>
+        <label for="sort-select">
+          Sort by:
+        </label>
 
-  <select id="sort-select">
-    <option value="combinedPercent">
-      Combined Score
-    </option>
+        <select id="sort-select">
+          <option value="combinedPercent">
+            Combined Score
+          </option>
 
-    <option value="rulePercent">
-      Rule-Based Score
-    </option>
+          <option value="rulePercent">
+            Rule-Based Score
+          </option>
 
-    <option value="semanticPercent">
-      AI Semantic Score
-    </option>
-  </select>
+          <option value="semanticPercent">
+            AI Semantic Score
+          </option>
+        </select>
+      </div>
+    </div>
 
-  <div id="results-container"></div>
+    <h2 id="candidate-heading"></h2>
+
+    <div id="results-container"></div>
+  </main>
 
   <footer>
     <p>
@@ -131,29 +191,60 @@
   </footer>
 
   <script>
-    // Read results saved by app.js
-    const storedResults =
-      sessionStorage.getItem(
-        "labMatchResults"
-      );
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-    let results = [];
+    function safePercent(value) {
+      const number = Number(value);
 
-    if (storedResults) {
+      return Number.isFinite(number)
+        ? number.toFixed(1)
+        : "0.0";
+    }
+
+    function formatList(value) {
+      if (Array.isArray(value)) {
+        return value.join(", ");
+      }
+
+      return value || "Not available";
+    }
+
+    function readStoredJson(key, fallback) {
       try {
-        const parsedResults =
-          JSON.parse(storedResults);
+        const stored =
+          sessionStorage.getItem(key);
 
-        results = Array.isArray(parsedResults)
-          ? parsedResults
-          : [];
+        return stored
+          ? JSON.parse(stored)
+          : fallback;
       } catch (error) {
         console.error(
-          "Could not parse labMatchResults:",
+          `Could not read ${key}:`,
           error
         );
+
+        return fallback;
       }
     }
+
+    const results =
+      readStoredJson(
+        "labMatchResults",
+        []
+      );
+
+    const candidate =
+      readStoredJson(
+        "submittedCandidate",
+        {}
+      );
 
     const container =
       document.getElementById(
@@ -165,50 +256,31 @@
         "sort-select"
       );
 
-    // Safely formats a percentage
-    function safePercent(value) {
-      const number = Number(value);
+    const heading =
+      document.getElementById(
+        "candidate-heading"
+      );
 
-      return Number.isFinite(number)
-        ? number.toFixed(1)
-        : "0.0";
-    }
+    heading.textContent =
+      candidate.Candidate_Name
+        ? `Matches for ${candidate.Candidate_Name}`
+        : "Your Laboratory Matches";
 
-    // Converts arrays into readable text
-    function formatList(value) {
-      if (Array.isArray(value)) {
-        return value.join(", ");
-      }
-
-      return value || "Not available";
-    }
-
-    // Prevents data values from being interpreted as HTML
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // Displays all lab cards
     function displayResults(
       sortBy = "combinedPercent"
     ) {
       container.innerHTML = "";
 
-      if (results.length === 0) {
+      if (!Array.isArray(results) ||
+          results.length === 0) {
         container.innerHTML = `
           <p>
-            No results found. Please submit
-            the candidate form first.
+            No match results were found.
           </p>
 
           <p>
             <a href="index.html">
-              Go to Candidate Form
+              Complete the candidate form
             </a>
           </p>
         `;
@@ -217,7 +289,6 @@
         return;
       }
 
-      // Sort a copy from highest score to lowest
       const sortedResults =
         [...results].sort(
           (a, b) =>
@@ -227,68 +298,41 @@
 
       sortedResults.forEach(
         (result, index) => {
+          const profile =
+            result.labProfile || {};
+
           const card =
             document.createElement(
               "section"
             );
 
-          card.className =
-            "lab-card";
-
-          const profile =
-            result.labProfile || {};
-
-          const labId =
-            result.Lab_ID ||
-            "Unknown Lab";
-
-          const labName =
-            result.Lab_Name ||
-            "Unnamed Lab";
-
-          const semanticReason =
-            result.semanticReason ||
-            "Semantic explanation is not available.";
+          card.className = "lab-card";
 
           card.innerHTML = `
             <h2>
               Rank ${index + 1}:
-              ${escapeHtml(labId)} —
-              ${escapeHtml(labName)}
+              ${escapeHtml(result.Lab_ID)}
+              —
+              ${escapeHtml(result.Lab_Name)}
             </h2>
 
-            <div class="score-badges">
-              <div class="score-badge">
-                <strong>
-                  Combined Match
-                </strong>
-
-                <br>
-
+            <div class="score-grid">
+              <div class="score-box">
+                <strong>Combined Match</strong>
                 ${safePercent(
                   result.combinedPercent
                 )}%
               </div>
 
-              <div class="score-badge">
-                <strong>
-                  Rule-Based Score
-                </strong>
-
-                <br>
-
+              <div class="score-box">
+                <strong>Rule-Based Score</strong>
                 ${safePercent(
                   result.rulePercent
                 )}%
               </div>
 
-              <div class="score-badge semantic-score">
-                <strong>
-                  AI Semantic Score
-                </strong>
-
-                <br>
-
+              <div class="score-box">
+                <strong>AI Semantic Score</strong>
                 ${safePercent(
                   result.semanticPercent
                 )}%
@@ -299,120 +343,81 @@
               <h3>Why this match?</h3>
 
               <p>
-                ${escapeHtml(semanticReason)}
+                ${escapeHtml(
+                  result.semanticReason ||
+                  "Semantic explanation is unavailable."
+                )}
               </p>
             </div>
 
-            <div class="score-breakdown">
-              <h3>
-                Rule-Based Score Breakdown
-              </h3>
+            <h3>Rule-Based Breakdown</h3>
 
-              <p>
-                <strong>Field Score:</strong>
-
+            <div class="breakdown">
+              <div>
+                <strong>Field:</strong>
                 ${safePercent(
                   result.fieldPercent
                 )}%
-              </p>
+              </div>
 
-              <p>
-                <strong>Technique Score:</strong>
-
+              <div>
+                <strong>Techniques:</strong>
                 ${safePercent(
                   result.techniquePercent
                 )}%
-              </p>
+              </div>
 
-              <p>
-                <strong>Goal Score:</strong>
-
+              <div>
+                <strong>Goals:</strong>
                 ${safePercent(
                   result.goalPercent
                 )}%
-              </p>
+              </div>
             </div>
 
-            <div class="lab-information">
-              <h3>Lab Information</h3>
-
-              <p>
-                <strong>Primary Field:</strong>
-
-                ${escapeHtml(
-                  profile.Primary_Field ||
-                  "Not available"
-                )}
-              </p>
-
-              <p>
-                <strong>Sub-disciplines:</strong>
-
-                ${escapeHtml(
-                  formatList(
-                    profile.Sub_discipline
-                  )
-                )}
-              </p>
-
-              <p>
-                <strong>Lab Aim:</strong>
-
-                ${escapeHtml(
-                  profile.Lab_Aim ||
-                  "Not available"
-                )}
-              </p>
-
-              <p>
-                <strong>Institution Type:</strong>
-
-                ${escapeHtml(
-                  profile.Institution_Type ||
-                  "Not available"
-                )}
-              </p>
-
-              <p>
-                <strong>Required Techniques:</strong>
-
-                ${escapeHtml(
-                  profile.Required_Techniques ||
-                  formatList(
-                    profile.Required_Skills
-                  )
-                )}
-              </p>
-
-              <p>
-                <strong>Lab Description:</strong>
-
-                ${escapeHtml(
-                  profile
-                    .Lab_Description_FreeText ||
-                  "Not available"
-                )}
-              </p>
-            </div>
+            <h3>Lab Information</h3>
 
             <p>
-              <a
-                class="profile-link"
-                href="lab-profile.html?labId=${encodeURIComponent(
-                  labId
-                )}"
-              >
-                View Lab Profile
-              </a>
+              <strong>Primary Field:</strong>
+              ${escapeHtml(
+                profile.Primary_Field ||
+                "Not available"
+              )}
             </p>
 
-            <p class="ai-note">
-              <small>
-                The final combined score uses
-                80% rule-based scoring and
-                20% Cohere semantic scoring.
-              </small>
+            <p>
+              <strong>Sub-disciplines:</strong>
+              ${escapeHtml(
+                formatList(
+                  profile.Sub_discipline
+                )
+              )}
             </p>
+
+            <p>
+              <strong>Lab Aim:</strong>
+              ${escapeHtml(
+                profile.Lab_Aim ||
+                "Not available"
+              )}
+            </p>
+
+            <p>
+              <strong>Description:</strong>
+              ${escapeHtml(
+                profile.Lab_Description_FreeText ||
+                "Not available"
+              )}
+            </p>
+
+            <a
+              class="profile-link"
+              href="lab-profile.html?labId=${encodeURIComponent(
+                result.Lab_ID
+              )}"
+            >
+              View Lab Profile
+            </a>
           `;
 
           container.appendChild(card);
@@ -420,7 +425,6 @@
       );
     }
 
-    // Re-sort when the dropdown changes
     sortSelect.addEventListener(
       "change",
       event => {
@@ -430,7 +434,6 @@
       }
     );
 
-    // Initially sort by combined score
     displayResults();
   </script>
 </body>
