@@ -1,21 +1,30 @@
-// app.js
-// Loads data, runs rule-based and AI semantic scoring,
-// ranks labs, and saves results to sessionStorage.
+// scripts/app.js
 
 let labsData = [];
 let candidatesData = [];
 
-// Cache embeddings to avoid repeated Cohere API calls
-const embeddingCache = {};
+const embeddingCache = new Map();
 
-// Run after pages/index.html finishes loading
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeApp
+);
+
+async function initializeApp() {
+  const form = document.getElementById(
+    "candidate-form"
+  );
+
+  if (!form) {
+    return;
+  }
+
   try {
-    // Load lab and candidate JSON files
-    const [labsResponse, candidatesResponse] = await Promise.all([
-      fetch("../data/labs.json"),
-      fetch("../data/candidates.json")
-    ]);
+    const [labsResponse, candidatesResponse] =
+      await Promise.all([
+        fetch("../data/labs.json"),
+        fetch("../data/candidates.json")
+      ]);
 
     if (!labsResponse.ok) {
       throw new Error(
@@ -29,55 +38,93 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
     }
 
-    const labsRaw = await labsResponse.json();
-    const candidatesRaw = await candidatesResponse.json();
+    const rawLabs = await labsResponse.json();
+    const rawCandidates =
+      await candidatesResponse.json();
 
-    // Convert raw JSON into the scorer's standard format
-    labsData = labsRaw.map(normalizeLab);
-    candidatesData = candidatesRaw.map(normalizeCandidate);
+    labsData = rawLabs.map(normalizeLab);
 
-    // Compute all lab embeddings once when the page loads
-    await precomputeLabEmbeddings(labsData);
+    candidatesData =
+      rawCandidates.map(normalizeCandidate);
 
-    console.log("Data loaded. Lab embeddings precomputed.");
+    console.log(
+      `Loaded ${candidatesData.length} candidates ` +
+      `and ${labsData.length} labs.`
+    );
 
-    // Connect the candidate form to the submit function
-    const form = document.getElementById("candidate-form");
+    if (window.COHERE_API_KEY) {
+      await precomputeLabEmbeddings(labsData);
 
-    if (form) {
-      form.addEventListener("submit", handleCandidateSubmit);
-
-      console.log("Candidate form submit event connected.");
+      console.log(
+        "Lab embeddings precomputed and cached."
+      );
     } else {
-      console.warn("candidate-form not found on this page.");
+      console.warn(
+        "Cohere API key is missing from config.js."
+      );
     }
-  } catch (error) {
-    console.error("Error loading data:", error);
-  }
-});
 
-// Standardizes text before matching
+    form.addEventListener(
+      "submit",
+      handleCandidateSubmit
+    );
+
+    console.log(
+      "Candidate form connected to app.js."
+    );
+  } catch (error) {
+    console.error(
+      "Application initialization failed:",
+      error
+    );
+
+    setStatus(
+      "The data could not be loaded. Check the Console.",
+      true
+    );
+  }
+}
+
+function setStatus(message, isError = false) {
+  const element =
+    document.getElementById("status-message");
+
+  if (!element) {
+    return;
+  }
+
+  element.textContent = message;
+  element.style.color =
+    isError ? "#a30000" : "#555";
+}
+
 function normalizeText(value) {
   return String(value ?? "")
     .toLowerCase()
-    .replace(/\([^)]*\)/g, "")
+    .replace(/\([^)]*\)/g, " ")
     .replace(/[–—-]/g, " ")
-    .replace(/&/g, "and")
+    .replace(/&/g, " and ")
     .replace(/\bwestern blotting\b/g, "western blot")
     .replace(/\bconfocal imaging\b/g, "confocal microscopy")
+    .replace(/\bmammalian cell culture\b/g, "cell culture")
+    .replace(/\bcell culture mammalian\b/g, "cell culture")
     .replace(/\bbiotech\b/g, "biotechnology")
     .replace(/\bpharma\b/g, "pharmaceutical")
+    .replace(/\bpost baccalaureate\b/g, "postbac")
+    .replace(/\bin person\b/g, "in-person")
+    .replace(/\bfor credit\b/g, "for-credit")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-// Converts comma-separated or semicolon-separated text into an array
 function splitList(value) {
   if (Array.isArray(value)) {
-    return value.flatMap(splitList);
+    return value
+      .flatMap(item => splitList(item))
+      .filter(Boolean);
   }
 
-  if (!value) {
+  if (value === null || value === undefined) {
     return [];
   }
 
@@ -87,31 +134,65 @@ function splitList(value) {
     .filter(Boolean);
 }
 
-function valuesMatch(candidateValue, labValue) {
-  const candidateArray = Array.isArray(candidateValue)
-    ? candidateValue
-    : splitList(candidateValue);
+function cleanSkill(value) {
+  return String(value ?? "")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/—.*/g, "")
+    .trim();
+}
 
-  const labArray = Array.isArray(labValue)
-    ? labValue
-    : splitList(labValue);
+function extractSkills(value) {
+  if (!Array.isArray(value)) {
+    return splitList(value).map(cleanSkill);
+  }
+
+  return value
+    .map(item => {
+      if (
+        item &&
+        typeof item === "object"
+      ) {
+        return cleanSkill(
+          item.skill ||
+          item.Skill ||
+          item.name ||
+          ""
+        );
+      }
+
+      return cleanSkill(item);
+    })
+    .filter(Boolean);
+}
+
+function valuesMatch(candidateValue, labValue) {
+  const candidateArray =
+    Array.isArray(candidateValue)
+      ? candidateValue
+      : splitList(candidateValue);
+
+  const labArray =
+    Array.isArray(labValue)
+      ? labValue
+      : splitList(labValue);
 
   return candidateArray.some(candidateItem =>
     labArray.some(labItem => {
-      const candidateText = normalizeText(candidateItem);
-      const labText = normalizeText(labItem);
+      const candidateText =
+        normalizeText(candidateItem);
+
+      const labText =
+        normalizeText(labItem);
 
       if (!candidateText || !labText) {
         return false;
       }
 
-      // Exact matches are always accepted
       if (candidateText === labText) {
         return true;
       }
 
-      // Prevent short values such as "R" or "MS"
-      // from matching parts of longer words
+      // Prevent "R" from matching PCR or CRISPR.
       if (
         candidateText.length < 4 ||
         labText.length < 4
@@ -127,76 +208,161 @@ function valuesMatch(candidateValue, labValue) {
   );
 }
 
-// Standardizes education levels
 function normalizeEducation(value) {
   const text = normalizeText(value);
 
-  if (text.includes("freshman")) return "Freshman";
-  if (text.includes("sophomore")) return "Sophomore";
-  if (text.includes("junior")) return "Junior";
-  if (text.includes("senior")) return "Senior";
-  if (text.includes("post")) return "Postbac";
-  if (text.includes("master") || text === "ms") return "MS";
-  if (text.includes("phd")) return "PhD";
+  if (text.includes("freshman")) {
+    return "Freshman";
+  }
+
+  if (text.includes("sophomore")) {
+    return "Sophomore";
+  }
+
+  if (text.includes("junior")) {
+    return "Junior";
+  }
+
+  if (text.includes("senior")) {
+    return "Senior";
+  }
+
+  if (
+    text.includes("postbac") ||
+    text.includes("post bac")
+  ) {
+    return "Postbac";
+  }
+
+  if (
+    text.includes("master") ||
+    text === "ms"
+  ) {
+    return "MS";
+  }
+
+  if (
+    text.includes("phd") ||
+    text.includes("postdoctoral") ||
+    text.includes("postdoc")
+  ) {
+    return "PhD";
+  }
 
   return value;
 }
 
-// Standardizes availability values
+function normalizeEducationOptions(value) {
+  const items = splitList(value);
+  const results = [];
+
+  for (const item of items) {
+    const text = normalizeText(item);
+
+    if (text.includes("undergraduate")) {
+      results.push(
+        "Freshman",
+        "Sophomore",
+        "Junior",
+        "Senior"
+      );
+      continue;
+    }
+
+    if (text.includes("graduate student")) {
+      results.push("MS", "PhD");
+      continue;
+    }
+
+    results.push(normalizeEducation(item));
+  }
+
+  return [...new Set(results.filter(Boolean))];
+}
+
 function normalizeHours(value) {
   const text = normalizeText(value);
 
-  if (text.includes("less than 10")) {
+  if (
+    text.includes("less than 10") ||
+    text.includes("under 10")
+  ) {
     return "Less than 10 hours";
   }
 
   if (
-    text.includes("10 20") ||
-    text.includes("part time")
+    text.includes("20+") ||
+    text.includes("20 plus") ||
+    text.includes("full time") ||
+    text.includes("more than 20")
   ) {
-    return "Part-time";
+    return "Full-time";
   }
 
   if (
-    text.includes("20+") ||
-    text.includes("full time")
+    text.includes("part time") ||
+    text.includes("10 20") ||
+    text.includes("10 15") ||
+    text.includes("12 15") ||
+    text.includes("8 12") ||
+    text.includes("10–20")
   ) {
-    return "Full-time";
+    return "Part-time";
   }
 
   return value;
 }
 
-// Standardizes compensation values
 function normalizeCompensation(value) {
   const text = normalizeText(value);
 
-  if (text.includes("paid")) {
-    return "Paid";
-  }
-
   if (
-    text.includes("credit") ||
+    text.includes("academic credit") ||
+    text.includes("for-credit") ||
     text.includes("for credit")
   ) {
     return "For-credit";
   }
 
+  if (text.includes("paid")) {
+    return "Paid";
+  }
+
+  if (text.includes("volunteer")) {
+    return "Volunteer";
+  }
+
   return value;
 }
 
-// Standardizes in-person, hybrid, and remote values
-function normalizeRemote(value) {
+function normalizeCompensationOptions(value) {
   const text = normalizeText(value);
+  const results = [];
 
-  if (text.includes("in person")) {
-    return "In-person only";
+  if (text.includes("paid")) {
+    results.push("Paid");
   }
 
   if (
-    text.includes("hybrid") ||
-    text.includes("flexible")
+    text.includes("for-credit") ||
+    text.includes("academic credit")
   ) {
+    results.push("For-credit");
+  }
+
+  if (text.includes("volunteer")) {
+    results.push("Volunteer");
+  }
+
+  return results.length
+    ? results
+    : [normalizeCompensation(value)];
+}
+
+function normalizeRemote(value) {
+  const text = normalizeText(value);
+
+  if (text.includes("hybrid")) {
     return "Hybrid";
   }
 
@@ -204,34 +370,73 @@ function normalizeRemote(value) {
     return "Remote";
   }
 
+  if (
+    text.includes("in-person") ||
+    text.includes("in person")
+  ) {
+    return "In-person only";
+  }
+
   return value;
 }
 
-// Removes proficiency labels such as "(Advanced)"
-function cleanSkill(skill) {
-  return String(skill)
-    .replace(/\([^)]*\)/g, "")
-    .replace(/—.*/g, "")
-    .trim();
+function expandCareerTerms(value) {
+  const text = normalizeText(value);
+  const results = [value];
+
+  if (text.includes("academic phd")) {
+    results.push("Academic PhD");
+  }
+
+  if (text.includes("md/phd")) {
+    results.push("MD/PhD");
+  }
+
+  if (text.includes("pharmaceutical")) {
+    results.push("Pharmaceutical Industry");
+  }
+
+  if (text.includes("biotechnology")) {
+    results.push("Biotechnology Industry");
+  }
+
+  if (text.includes("government")) {
+    results.push("Government Research");
+  }
+
+  if (text.includes("public health")) {
+    results.push("Public Health");
+  }
+
+  if (text.includes("clinical medicine")) {
+    results.push(
+      "Clinical Research",
+      "Medical School"
+    );
+  }
+
+  return [...new Set(results.filter(Boolean))];
 }
 
-// Converts candidate JSON into scorer format
 function normalizeCandidate(raw) {
   return {
-    Candidate_ID: raw.Candidate_ID,
-    Candidate_Name: raw.Candidate_Name,
+    Candidate_ID:
+      raw.Candidate_ID || "USER-CANDIDATE",
+
+    Candidate_Name:
+      raw.Candidate_Name || "Candidate",
 
     Primary_Field_Interest:
-      raw.Primary_Field_Interest,
+      raw.Primary_Field_Interest || "",
 
     Sub_discipline_Interests:
       splitList(raw.Sub_discipline_Interests),
 
     Confirmed_Skills:
-      splitList(raw.Confirmed_Skills).map(cleanSkill),
+      extractSkills(raw.Confirmed_Skills),
 
     Career_Goal:
-      raw.Career_Goal,
+      expandCareerTerms(raw.Career_Goal),
 
     Education_Level:
       normalizeEducation(raw.Education_Level),
@@ -240,17 +445,20 @@ function normalizeCandidate(raw) {
       normalizeHours(raw.Hours_Available),
 
     Compensation_Need:
-      normalizeCompensation(raw.Compensation_Need),
+      normalizeCompensation(
+        raw.Compensation_Need
+      ),
 
     Remote_Preference:
-      normalizeRemote(raw.Remote_Preference),
+      normalizeRemote(
+        raw.Remote_Preference
+      ),
 
     Research_Statement_FreeText:
-      raw.Research_Statement_FreeText
+      raw.Research_Statement_FreeText || ""
   };
 }
 
-// Converts lab JSON into scorer format
 function normalizeLab(raw) {
   const requiredSkills =
     splitList(raw.Required_Techniques);
@@ -261,73 +469,79 @@ function normalizeLab(raw) {
   return {
     Lab_ID:
       raw["Lab_ID (LAB-001 to LAB-005)"] ||
-      raw.Lab_ID,
+      raw.Lab_ID ||
+      "",
 
     Lab_Name:
-      raw.Lab_Name,
+      raw.Lab_Name || "Unnamed Lab",
 
     Primary_Field:
-      raw.Primary_Field,
+      raw.Primary_Field || "",
 
     Sub_discipline:
       splitList(raw.Sub_disciplines),
 
-    // Required and preferred techniques are included
     Required_Skills: [
       ...requiredSkills,
       ...preferredSkills
     ].map(cleanSkill),
 
     Career_Goal:
-      splitList(raw.Career_Pathways_Supported),
+      expandCareerTerms(
+        raw.Career_Pathways_Supported
+      ),
 
     Hiree_Level:
-      splitList(raw.Hiree_Level_Sought)
-        .map(normalizeEducation),
+      normalizeEducationOptions(
+        raw.Hiree_Level_Sought
+      ),
 
     Hours:
       normalizeHours(raw.Hours_Per_Week),
 
     Compensation:
-      normalizeCompensation(raw.Compensation),
+      normalizeCompensationOptions(
+        raw.Compensation
+      ),
 
     Remote:
       normalizeRemote(raw.Remote_Option),
 
     Lab_Description_FreeText:
-      raw.Lab_Description_FreeText,
+      raw.Lab_Description_FreeText || "",
 
-    // Keep extra information for results and profile pages
     Lab_Aim:
-      raw.Lab_Aim,
+      raw.Lab_Aim || "",
 
     Institution_Type:
-      raw.Institution_Type,
+      raw.Institution_Type || "",
 
     Lab_Size:
-      raw.Lab_Size,
+      raw.Lab_Size || "",
 
     Required_Techniques:
-      raw.Required_Techniques,
+      raw.Required_Techniques || "",
 
     Preferred_Techniques:
-      raw.Preferred_Techniques,
+      raw.Preferred_Techniques || "",
 
     Career_Pathways_Supported:
-      raw.Career_Pathways_Supported,
+      raw.Career_Pathways_Supported || "",
 
     Hiree_Level_Sought:
-      raw.Hiree_Level_Sought,
+      raw.Hiree_Level_Sought || "",
 
     Hours_Per_Week:
-      raw.Hours_Per_Week,
+      raw.Hours_Per_Week || "",
+
+    Compensation_Original:
+      raw.Compensation || "",
 
     Remote_Option:
-      raw.Remote_Option
+      raw.Remote_Option || ""
   };
 }
 
-// Safely reads one form input
 function getInputValue(id) {
   const element = document.getElementById(id);
 
@@ -336,11 +550,9 @@ function getInputValue(id) {
     : "";
 }
 
-// Builds a candidate object from the submitted form
 function buildCandidateFromForm() {
   return {
-    Candidate_ID:
-      "USER-CANDIDATE",
+    Candidate_ID: "USER-CANDIDATE",
 
     Candidate_Name:
       getInputValue("candidate-name"),
@@ -359,7 +571,9 @@ function buildCandidateFromForm() {
       ).map(cleanSkill),
 
     Career_Goal:
-      getInputValue("career-goal"),
+      expandCareerTerms(
+        getInputValue("career-goal")
+      ),
 
     Education_Level:
       normalizeEducation(
@@ -386,8 +600,19 @@ function buildCandidateFromForm() {
   };
 }
 
-// Calculates the technique score
-function skillScore(candidateSkills, labSkills, weight) {
+function percent(score, maximum) {
+  if (!maximum) {
+    return 0;
+  }
+
+  return (score / maximum) * 100;
+}
+
+function skillScore(
+  candidateSkills,
+  labSkills,
+  weight
+) {
   if (
     !Array.isArray(labSkills) ||
     labSkills.length === 0
@@ -412,16 +637,6 @@ function skillScore(candidateSkills, labSkills, weight) {
     (matchedCount / labSkills.length);
 }
 
-// Converts score into percentage
-function percent(score, max) {
-  if (max === 0) {
-    return 0;
-  }
-
-  return (score / max) * 100;
-}
-
-// Calculates field, technique, goal, and total rule scores
 function calculateRuleScores(candidate, lab) {
   let fieldScore = 0;
   let fieldMax = 0;
@@ -456,7 +671,6 @@ function calculateRuleScores(candidate, lab) {
     }
   }
 
-  // Field scoring
   addFieldMatch(
     candidate.Primary_Field_Interest,
     lab.Primary_Field,
@@ -469,7 +683,6 @@ function calculateRuleScores(candidate, lab) {
     2
   );
 
-  // Technique scoring
   techniqueMax += 18;
 
   techniqueScore += skillScore(
@@ -478,7 +691,6 @@ function calculateRuleScores(candidate, lab) {
     18
   );
 
-  // Goal scoring
   addGoalMatch(
     candidate.Career_Goal,
     lab.Career_Goal,
@@ -542,19 +754,26 @@ function calculateRuleScores(candidate, lab) {
   };
 }
 
-// Gets an embedding from Cohere and stores it in cache
-async function getEmbedding(text) {
-  if (!text) {
+async function getEmbedding(
+  text,
+  inputType = "search_document"
+) {
+  const cleanText = String(text || "").trim();
+
+  if (!cleanText) {
     return [];
   }
 
-  if (embeddingCache[text]) {
-    return embeddingCache[text];
+  const cacheKey =
+    `${inputType}:${cleanText}`;
+
+  if (embeddingCache.has(cacheKey)) {
+    return embeddingCache.get(cacheKey);
   }
 
   if (!window.COHERE_API_KEY) {
     throw new Error(
-      "Cohere API key is missing."
+      "Cohere API key is missing from scripts/config.js."
     );
   }
 
@@ -565,16 +784,15 @@ async function getEmbedding(text) {
 
       headers: {
         Authorization:
-          "Bearer " + window.COHERE_API_KEY,
+          `Bearer ${window.COHERE_API_KEY}`,
 
-        "Content-Type":
-          "application/json"
+        "Content-Type": "application/json"
       },
 
       body: JSON.stringify({
-        texts: [text],
+        texts: [cleanText],
         model: "embed-english-light-v3.0",
-        input_type: "search_document"
+        input_type: inputType
       })
     }
   );
@@ -584,117 +802,128 @@ async function getEmbedding(text) {
   if (!response.ok) {
     throw new Error(
       data.message ||
-      `Cohere API request failed: ${response.status}`
+      `Cohere request failed: ${response.status}`
     );
   }
 
-  if (
-    !data.embeddings ||
-    !data.embeddings[0]
-  ) {
+  const embedding =
+    data.embeddings?.[0];
+
+  if (!Array.isArray(embedding)) {
     throw new Error(
-      "Cohere API did not return an embedding."
+      "Cohere did not return a valid embedding."
     );
   }
 
-  embeddingCache[text] =
-    data.embeddings[0];
+  embeddingCache.set(
+    cacheKey,
+    embedding
+  );
 
-  return embeddingCache[text];
+  return embedding;
 }
 
-// Calculates cosine similarity
-function cosineSimilarity(vecA, vecB) {
+function cosineSimilarity(vectorA, vectorB) {
   if (
-    !Array.isArray(vecA) ||
-    !Array.isArray(vecB) ||
-    vecA.length === 0 ||
-    vecA.length !== vecB.length
+    !Array.isArray(vectorA) ||
+    !Array.isArray(vectorB) ||
+    vectorA.length === 0 ||
+    vectorA.length !== vectorB.length
   ) {
     return 0;
   }
 
-  let dot = 0;
+  let dotProduct = 0;
   let magnitudeA = 0;
   let magnitudeB = 0;
 
-  for (let i = 0; i < vecA.length; i++) {
-    dot += vecA[i] * vecB[i];
-    magnitudeA += vecA[i] * vecA[i];
-    magnitudeB += vecB[i] * vecB[i];
+  for (let i = 0; i < vectorA.length; i++) {
+    dotProduct += vectorA[i] * vectorB[i];
+    magnitudeA += vectorA[i] ** 2;
+    magnitudeB += vectorB[i] ** 2;
   }
 
   magnitudeA = Math.sqrt(magnitudeA);
   magnitudeB = Math.sqrt(magnitudeB);
 
-  if (
-    magnitudeA === 0 ||
-    magnitudeB === 0
-  ) {
+  if (!magnitudeA || !magnitudeB) {
     return 0;
   }
 
-  return dot /
+  return dotProduct /
     (magnitudeA * magnitudeB);
 }
 
-// Calculates AI semantic similarity
 async function semanticScore(
   candidateStatement,
   labDescription
 ) {
+  if (
+    !candidateStatement ||
+    !labDescription
+  ) {
+    return 0;
+  }
+
   const [
     candidateEmbedding,
     labEmbedding
   ] = await Promise.all([
-    getEmbedding(candidateStatement),
-    getEmbedding(labDescription)
+    getEmbedding(
+      candidateStatement,
+      "search_query"
+    ),
+
+    getEmbedding(
+      labDescription,
+      "search_document"
+    )
   ]);
 
-  return cosineSimilarity(
-    candidateEmbedding,
-    labEmbedding
+  const similarity =
+    cosineSimilarity(
+      candidateEmbedding,
+      labEmbedding
+    );
+
+  return Math.max(
+    0,
+    Math.min(1, similarity)
   );
 }
 
-// Precomputes all lab embeddings when the page loads
 async function precomputeLabEmbeddings(labs) {
   for (const lab of labs) {
     if (lab.Lab_Description_FreeText) {
       await getEmbedding(
-        lab.Lab_Description_FreeText
+        lab.Lab_Description_FreeText,
+        "search_document"
       );
     }
   }
-
-  console.log(
-    "Lab embeddings precomputed and cached."
-  );
 }
 
-// Creates a short explanation for the AI semantic score
 function getSemanticReason(semanticPercent) {
   if (semanticPercent >= 70) {
     return (
-      "High: your research statement describes topics " +
-      "closely related to this lab's work."
+      "High: your research statement is closely " +
+      "related to this lab's research."
     );
   }
 
   if (semanticPercent >= 40) {
     return (
-      "Moderate: there is some overlap between your " +
-      "interests and this lab's research focus."
+      "Moderate: your interests overlap with " +
+      "some parts of this lab's research."
     );
   }
 
   return (
-    "Low: your research statement and this lab's work " +
-    "describe different research areas."
+    "Low: your research statement and this lab " +
+    "focus on different research areas."
   );
 }
 
-// Runs complete scoring for one candidate and one lab
 async function scoreCandidate(candidate, lab) {
   const rule =
     calculateRuleScores(candidate, lab);
@@ -708,11 +937,6 @@ async function scoreCandidate(candidate, lab) {
   const semanticPercent =
     semantic * 100;
 
-  // Generate an explanation of the AI score
-  const semanticReason =
-    getSemanticReason(semanticPercent);
-
-  // Final score: 80% rule + 20% AI
   const combinedPercent =
     rule.rulePercent * 0.8 +
     semanticPercent * 0.2;
@@ -730,29 +954,58 @@ async function scoreCandidate(candidate, lab) {
     Lab_Name:
       lab.Lab_Name,
 
-    // Used by results.html and lab-profile.html
     labProfile:
       lab,
 
     ...rule,
 
     semanticPercent,
-    semanticReason,
+
+    semanticReason:
+      getSemanticReason(semanticPercent),
+
     combinedPercent
   };
 }
 
-// Runs when the user clicks Find Matches
 async function handleCandidateSubmit(event) {
   event.preventDefault();
+
+  const submitButton =
+    document.getElementById("submit-button");
 
   const candidate =
     buildCandidateFromForm();
 
-  const results = [];
+  if (!labsData.length) {
+    setStatus(
+      "Lab data has not loaded.",
+      true
+    );
+    return;
+  }
+
+  if (!window.COHERE_API_KEY) {
+    setStatus(
+      "Cohere API key is missing.",
+      true
+    );
+    return;
+  }
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent =
+      "Calculating Matches...";
+  }
+
+  setStatus(
+    "Comparing your profile with all laboratories..."
+  );
 
   try {
-    // Compare the submitted candidate against every lab
+    const results = [];
+
     for (const lab of labsData) {
       const result =
         await scoreCandidate(candidate, lab);
@@ -760,36 +1013,12 @@ async function handleCandidateSubmit(event) {
       results.push(result);
     }
 
-    // Sort highest combined score to lowest
     results.sort(
       (a, b) =>
         b.combinedPercent -
         a.combinedPercent
     );
 
-    if (results.length > 0) {
-      console.log(
-        "Rule scorer fired:",
-        results[0].rulePercent
-      );
-
-      console.log(
-        "AI scorer fired:",
-        results[0].semanticPercent
-      );
-
-      console.log(
-        "Semantic reason:",
-        results[0].semanticReason
-      );
-
-      console.log(
-        "Combined score:",
-        results[0].combinedPercent
-      );
-    }
-
-    // Same key used by results.html and lab-profile.html
     sessionStorage.setItem(
       "labMatchResults",
       JSON.stringify(results)
@@ -800,27 +1029,43 @@ async function handleCandidateSubmit(event) {
       JSON.stringify(candidate)
     );
 
-    console.log(
-      "Ranking results saved to sessionStorage."
+    console.table(
+      results.map(result => ({
+        Lab: result.Lab_ID,
+        "Rule %":
+          result.rulePercent.toFixed(1),
+        "AI %":
+          result.semanticPercent.toFixed(1),
+        "Combined %":
+          result.combinedPercent.toFixed(1)
+      }))
     );
 
-    console.table(results);
-
-    // Go to pages/results.html
     window.location.href =
       "results.html";
   } catch (error) {
     console.error(
-      "Error calculating match results:",
+      "Match calculation failed:",
       error
     );
 
-    alert(
-      "The match results could not be calculated. " +
-      "Check the browser console."
+    setStatus(
+      "The matches could not be calculated. Check the Console.",
+      true
     );
+
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent =
+        "Find My Lab Matches";
+    }
   }
 }
+
+/*
+  Console test functions
+*/
+
 async function runFullCandidateTest() {
   const summary = [];
 
@@ -828,12 +1073,15 @@ async function runFullCandidateTest() {
     const candidateResults = [];
 
     for (const lab of labsData) {
-      const result = await scoreCandidate(candidate, lab);
-      candidateResults.push(result);
+      candidateResults.push(
+        await scoreCandidate(candidate, lab)
+      );
     }
 
     candidateResults.sort(
-      (a, b) => b.combinedPercent - a.combinedPercent
+      (a, b) =>
+        b.combinedPercent -
+        a.combinedPercent
     );
 
     const top = candidateResults[0];
@@ -841,290 +1089,170 @@ async function runFullCandidateTest() {
     summary.push({
       Candidate: candidate.Candidate_ID,
       "Top Match Lab": top.Lab_ID,
-      "Rule %": `${top.rulePercent.toFixed(1)}%`,
-      "AI %": `${top.semanticPercent.toFixed(1)}%`,
-      "Combined %": `${top.combinedPercent.toFixed(1)}%`
+      "Rule %":
+        `${top.rulePercent.toFixed(1)}%`,
+      "AI %":
+        `${top.semanticPercent.toFixed(1)}%`,
+      "Combined %":
+        `${top.combinedPercent.toFixed(1)}%`
     });
   }
 
   console.table(summary);
 
-  const csvRows = [
-    ["Candidate", "Top Match Lab", "Rule %", "AI %", "Combined %"],
-    ...summary.map(row => [
-      row.Candidate,
-      row["Top Match Lab"],
-      row["Rule %"],
-      row["AI %"],
-      row["Combined %"]
-    ])
-  ];
-
-  const csv = csvRows
-    .map(row => row.join("\t"))
-    .join("\n");
-
-  await navigator.clipboard.writeText(csv);
-
-  console.log("Complete table copied to clipboard.");
-
   return summary;
 }
+
 async function runFullMatrixTest() {
-  // Make sure all data has loaded
-  if (!Array.isArray(candidatesData) || candidatesData.length === 0) {
-    console.error("Candidate data has not loaded.");
-    return;
-  }
-
-  if (!Array.isArray(labsData) || labsData.length === 0) {
-    console.error("Lab data has not loaded.");
-    return;
-  }
-
-  console.log(
-    `Starting full matrix test: ` +
-    `${candidatesData.length} candidates × ` +
-    `${labsData.length} labs`
-  );
-
-  if (candidatesData.length !== 11 || labsData.length !== 11) {
-    console.warn(
-      `Expected 11 candidates and 11 labs, but found ` +
-      `${candidatesData.length} candidates and ` +
-      `${labsData.length} labs.`
-    );
-  }
-
   const allResults = [];
 
-  // Run every candidate against every lab
-  for (let candidateIndex = 0;
-       candidateIndex < candidatesData.length;
-       candidateIndex++) {
+  console.log(
+    `Starting ${candidatesData.length} × ` +
+    `${labsData.length} matrix test.`
+  );
 
-    const candidate = candidatesData[candidateIndex];
-
+  for (const candidate of candidatesData) {
     console.log(
-      `Testing ${candidate.Candidate_ID} ` +
-      `(${candidateIndex + 1}/${candidatesData.length})`
+      `Testing ${candidate.Candidate_ID}`
     );
 
     for (const lab of labsData) {
-      try {
-        const result = await scoreCandidate(candidate, lab);
+      const result =
+        await scoreCandidate(candidate, lab);
 
-        allResults.push({
-          Candidate: result.Candidate_ID,
-          CandidateName: result.Candidate_Name,
-          Lab: result.Lab_ID,
-          LabName: result.Lab_Name,
-          rulePercent: result.rulePercent,
-          semanticPercent: result.semanticPercent,
-          combinedPercent: result.combinedPercent,
-          semanticReason: result.semanticReason
-        });
-      } catch (error) {
-        console.error(
-          `Failed: ${candidate.Candidate_ID} vs ${lab.Lab_ID}`,
-          error
-        );
-      }
+      allResults.push({
+        Candidate:
+          result.Candidate_ID,
+
+        CandidateName:
+          result.Candidate_Name,
+
+        Lab:
+          result.Lab_ID,
+
+        LabName:
+          result.Lab_Name,
+
+        rulePercent:
+          result.rulePercent,
+
+        semanticPercent:
+          result.semanticPercent,
+
+        combinedPercent:
+          result.combinedPercent
+      });
     }
   }
+
+  const candidateTopMatches =
+    candidatesData.map(candidate => {
+      const matches = allResults
+        .filter(
+          result =>
+            result.Candidate ===
+            candidate.Candidate_ID
+        )
+        .sort(
+          (a, b) =>
+            b.combinedPercent -
+            a.combinedPercent
+        );
+
+      const top = matches[0];
+
+      return {
+        Candidate:
+          candidate.Candidate_ID,
+
+        "Top Match Lab":
+          top?.Lab || "No result",
+
+        "Rule %":
+          top
+            ? `${top.rulePercent.toFixed(1)}%`
+            : "N/A",
+
+        "AI %":
+          top
+            ? `${top.semanticPercent.toFixed(1)}%`
+            : "N/A",
+
+        "Combined %":
+          top
+            ? `${top.combinedPercent.toFixed(1)}%`
+            : "N/A"
+      };
+    });
+
+  const labTopCandidates =
+    labsData.map(lab => {
+      const matches = allResults
+        .filter(
+          result =>
+            result.Lab === lab.Lab_ID
+        )
+        .sort(
+          (a, b) =>
+            b.combinedPercent -
+            a.combinedPercent
+        );
+
+      const top = matches[0];
+
+      return {
+        Lab: lab.Lab_ID,
+
+        "Top Candidate":
+          top?.Candidate || "No result",
+
+        "Rule %":
+          top
+            ? `${top.rulePercent.toFixed(1)}%`
+            : "N/A",
+
+        "AI %":
+          top
+            ? `${top.semanticPercent.toFixed(1)}%`
+            : "N/A",
+
+        "Combined %":
+          top
+            ? `${top.combinedPercent.toFixed(1)}%`
+            : "N/A"
+      };
+    });
 
   console.log(
     `Completed ${allResults.length} combinations.`
   );
 
-  // Full 121-combination table
-  const fullMatrixTable = allResults.map(result => ({
-    Candidate: result.Candidate,
-    Lab: result.Lab,
-    "Rule %": `${result.rulePercent.toFixed(1)}%`,
-    "AI %": `${result.semanticPercent.toFixed(1)}%`,
-    "Combined %": `${result.combinedPercent.toFixed(1)}%`
-  }));
+  console.log(
+    "TOP LAB FOR EACH CANDIDATE"
+  );
 
-  console.log("FULL 11 × 11 MATRIX");
-  console.table(fullMatrixTable);
-
-  // Find the top lab for every candidate
-  const candidateTopMatches = candidatesData.map(candidate => {
-    const matches = allResults
-      .filter(
-        result =>
-          result.Candidate === candidate.Candidate_ID
-      )
-      .sort(
-        (a, b) =>
-          b.combinedPercent - a.combinedPercent
-      );
-
-    const top = matches[0];
-
-    return {
-      Candidate: candidate.Candidate_ID,
-      "Top Match Lab": top?.Lab || "No result",
-      "Rule %": top
-        ? `${top.rulePercent.toFixed(1)}%`
-        : "N/A",
-      "AI %": top
-        ? `${top.semanticPercent.toFixed(1)}%`
-        : "N/A",
-      "Combined %": top
-        ? `${top.combinedPercent.toFixed(1)}%`
-        : "N/A"
-    };
-  });
-
-  console.log("TOP LAB FOR EACH CANDIDATE");
   console.table(candidateTopMatches);
 
-  // Find the top candidate for every lab
-  const labTopCandidates = labsData.map(lab => {
-    const matches = allResults
-      .filter(
-        result =>
-          result.Lab === lab.Lab_ID
-      )
-      .sort(
-        (a, b) =>
-          b.combinedPercent - a.combinedPercent
-      );
+  console.log(
+    "TOP CANDIDATE FOR EACH LAB"
+  );
 
-    const top = matches[0];
-
-    return {
-      Lab: lab.Lab_ID,
-      "Top Candidate": top?.Candidate || "No result",
-      "Rule %": top
-        ? `${top.rulePercent.toFixed(1)}%`
-        : "N/A",
-      "AI %": top
-        ? `${top.semanticPercent.toFixed(1)}%`
-        : "N/A",
-      "Combined %": top
-        ? `${top.combinedPercent.toFixed(1)}%`
-        : "N/A"
-    };
-  });
-
-  console.log("TOP CANDIDATE FOR EACH LAB");
   console.table(labTopCandidates);
 
-  // Intended pairs:
-  // CAND-001 vs LAB-001, CAND-002 vs LAB-002, etc.
-  const intendedPairs = allResults.filter(result => {
-    const candidateNumber =
-      result.Candidate.match(/\d+$/)?.[0];
-
-    const labNumber =
-      result.Lab.match(/\d+$/)?.[0];
-
-    return candidateNumber === labNumber;
-  });
-
-  // Every combination that is not an intended pair
-  const crossPairs = allResults.filter(result => {
-    const candidateNumber =
-      result.Candidate.match(/\d+$/)?.[0];
-
-    const labNumber =
-      result.Lab.match(/\d+$/)?.[0];
-
-    return candidateNumber !== labNumber;
-  });
-
-  function average(values) {
-    if (values.length === 0) {
-      return 0;
-    }
-
-    return (
-      values.reduce(
-        (total, value) => total + value,
-        0
-      ) / values.length
-    );
-  }
-
-  const intendedSemanticAverage = average(
-    intendedPairs.map(
-      result => result.semanticPercent
-    )
-  );
-
-  const crossPairSemanticAverage = average(
-    crossPairs.map(
-      result => result.semanticPercent
-    )
-  );
-
-  const semanticDifference =
-    intendedSemanticAverage -
-    crossPairSemanticAverage;
-
-  const intendedPairTable = intendedPairs.map(result => ({
-    Candidate: result.Candidate,
-    Lab: result.Lab,
-    "Rule %": `${result.rulePercent.toFixed(1)}%`,
-    "AI %": `${result.semanticPercent.toFixed(1)}%`,
-    "Combined %": `${result.combinedPercent.toFixed(1)}%`
-  }));
-
-  console.log("11 INTENDED PAIRS");
-  console.table(intendedPairTable);
-
-  const averageTable = [
-    {
-      Group: "Intended pairs",
-      Combinations: intendedPairs.length,
-      "Average AI %":
-        `${intendedSemanticAverage.toFixed(1)}%`
-    },
-    {
-      Group: "Random cross-pairs",
-      Combinations: crossPairs.length,
-      "Average AI %":
-        `${crossPairSemanticAverage.toFixed(1)}%`
-    },
-    {
-      Group: "Difference",
-      Combinations: "—",
-      "Average AI %":
-        `${semanticDifference.toFixed(1)} percentage points`
-    }
-  ];
-
-  console.log("SEMANTIC SCORE COMPARISON");
-  console.table(averageTable);
-
-  if (intendedSemanticAverage > crossPairSemanticAverage) {
-    console.log(
-      "PASS: Intended pairs have a higher average " +
-      "semantic score than cross-pairs."
-    );
-  } else {
-    console.warn(
-      "FLAG FOR MEMO: Intended pairs do not have a " +
-      "higher average semantic score. Some research " +
-      "statements or lab descriptions may be too generic."
-    );
-  }
-
-  const finalResults = {
-    all121Combinations: allResults,
+  window.fullMatrixTestResults = {
+    allResults,
     candidateTopMatches,
-    labTopCandidates,
-    intendedPairs,
-    intendedSemanticAverage,
-    crossPairSemanticAverage,
-    semanticDifference
+    labTopCandidates
   };
 
-  // Save results so they can be inspected later
-  window.fullMatrixTestResults = finalResults;
-
-  return finalResults;
+  return window.fullMatrixTestResults;
 }
+
+window.scoreCandidate =
+  scoreCandidate;
+
+window.runFullCandidateTest =
+  runFullCandidateTest;
+
+window.runFullMatrixTest =
+  runFullMatrixTest;
