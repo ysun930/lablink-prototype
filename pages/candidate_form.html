@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LabLink Candidate Form</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 850px;
+      margin: 30px auto;
+      padding: 0 20px;
+      background-color: #f5f7fb;
+      color: #222;
+    }
+
+    h1 {
+      color: #1f4e99;
+    }
+
+    form {
+      background-color: white;
+      padding: 25px;
+      border: 1px solid #d9dfe8;
+      border-radius: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 10px 18px;
+      background-color: #1f4e99;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #163b75;
+    }
+
+    .instructions {
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 15px;
+      text-align: center;
+      color: #555;
+      border-top: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>LabLink Candidate Form</h1>
+
+  <p class="instructions">
+    Complete the form below to receive ranked laboratory matches.
+    Separate multiple skills or interests with commas.
+  </p>
+
+  <form id="candidate-form">
+    <div class="form-group">
+      <label for="candidate-name">Name:</label>
+
+      <input
+        id="candidate-name"
+        type="text"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="primary-field">Primary Field:</label>
+
+      <input
+        id="primary-field"
+        type="text"
+        placeholder="Example: Neuroscience"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="sub-discipline">Sub-discipline:</label>
+
+      <input
+        id="sub-discipline"
+        type="text"
+        placeholder="Example: Molecular Neuroscience, Neural Circuits"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="skills">Skills:</label>
+
+      <input
+        id="skills"
+        type="text"
+        placeholder="Example: PCR, Western Blot, Cell Culture"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="career-goal">Career Goal:</label>
+
+      <input
+        id="career-goal"
+        type="text"
+        placeholder="Example: Academic PhD in basic science"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="education-level">Education Level:</label>
+
+      <input
+        id="education-level"
+        type="text"
+        placeholder="Example: Junior"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="hours-available">Hours Available:</label>
+
+      <input
+        id="hours-available"
+        type="text"
+        placeholder="Example: Part-time"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="compensation-need">Compensation Need:</label>
+
+      <input
+        id="compensation-need"
+        type="text"
+        placeholder="Example: Paid or For-credit"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="remote-preference">Remote Preference:</label>
+
+      <input
+        id="remote-preference"
+        type="text"
+        placeholder="Example: In-person only"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="research-statement">
+        Research Statement:
+      </label>
+
+      <textarea
+        id="research-statement"
+        placeholder="Describe your research interests, experience, and goals."
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit">
+      Find Matches
+    </button>
+  </form>
+
+  <footer>
+    <p>
+      Semantic matching powered by Cohere Embed AI.
+    </p>
+  </footer>
+
+  <!-- config.js must load before app.js -->
+  <script src="../scripts/config.js"></script>
+  <script src="../scripts/app.js"></script>
+</body>
+</html>
