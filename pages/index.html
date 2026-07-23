@@ -8,198 +8,569 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>LabLink Candidate Form</title>
+  <title>LabLink | Find Your Research Lab</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      max-width: 850px;
-      margin: 30px auto;
-      padding: 0 20px;
       background-color: #f5f7fb;
       color: #222;
     }
 
-    h1 {
-      color: #1f4e99;
+    header {
+      background-color: #123f88;
+      color: white;
+      padding: 18px 30px;
     }
 
-    form {
+    .nav-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .tagline {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 35px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .hero h2 {
+      margin-bottom: 12px;
+      color: #123f88;
+      font-size: 34px;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 0 auto;
+      color: #555;
+      line-height: 1.6;
+      font-size: 17px;
+    }
+
+    .process {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 35px;
+    }
+
+    .process-card {
       background-color: white;
-      padding: 25px;
+      padding: 18px;
       border: 1px solid #d9dfe8;
       border-radius: 8px;
+      text-align: center;
+    }
+
+    .process-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 8px;
+      border-radius: 50%;
+      background-color: #123f88;
+      color: white;
+      font-weight: bold;
+    }
+
+    .process-card h3 {
+      margin: 5px 0 8px;
+      color: #123f88;
+    }
+
+    .process-card p {
+      margin: 0;
+      color: #555;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    .form-section {
+      background-color: white;
+      padding: 30px;
+      border: 1px solid #d9dfe8;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-section h2 {
+      margin-top: 0;
+      color: #123f88;
+    }
+
+    .instructions {
+      color: #555;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
     }
 
     .form-group {
       margin-bottom: 18px;
     }
 
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
       font-weight: bold;
     }
 
     input,
+    select,
     textarea {
       width: 100%;
-      box-sizing: border-box;
-      padding: 9px;
-      border: 1px solid #aaa;
-      border-radius: 4px;
+      padding: 10px;
+      border: 1px solid #aeb7c5;
+      border-radius: 5px;
+      background-color: white;
       font-family: inherit;
+      font-size: 15px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #8cb4ee;
+      border-color: #123f88;
     }
 
     textarea {
-      min-height: 130px;
+      min-height: 140px;
       resize: vertical;
     }
 
+    .helper-text {
+      display: block;
+      margin-top: 5px;
+      color: #666;
+      font-size: 12px;
+    }
+
     button {
-      padding: 10px 18px;
-      background-color: #1f4e99;
+      width: 100%;
+      padding: 13px 20px;
+      background-color: #123f88;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 17px;
+      font-weight: bold;
     }
 
     button:hover {
-      background-color: #163b75;
-    }
-
-    .instructions {
-      color: #555;
-      margin-bottom: 20px;
+      background-color: #0c2f68;
     }
 
     footer {
-      margin-top: 40px;
-      padding: 15px;
+      margin-top: 45px;
+      padding: 20px;
       text-align: center;
       color: #555;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #d1d7e0;
+    }
+
+    @media (max-width: 720px) {
+      .process,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full-width {
+        grid-column: auto;
+      }
+
+      .nav-container {
+        display: block;
+        text-align: center;
+      }
+
+      .tagline {
+        margin-top: 5px;
+      }
+
+      .hero h2 {
+        font-size: 28px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <h1>LabLink Candidate Form</h1>
+  <header>
+    <div class="nav-container">
+      <h1 class="logo">LabLink</h1>
 
-  <p class="instructions">
-    Complete the form below to receive ranked laboratory matches.
-    Separate multiple skills or interests with commas.
-  </p>
-
-  <form id="candidate-form">
-    <div class="form-group">
-      <label for="candidate-name">Name:</label>
-
-      <input
-        id="candidate-name"
-        type="text"
-        required
-      >
+      <p class="tagline">
+        AI-assisted research laboratory matching
+      </p>
     </div>
+  </header>
 
-    <div class="form-group">
-      <label for="primary-field">Primary Field:</label>
+  <main>
+    <section class="hero">
+      <h2>Find a Lab That Fits Your Goals</h2>
 
-      <input
-        id="primary-field"
-        type="text"
-        placeholder="Example: Neuroscience"
-        required
-      >
-    </div>
+      <p>
+        LabLink compares your research interests, technical skills,
+        career goals, and availability with laboratory profiles.
+        Rule-based and AI semantic scoring are combined to produce
+        personalized laboratory recommendations.
+      </p>
+    </section>
 
-    <div class="form-group">
-      <label for="sub-discipline">Sub-discipline:</label>
+    <section class="process">
+      <div class="process-card">
+        <div class="process-number">1</div>
 
-      <input
-        id="sub-discipline"
-        type="text"
-        placeholder="Example: Molecular Neuroscience, Neural Circuits"
-      >
-    </div>
+        <h3>Complete Your Profile</h3>
 
-    <div class="form-group">
-      <label for="skills">Skills:</label>
+        <p>
+          Enter your interests, experience, skills, and preferences.
+        </p>
+      </div>
 
-      <input
-        id="skills"
-        type="text"
-        placeholder="Example: PCR, Western Blot, Cell Culture"
-      >
-    </div>
+      <div class="process-card">
+        <div class="process-number">2</div>
 
-    <div class="form-group">
-      <label for="career-goal">Career Goal:</label>
+        <h3>Run the Algorithm</h3>
 
-      <input
-        id="career-goal"
-        type="text"
-        placeholder="Example: Academic PhD in basic science"
-      >
-    </div>
+        <p>
+          LabLink calculates rule-based and AI semantic scores.
+        </p>
+      </div>
 
-    <div class="form-group">
-      <label for="education-level">Education Level:</label>
+      <div class="process-card">
+        <div class="process-number">3</div>
 
-      <input
-        id="education-level"
-        type="text"
-        placeholder="Example: Junior"
-      >
-    </div>
+        <h3>View Ranked Matches</h3>
 
-    <div class="form-group">
-      <label for="hours-available">Hours Available:</label>
+        <p>
+          Review your top labs, score breakdowns, and match reasons.
+        </p>
+      </div>
+    </section>
 
-      <input
-        id="hours-available"
-        type="text"
-        placeholder="Example: Part-time"
-      >
-    </div>
+    <section class="form-section">
+      <h2>Candidate Profile</h2>
 
-    <div class="form-group">
-      <label for="compensation-need">Compensation Need:</label>
+      <p class="instructions">
+        Complete the form below to receive ranked laboratory matches.
+        Separate multiple skills or sub-disciplines with commas.
+      </p>
 
-      <input
-        id="compensation-need"
-        type="text"
-        placeholder="Example: Paid or For-credit"
-      >
-    </div>
+      <form id="candidate-form">
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="candidate-name">
+              Name
+            </label>
 
-    <div class="form-group">
-      <label for="remote-preference">Remote Preference:</label>
+            <input
+              id="candidate-name"
+              type="text"
+              placeholder="Enter your name"
+              required
+            >
+          </div>
 
-      <input
-        id="remote-preference"
-        type="text"
-        placeholder="Example: In-person only"
-      >
-    </div>
+          <div class="form-group">
+            <label for="primary-field">
+              Primary Research Field
+            </label>
 
-    <div class="form-group">
-      <label for="research-statement">
-        Research Statement:
-      </label>
+            <select id="primary-field" required>
+              <option value="">
+                Select a field
+              </option>
 
-      <textarea
-        id="research-statement"
-        placeholder="Describe your research interests, experience, and goals."
-        required
-      ></textarea>
-    </div>
+              <option value="Neuroscience">
+                Neuroscience
+              </option>
 
-    <button type="submit">
-      Find Matches
-    </button>
-  </form>
+              <option value="Computational Biology / Bioinformatics">
+                Computational Biology / Bioinformatics
+              </option>
+
+              <option value="Oncology / Cancer Biology">
+                Oncology / Cancer Biology
+              </option>
+
+              <option value="Structural Biology">
+                Structural Biology
+              </option>
+
+              <option value="Epidemiology & Public Health">
+                Epidemiology & Public Health
+              </option>
+
+              <option value="Pharmacology">
+                Pharmacology
+              </option>
+
+              <option value="Genetics & Genomics">
+                Genetics & Genomics
+              </option>
+
+              <option value="Immunology">
+                Immunology
+              </option>
+
+              <option value="Environmental Science">
+                Environmental Science
+              </option>
+
+              <option value="Biomedical Engineering">
+                Biomedical Engineering
+              </option>
+
+              <option value="Clinical Medicine & Translational Research">
+                Clinical Medicine & Translational Research
+              </option>
+
+              <option value="Microbiology">
+                Microbiology
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sub-discipline">
+              Sub-disciplines
+            </label>
+
+            <input
+              id="sub-discipline"
+              type="text"
+              placeholder="Example: Neural Circuits, Neurodevelopment"
+            >
+
+            <span class="helper-text">
+              Separate multiple entries with commas.
+            </span>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="skills">
+              Technical Skills
+            </label>
+
+            <input
+              id="skills"
+              type="text"
+              placeholder="Example: PCR, Western Blot, Python, Cell Culture"
+            >
+
+            <span class="helper-text">
+              Separate multiple skills with commas.
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="career-goal">
+              Career Goal
+            </label>
+
+            <select id="career-goal" required>
+              <option value="">
+                Select a career goal
+              </option>
+
+              <option value="Academic PhD in basic science">
+                Academic PhD
+              </option>
+
+              <option value="MD or MD/PhD pathway">
+                MD or MD/PhD
+              </option>
+
+              <option value="Pharma or biotech industry">
+                Pharmaceutical or Biotechnology Industry
+              </option>
+
+              <option value="Government research">
+                Government Research
+              </option>
+
+              <option value="Clinical medicine">
+                Clinical Medicine
+              </option>
+
+              <option value="Public Health">
+                Public Health
+              </option>
+
+              <option value="Biotech startup / entrepreneurship">
+                Biotechnology Startup / Entrepreneurship
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="education-level">
+              Education Level
+            </label>
+
+            <select id="education-level" required>
+              <option value="">
+                Select an education level
+              </option>
+
+              <option value="Freshman">
+                College Freshman
+              </option>
+
+              <option value="Sophomore">
+                College Sophomore
+              </option>
+
+              <option value="Junior">
+                College Junior
+              </option>
+
+              <option value="Senior">
+                College Senior
+              </option>
+
+              <option value="Postbac">
+                Post-baccalaureate
+              </option>
+
+              <option value="MS">
+                Master's Student
+              </option>
+
+              <option value="PhD">
+                PhD or Postdoctoral Researcher
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="hours-available">
+              Hours Available
+            </label>
+
+            <select id="hours-available" required>
+              <option value="">
+                Select availability
+              </option>
+
+              <option value="Less than 10 hours">
+                Less than 10 hours per week
+              </option>
+
+              <option value="Part-time">
+                10–20 hours per week
+              </option>
+
+              <option value="Full-time">
+                More than 20 hours per week
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="compensation-need">
+              Compensation Preference
+            </label>
+
+            <select id="compensation-need" required>
+              <option value="">
+                Select a preference
+              </option>
+
+              <option value="Paid">
+                Paid position preferred
+              </option>
+
+              <option value="For-credit">
+                Academic credit acceptable
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="remote-preference">
+              Work Format Preference
+            </label>
+
+            <select id="remote-preference" required>
+              <option value="">
+                Select a work format
+              </option>
+
+              <option value="In-person only">
+                In-person only
+              </option>
+
+              <option value="Hybrid">
+                Hybrid or flexible
+              </option>
+
+              <option value="Remote">
+                Fully remote
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="research-statement">
+              Research Statement
+            </label>
+
+            <textarea
+              id="research-statement"
+              placeholder="Describe your research interests, relevant experience, methods you want to learn, and long-term goals."
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <button type="submit">
+              Find My Lab Matches
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
 
   <footer>
     <p>
