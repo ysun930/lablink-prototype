@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Student Profile | LabLink</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8f7;
+      color: #213547;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 7%;
+      background-color: white;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      color: #0f766e;
+      font-size: 27px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav a {
+      color: #334155;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover {
+      color: #0f766e;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #134e4a);
+      color: white;
+      text-align: center;
+      padding: 75px 20px 125px;
+    }
+
+    .hero h1 {
+      font-size: 46px;
+      margin-bottom: 14px;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: 0 auto;
+      font-size: 18px;
+      line-height: 1.6;
+      color: #e6fffb;
+    }
+
+    .form-section {
+      max-width: 900px;
+      margin: -70px auto 80px;
+      padding: 0 20px;
+      position: relative;
+    }
+
+    form {
+      background-color: white;
+      padding: 45px;
+      border-radius: 20px;
+      box-shadow: 0 15px 45px rgba(15, 118, 110, 0.14);
+    }
+
+    .form-heading {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .form-heading h2 {
+      color: #16324f;
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .form-heading p {
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      margin-bottom: 8px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .field-note {
+      display: block;
+      margin-top: 5px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: normal;
+      line-height: 1.5;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background-color: #fbfdfd;
+      color: #213547;
+      font-family: inherit;
+      font-size: 15px;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #0f766e;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    select[multiple] {
+      min-height: 240px;
+      padding: 8px;
+    }
+
+    select[multiple] option {
+      padding: 7px 8px;
+    }
+
+    textarea {
+      min-height: 170px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 30px;
+      padding: 15px 24px;
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #115e59;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25);
+    }
+
+    footer {
+      background-color: #134e4a;
+      color: #d7f5f1;
+      text-align: center;
+      padding: 25px 20px;
+    }
+
+    footer p {
+      font-size: 14px;
+    }
+
+    @media (max-width: 750px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+
+      .hero {
+        padding: 60px 20px 110px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: auto;
+      }
+
+      form {
+        padding: 30px 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1 class="logo">LabLink</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="index.html#how-it-works">How It Works</a>
+      <a href="pick_form.html">Get Started</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <h1>Create Your Student Profile</h1>
+
+      <p>
+        Tell us about your research interests, experience, and goals
+        so we can connect you with laboratories that fit your profile.
+      </p>
+    </section>
+
+    <section class="form-section">
+
+      <form id="candidate-form">
+
+        <div class="form-heading">
+          <h2>Student Information</h2>
+
+          <p>
+            Complete the form below to receive ranked laboratory matches.
+            Select the options that most closely represent your background
+            and research goals.
+          </p>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group full-width">
+            <label for="candidate-name">
+              Name
+            </label>
+
+            <input
+              id="candidate-name"
+              name="candidateName"
+              type="text"
+              placeholder="Enter your full name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="primary-field">
+              Primary Field of Interest
+            </label>
+
+            <select
+              id="primary-field"
+              name="primaryField"
+              required
+            >
+              <option value="">
+                Select a primary field
+              </option>
+
+              <option value="Neuroscience">
+                Neuroscience
+              </option>
+
+              <option value="Oncology">
+                Oncology
+              </option>
+
+              <option value="Genetics and Genomics">
+                Genetics and Genomics
+              </option>
+
+              <option value="Molecular Biology">
+                Molecular Biology
+              </option>
+
+              <option value="Cell Biology">
+                Cell Biology
+              </option>
+
+              <option value="Microbiology">
+                Microbiology
+              </option>
+
+              <option value="Immunology">
+                Immunology
+              </option>
+
+              <option value="Biochemistry">
+                Biochemistry
+              </option>
+
+              <option value="Structural Biology">
+                Structural Biology
+              </option>
+
+              <option value="Pharmacology">
+                Pharmacology
+              </option>
+
+              <option value="Environmental Science">
+                Environmental Science
+              </option>
+
+              <option value="Biomedical Engineering">
+                Biomedical Engineering
+              </option>
+
+              <option value="Clinical Medicine">
+                Clinical Medicine
+              </option>
+
+              <option value="Bioinformatics">
+                Bioinformatics
+              </option>
+
+              <option value="Public Health">
+                Public Health
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sub-discipline">
+              Sub-discipline of Interest
+            </label>
+
+            <select
+              id="sub-discipline"
+              name="subDiscipline"
+              disabled
+            >
+              <option value="">
+                Select a primary field first
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="skills-select">
+              Research Skills and Techniques
+
+              <span class="field-note">
+                Hold Command on Mac or Control on Windows while clicking
+                to select more than one skill.
+              </span>
+            </label>
+
+            <select
+              id="skills-select"
+              name="skillsSelection"
+              multiple
+            >
+              <optgroup label="Molecular Biology">
+                <option value="PCR">
+                  PCR
+                </option>
+
+                <option value="qPCR">
+                  qPCR
+                </option>
+
+                <option value="RT-PCR">
+                  RT-PCR
+                </option>
+
+                <option value="DNA Extraction">
+                  DNA Extraction
+                </option>
+
+                <option value="RNA Extraction">
+                  RNA Extraction
+                </option>
+
+                <option value="Gel Electrophoresis">
+                  Gel Electrophoresis
+                </option>
+
+                <option value="Molecular Cloning">
+                  Molecular Cloning
+                </option>
+
+                <option value="CRISPR-Cas9">
+                  CRISPR-Cas9
+                </option>
+
+                <option value="RNA Sequencing">
+                  RNA Sequencing
+                </option>
+              </optgroup>
+
+              <optgroup label="Protein and Biochemistry">
+                <option value="Western Blot">
+                  Western Blot
+                </option>
+
+                <option value="ELISA">
+                  ELISA
+                </option>
+
+                <option value="Protein Purification">
+                  Protein Purification
+                </option>
+
+                <option value="SDS-PAGE">
+                  SDS-PAGE
+                </option>
+
+                <option value="Mass Spectrometry">
+                  Mass Spectrometry
+                </option>
+              </optgroup>
+
+              <optgroup label="Cell and Tissue Methods">
+                <option value="Mammalian Cell Culture">
+                  Mammalian Cell Culture
+                </option>
+
+                <option value="Primary Cell Culture">
+                  Primary Cell Culture
+                </option>
+
+                <option value="Tissue Culture">
+                  Tissue Culture
+                </option>
+
+                <option value="Immunohistochemistry">
+                  Immunohistochemistry
+                </option>
+
+                <option value="Flow Cytometry">
+                  Flow Cytometry
+                </option>
+
+                <option value="Animal Handling">
+                  Animal Handling
+                </option>
+              </optgroup>
+
+              <optgroup label="Microscopy and Imaging">
+                <option value="Fluorescence Microscopy">
+                  Fluorescence Microscopy
+                </option>
+
+                <option value="Confocal Microscopy">
+                  Confocal Microscopy
+                </option>
+
+                <option value="Electron Microscopy">
+                  Electron Microscopy
+                </option>
+
+                <option value="Biomedical Imaging">
+                  Biomedical Imaging
+                </option>
+              </optgroup>
+
+              <optgroup label="Computational and Data Analysis">
+                <option value="Python">
+                  Python
+                </option>
+
+                <option value="R">
+                  R
+                </option>
+
+                <option value="MATLAB">
+                  MATLAB
+                </option>
+
+                <option value="ImageJ">
+                  ImageJ
+                </option>
+
+                <option value="Statistical Analysis">
+                  Statistical Analysis
+                </option>
+
+                <option value="Bioinformatics">
+                  Bioinformatics
+                </option>
+
+                <option value="Machine Learning">
+                  Machine Learning
+                </option>
+
+                <option value="Data Visualization">
+                  Data Visualization
+                </option>
+              </optgroup>
+
+              <optgroup label="Clinical Research">
+                <option value="Electronic Health Record Review">
+                  Electronic Health Record Review
+                </option>
+
+                <option value="REDCap">
+                  REDCap
+                </option>
+
+                <option value="Clinical Data Collection">
+                  Clinical Data Collection
+                </option>
+
+                <option value="Literature Review">
+                  Literature Review
+                </option>
+
+                <option value="Patient Outcomes Analysis">
+                  Patient Outcomes Analysis
+                </option>
+              </optgroup>
+
+              <optgroup label="Environmental Research">
+                <option value="Field Sampling">
+                  Field Sampling
+                </option>
+
+                <option value="Water Quality Analysis">
+                  Water Quality Analysis
+                </option>
+
+                <option value="GIS">
+                  GIS
+                </option>
+
+                <option value="Environmental DNA Analysis">
+                  Environmental DNA Analysis
+                </option>
+              </optgroup>
+
+              <optgroup label="Engineering and Structural Biology">
+                <option value="CAD">
+                  CAD
+                </option>
+
+                <option value="3D Printing">
+                  3D Printing
+                </option>
+
+                <option value="Cryo-Electron Microscopy">
+                  Cryo-Electron Microscopy
+                </option>
+
+                <option value="X-ray Crystallography">
+                  X-ray Crystallography
+                </option>
+              </optgroup>
+
+              <optgroup label="General Research Skills">
+                <option value="Scientific Writing">
+                  Scientific Writing
+                </option>
+
+                <option value="Laboratory Safety">
+                  Laboratory Safety
+                </option>
+
+                <option value="Data Entry">
+                  Data Entry
+                </option>
+
+                <option value="Research Presentation">
+                  Research Presentation
+                </option>
+
+                <option value="No Prior Laboratory Experience">
+                  No Prior Laboratory Experience
+                </option>
+              </optgroup>
+            </select>
+
+            <!--
+              This hidden input preserves the original "skills" ID
+              that app.js may already use.
+            -->
+            <input
+              id="skills"
+              name="skills"
+              type="hidden"
+            >
+          </div>
+
+          <div class="form-group full-width">
+            <label for="career-goal">
+              Career Goal
+            </label>
+
+            <select
+              id="career-goal"
+              name="careerGoal"
+            >
+              <option value="">
+                Select a career goal
+              </option>
+
+              <option value="Academic Research">
+                Academic Research
+              </option>
+
+              <option value="PhD Preparation">
+                PhD Preparation
+              </option>
+
+              <option value="Medical School Preparation">
+                Medical School Preparation
+              </option>
+
+              <option value="MD-PhD Preparation">
+                MD-PhD Preparation
+              </option>
+
+              <option value="Biotechnology">
+                Biotechnology
+              </option>
+
+              <option value="Pharmaceutical Industry">
+                Pharmaceutical Industry
+              </option>
+
+              <option value="Clinical Research">
+                Clinical Research
+              </option>
+
+              <option value="Public Health">
+                Public Health
+              </option>
+
+              <option value="Government Research">
+                Government Research
+              </option>
+
+              <option value="Environmental Research">
+                Environmental Research
+              </option>
+
+              <option value="Biomedical Engineering">
+                Biomedical Engineering
+              </option>
+
+              <option value="Data Science and Bioinformatics">
+                Data Science and Bioinformatics
+              </option>
+
+              <option value="Exploring Career Options">
+                Exploring Career Options
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="education-level">
+              Education Level
+            </label>
+
+            <select
+              id="education-level"
+              name="educationLevel"
+            >
+              <option value="">
+                Select your education level
+              </option>
+
+              <option value="High School Student">
+                High School Student
+              </option>
+
+              <option value="First-Year Undergraduate">
+                First-Year Undergraduate
+              </option>
+
+              <option value="Sophomore">
+                Sophomore
+              </option>
+
+              <option value="Junior">
+                Junior
+              </option>
+
+              <option value="Senior">
+                Senior
+              </option>
+
+              <option value="Post-Baccalaureate">
+                Post-Baccalaureate
+              </option>
+
+              <option value="Graduate Student">
+                Graduate Student
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="hours-available">
+              Hours Available Per Week
+            </label>
+
+            <select
+              id="hours-available"
+              name="hoursAvailable"
+            >
+              <option value="">
+                Select your availability
+              </option>
+
+              <option value="Fewer than 5 hours">
+                Fewer than 5 hours
+              </option>
+
+              <option value="5-10 hours">
+                5–10 hours
+              </option>
+
+              <option value="10-15 hours">
+                10–15 hours
+              </option>
+
+              <option value="15-20 hours">
+                15–20 hours
+              </option>
+
+              <option value="20 or more hours">
+                20 or more hours
+              </option>
+
+              <option value="Full-time">
+                Full-time
+              </option>
+
+              <option value="Flexible">
+                Flexible
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="compensation-need">
+              Compensation Preference
+            </label>
+
+            <select
+              id="compensation-need"
+              name="compensationNeed"
+            >
+              <option value="">
+                Select a compensation preference
+              </option>
+
+              <option value="Paid required">
+                Paid position required
+              </option>
+
+              <option value="Paid preferred">
+                Paid position preferred
+              </option>
+
+              <option value="Academic Credit">
+                Academic credit
+              </option>
+
+              <option value="Paid or Academic Credit">
+                Paid or academic credit
+              </option>
+
+              <option value="Volunteer acceptable">
+                Volunteer position acceptable
+              </option>
+
+              <option value="No preference">
+                No preference
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="remote-preference">
+              Work Format Preference
+            </label>
+
+            <select
+              id="remote-preference"
+              name="remotePreference"
+            >
+              <option value="">
+                Select a work format
+              </option>
+
+              <option value="In-person only">
+                In-person only
+              </option>
+
+              <option value="In-person preferred">
+                In-person preferred
+              </option>
+
+              <option value="Hybrid">
+                Hybrid
+              </option>
+
+              <option value="Remote">
+                Remote
+              </option>
+
+              <option value="Flexible">
+                Flexible
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="research-statement">
+              Research Statement
+
+              <span class="field-note">
+                Describe your research interests, relevant experience,
+                long-term goals, and what you hope to learn in a laboratory.
+              </span>
+            </label>
+
+            <textarea
+              id="research-statement"
+              name="researchStatement"
+              placeholder="Example: I am interested in studying how genetic and molecular changes contribute to neurological disease. I have experience with PCR and data analysis and hope to gain additional experience in cell culture and microscopy."
+              required
+            ></textarea>
+          </div>
+
+        </div>
+
+        <button type="submit">
+          Find My Lab Matches
+        </button>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      © 2026 LabLink. Semantic matching powered by Cohere Embed AI.
+    </p>
+  </footer>
+
+  <script>
+    const subDisciplines = {
+      "Neuroscience": [
+        "Molecular Neuroscience",
+        "Cellular Neuroscience",
+        "Behavioral Neuroscience",
+        "Cognitive Neuroscience",
+        "Neural Circuits",
+        "Neurodevelopment",
+        "Neurodegeneration",
+        "Computational Neuroscience"
+      ],
+
+      "Oncology": [
+        "Cancer Biology",
+        "Tumor Immunology",
+        "Cancer Genetics",
+        "Cancer Pharmacology",
+        "Radiation Oncology",
+        "Precision Oncology"
+      ],
+
+      "Genetics and Genomics": [
+        "Human Genetics",
+        "Medical Genetics",
+        "Functional Genomics",
+        "Population Genetics",
+        "Epigenetics",
+        "Genomic Medicine"
+      ],
+
+      "Molecular Biology": [
+        "Gene Expression",
+        "RNA Biology",
+        "DNA Replication and Repair",
+        "Molecular Genetics",
+        "Protein Regulation"
+      ],
+
+      "Cell Biology": [
+        "Cell Signaling",
+        "Cellular Development",
+        "Stem Cell Biology",
+        "Organelle Biology",
+        "Cellular Metabolism"
+      ],
+
+      "Microbiology": [
+        "Bacteriology",
+        "Virology",
+        "Mycology",
+        "Microbial Genetics",
+        "Microbial Ecology"
+      ],
+
+      "Immunology": [
+        "Innate Immunity",
+        "Adaptive Immunity",
+        "Tumor Immunology",
+        "Autoimmune Disease",
+        "Vaccine Research"
+      ],
+
+      "Biochemistry": [
+        "Protein Biochemistry",
+        "Enzymology",
+        "Metabolism",
+        "Chemical Biology",
+        "Molecular Biophysics"
+      ],
+
+      "Structural Biology": [
+        "Cryo-Electron Microscopy",
+        "X-ray Crystallography",
+        "Protein Structure",
+        "Protein Dynamics",
+        "Computational Structural Biology"
+      ],
+
+      "Pharmacology": [
+        "Drug Discovery",
+        "Pharmacokinetics",
+        "Pharmacodynamics",
+        "Toxicology",
+        "Drug Delivery"
+      ],
+
+      "Environmental Science": [
+        "Climate Science",
+        "Environmental Microbiology",
+        "Microbial Ecology",
+        "Water Quality",
+        "Conservation Biology",
+        "Environmental Toxicology"
+      ],
+
+      "Biomedical Engineering": [
+        "Biomaterials",
+        "Tissue Engineering",
+        "Medical Devices",
+        "Biomedical Imaging",
+        "Biomechanics",
+        "Regenerative Medicine"
+      ],
+
+      "Clinical Medicine": [
+        "Clinical Research",
+        "Precision Medicine",
+        "Patient Outcomes",
+        "Epidemiology",
+        "Translational Medicine",
+        "Evidence-Based Medicine"
+      ],
+
+      "Bioinformatics": [
+        "Computational Biology",
+        "Genomic Data Analysis",
+        "Proteomics",
+        "Systems Biology",
+        "Machine Learning in Biology"
+      ],
+
+      "Public Health": [
+        "Epidemiology",
+        "Community Health",
+        "Global Health",
+        "Health Policy",
+        "Biostatistics",
+        "Environmental Health"
+      ]
+    };
+
+    const primaryField =
+      document.getElementById("primary-field");
+
+    const subDiscipline =
+      document.getElementById("sub-discipline");
+
+    const skillsSelect =
+      document.getElementById("skills-select");
+
+    const skillsInput =
+      document.getElementById("skills");
+
+    const candidateForm =
+      document.getElementById("candidate-form");
+
+    primaryField.addEventListener("change", function () {
+      const selectedField = this.value;
+
+      subDiscipline.innerHTML =
+        '<option value="">Select a sub-discipline</option>';
+
+      if (!selectedField || !subDisciplines[selectedField]) {
+        subDiscipline.disabled = true;
+        return;
+      }
+
+      subDisciplines[selectedField].forEach(function (discipline) {
+        const option = document.createElement("option");
+
+        option.value = discipline;
+        option.textContent = discipline;
+
+        subDiscipline.appendChild(option);
+      });
+
+      subDiscipline.disabled = false;
+    });
+
+    function updateSkillsValue() {
+      const selectedSkills = Array.from(
+        skillsSelect.selectedOptions
+      ).map(function (option) {
+        return option.value;
+      });
+
+      skillsInput.value = selectedSkills.join(", ");
+    }
+
+    skillsSelect.addEventListener("change", updateSkillsValue);
+
+    candidateForm.addEventListener("submit", function () {
+      updateSkillsValue();
+    });
+  </script>
+
+  <!-- config.js must load before app.js -->
+  <script src="../scripts/config.js"></script>
+  <script src="../scripts/app.js"></script>
+
+</body>
+</html>

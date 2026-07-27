@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Contact | LabLink</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8f7;
+      color: #213547;
+      line-height: 1.6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 7%;
+      background-color: white;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      color: #0f766e;
+      font-size: 27px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav a {
+      color: #334155;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: #0f766e;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #134e4a);
+      color: white;
+      text-align: center;
+      padding: 80px 20px 130px;
+    }
+
+    .hero-label {
+      margin-bottom: 12px;
+      color: #bce9e4;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin-bottom: 16px;
+      font-size: 48px;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: 0 auto;
+      color: #e6fffb;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .contact-section {
+      max-width: 1050px;
+      margin: -75px auto 80px;
+      padding: 0 20px;
+      position: relative;
+    }
+
+    .contact-container {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 34px;
+      padding: 45px;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 45px rgba(15, 118, 110, 0.14);
+    }
+
+    .form-panel h2,
+    .info-panel h2 {
+      margin-bottom: 10px;
+      color: #16324f;
+      font-size: 30px;
+    }
+
+    .section-intro {
+      margin-bottom: 28px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      margin-bottom: 8px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background-color: #fbfdfd;
+      color: #213547;
+      font-family: inherit;
+      font-size: 15px;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #0f766e;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 26px;
+      padding: 15px 24px;
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #115e59;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25);
+    }
+
+    .form-note {
+      margin-top: 14px;
+      color: #64748b;
+      font-size: 12.5px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .info-panel {
+      padding: 32px 28px;
+      background: linear-gradient(135deg, #edf8f6, #f8fcfb);
+      border: 1px solid #d8ebe8;
+      border-radius: 16px;
+      height: fit-content;
+    }
+
+    .info-card {
+      margin-top: 25px;
+    }
+
+    .info-item {
+      padding: 20px 0;
+      border-bottom: 1px solid #d8ebe8;
+    }
+
+    .info-item:first-child {
+      padding-top: 0;
+    }
+
+    .info-item:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .info-label {
+      margin-bottom: 6px;
+      color: #0f766e;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      color: #16324f;
+      font-size: 16px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .info-value a {
+      color: #16324f;
+      text-decoration: none;
+    }
+
+    .info-value a:hover {
+      color: #0f766e;
+    }
+
+    .info-subtext {
+      margin-top: 5px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .prototype-note {
+      margin-top: 28px;
+      padding: 20px;
+      background-color: white;
+      border-left: 4px solid #0f766e;
+      border-radius: 10px;
+      color: #526274;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer {
+      padding: 25px 20px;
+      background-color: #134e4a;
+      color: #d7f5f1;
+      text-align: center;
+    }
+
+    footer p {
+      font-size: 14px;
+    }
+
+    @media (max-width: 850px) {
+      .contact-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 750px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+
+      .hero {
+        padding: 60px 20px 110px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .contact-container {
+        padding: 32px 22px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1 class="logo">LabLink</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="index.html#how-it-works">How It Works</a>
+      <a href="contact.html" class="active">Contact</a>
+      <a href="pick_form.html">Get Started</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="hero-label">Contact LabLink</div>
+
+      <h1>Get in Touch</h1>
+
+      <p>
+        Have questions about LabLink, the matching model, or the
+        research matching prototype? Send us a message and our team
+        will get back to you.
+      </p>
+    </section>
+
+    <section class="contact-section">
+
+      <div class="contact-container">
+
+        <section class="form-panel">
+          <h2>Send a Message</h2>
+
+          <p class="section-intro">
+            Complete the form below with your question, feedback,
+            or interest in the LabLink project.
+          </p>
+
+          <form id="contact-form" onsubmit="return false;">
+
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="first-name">
+                  First Name
+                </label>
+
+                <input
+                  type="text"
+                  id="first-name"
+                  name="first-name"
+                  placeholder="Enter your first name"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="last-name">
+                  Last Name
+                </label>
+
+                <input
+                  type="text"
+                  id="last-name"
+                  name="last-name"
+                  placeholder="Enter your last name"
+                  required
+                >
+              </div>
+
+              <div class="form-group full-width">
+                <label for="email">
+                  Email Address
+                </label>
+
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email address"
+                  required
+                >
+              </div>
+
+              <div class="form-group full-width">
+                <label for="query">
+                  Your Message
+                </label>
+
+                <textarea
+                  id="query"
+                  name="query"
+                  placeholder="Tell us how we can help."
+                  required
+                ></textarea>
+              </div>
+
+            </div>
+
+            <button type="submit">
+              Send Message
+            </button>
+
+            <p class="form-note">
+              This form is currently a front-end prototype and is not
+              connected to an email service.
+            </p>
+
+          </form>
+        </section>
+
+        <aside class="info-panel">
+          <h2>Contact Information</h2>
+
+          <p class="section-intro">
+            Use the information below for questions about the
+            LabLink prototype.
+          </p>
+
+          <div class="info-card">
+
+            <div class="info-item">
+              <div class="info-label">Email</div>
+
+              <div class="info-value">
+                <a href="mailto:contact@lablink-project.org">
+                  contact@lablink-project.org
+                </a>
+              </div>
+
+              <div class="info-subtext">
+                Placeholder address for demonstration purposes.
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-label">Phone</div>
+
+              <div class="info-value">
+                <a href="tel:+15550101234">
+                  (555) 010-1234
+                </a>
+              </div>
+
+              <div class="info-subtext">
+                Placeholder number for demonstration purposes.
+              </div>
+            </div>
+
+          </div>
+
+          <div class="prototype-note">
+            LabLink is currently presented as a research matching
+            prototype. Contact details and message submission are
+            placeholders until the project is connected to a back-end
+            service.
+          </div>
+        </aside>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      © 2026 LabLink. A research matching prototype.
+    </p>
+  </footer>
+
+</body>
+</html>

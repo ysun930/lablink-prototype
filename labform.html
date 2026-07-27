@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LabLink Lab Form</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 80px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .logo {
+      color: #0f766e;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    nav a {
+      margin-left: 30px;
+      color: #333;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: #0f766e;
+    }
+
+    .hero {
+      padding: 70px 20px;
+      background: linear-gradient(135deg, #0f766e, #134e4a);
+      color: white;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin-bottom: 18px;
+      font-size: 45px;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: auto;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .form-section {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 25px;
+    }
+
+    .form-heading {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-heading h2 {
+      margin-bottom: 10px;
+      color: #0f766e;
+      font-size: 32px;
+    }
+
+    .instructions {
+      color: #555;
+    }
+
+    form {
+      padding: 35px;
+      background-color: white;
+      border-radius: 14px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .field-note {
+      display: block;
+      margin-top: 5px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: normal;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      background-color: white;
+      font-family: inherit;
+      font-size: 15px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #0f766e;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    select[multiple] {
+      min-height: 190px;
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 15px;
+      background-color: #0f766e;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0b5f59;
+    }
+
+    footer {
+      padding: 30px;
+      background-color: #134e4a;
+      color: white;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      nav a {
+        margin: 0;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      form {
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">LabLink</div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="candidate_form.html">Student Form</a>
+      <a href="pick_form.html">Get Started</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Find the Right Students for Your Lab</h1>
+
+    <p>
+      Create a laboratory profile and connect with students whose
+      research interests, technical skills, career goals, and
+      availability align with your laboratory.
+    </p>
+  </section>
+
+  <main class="form-section">
+
+    <div class="form-heading">
+      <h2>Laboratory Profile</h2>
+
+      <p class="instructions">
+        Complete the form below to add your laboratory to the
+        LabLink matching system.
+      </p>
+    </div>
+
+    <form id="lab-form">
+
+      <div class="form-group">
+        <label for="lab-name">Lab Name</label>
+
+        <input
+          id="lab-name"
+          name="labName"
+          type="text"
+          placeholder="Example: Chen Neuroscience Laboratory"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="principal-investigator">
+          Principal Investigator
+        </label>
+
+        <input
+          id="principal-investigator"
+          name="principalInvestigator"
+          type="text"
+          placeholder="Example: Dr. Maya Chen"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="institution">Institution</label>
+
+        <input
+          id="institution"
+          name="institution"
+          type="text"
+          placeholder="Example: University of California, Los Angeles"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="primary-field">Primary Field</label>
+
+        <select
+          id="primary-field"
+          name="primaryField"
+          required
+        >
+          <option value="">Select a primary field</option>
+          <option value="Neuroscience">Neuroscience</option>
+          <option value="Oncology">Oncology</option>
+          <option value="Genetics and Genomics">Genetics and Genomics</option>
+          <option value="Molecular Biology">Molecular Biology</option>
+          <option value="Cell Biology">Cell Biology</option>
+          <option value="Microbiology">Microbiology</option>
+          <option value="Immunology">Immunology</option>
+          <option value="Biochemistry">Biochemistry</option>
+          <option value="Structural Biology">Structural Biology</option>
+          <option value="Pharmacology">Pharmacology</option>
+          <option value="Environmental Science">Environmental Science</option>
+          <option value="Biomedical Engineering">Biomedical Engineering</option>
+          <option value="Clinical Medicine">Clinical Medicine</option>
+          <option value="Bioinformatics">Bioinformatics</option>
+          <option value="Public Health">Public Health</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sub-disciplines">Sub-discipline</label>
+
+        <select
+          id="sub-disciplines"
+          name="subDiscipline"
+          required
+          disabled
+        >
+          <option value="">
+            Select a primary field first
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="required-techniques">
+          Required Techniques
+
+          <span class="field-note">
+            Hold Command on Mac or Control on Windows to select
+            more than one technique.
+          </span>
+        </label>
+
+        <select
+          id="required-techniques"
+          name="requiredTechniques"
+          multiple
+        >
+          <optgroup label="Molecular Biology">
+            <option value="PCR">PCR</option>
+            <option value="qPCR">qPCR</option>
+            <option value="RT-PCR">RT-PCR</option>
+            <option value="DNA Extraction">DNA Extraction</option>
+            <option value="RNA Extraction">RNA Extraction</option>
+            <option value="Gel Electrophoresis">Gel Electrophoresis</option>
+            <option value="Molecular Cloning">Molecular Cloning</option>
+            <option value="CRISPR-Cas9">CRISPR-Cas9</option>
+          </optgroup>
+
+          <optgroup label="Protein and Biochemistry">
+            <option value="Western Blot">Western Blot</option>
+            <option value="ELISA">ELISA</option>
+            <option value="Protein Purification">Protein Purification</option>
+            <option value="SDS-PAGE">SDS-PAGE</option>
+            <option value="Mass Spectrometry">Mass Spectrometry</option>
+          </optgroup>
+
+          <optgroup label="Cell and Tissue Methods">
+            <option value="Mammalian Cell Culture">
+              Mammalian Cell Culture
+            </option>
+            <option value="Primary Cell Culture">
+              Primary Cell Culture
+            </option>
+            <option value="Tissue Culture">Tissue Culture</option>
+            <option value="Immunohistochemistry">
+              Immunohistochemistry
+            </option>
+            <option value="Flow Cytometry">Flow Cytometry</option>
+          </optgroup>
+
+          <optgroup label="Microscopy and Imaging">
+            <option value="Fluorescence Microscopy">
+              Fluorescence Microscopy
+            </option>
+            <option value="Confocal Microscopy">
+              Confocal Microscopy
+            </option>
+            <option value="Electron Microscopy">
+              Electron Microscopy
+            </option>
+            <option value="Biomedical Imaging">
+              Biomedical Imaging
+            </option>
+          </optgroup>
+
+          <optgroup label="Computational and Data Analysis">
+            <option value="Python">Python</option>
+            <option value="R">R</option>
+            <option value="MATLAB">MATLAB</option>
+            <option value="ImageJ">ImageJ</option>
+            <option value="Statistical Analysis">
+              Statistical Analysis
+            </option>
+            <option value="Bioinformatics">Bioinformatics</option>
+          </optgroup>
+
+          <optgroup label="Clinical and Environmental">
+            <option value="Electronic Health Record Review">
+              Electronic Health Record Review
+            </option>
+            <option value="REDCap">REDCap</option>
+            <option value="Field Sampling">Field Sampling</option>
+            <option value="Water Quality Analysis">
+              Water Quality Analysis
+            </option>
+            <option value="GIS">GIS</option>
+          </optgroup>
+
+          <optgroup label="Engineering and Structural Biology">
+            <option value="CAD">CAD</option>
+            <option value="3D Printing">3D Printing</option>
+            <option value="Cryo-Electron Microscopy">
+              Cryo-Electron Microscopy
+            </option>
+            <option value="X-ray Crystallography">
+              X-ray Crystallography
+            </option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="preferred-techniques">
+          Preferred Techniques
+
+          <span class="field-note">
+            Select any techniques that are helpful but not required.
+          </span>
+        </label>
+
+        <select
+          id="preferred-techniques"
+          name="preferredTechniques"
+          multiple
+        >
+          <optgroup label="Molecular Biology">
+            <option value="PCR">PCR</option>
+            <option value="qPCR">qPCR</option>
+            <option value="RT-PCR">RT-PCR</option>
+            <option value="DNA Extraction">DNA Extraction</option>
+            <option value="RNA Extraction">RNA Extraction</option>
+            <option value="Gel Electrophoresis">Gel Electrophoresis</option>
+            <option value="Molecular Cloning">Molecular Cloning</option>
+            <option value="CRISPR-Cas9">CRISPR-Cas9</option>
+          </optgroup>
+
+          <optgroup label="Protein and Biochemistry">
+            <option value="Western Blot">Western Blot</option>
+            <option value="ELISA">ELISA</option>
+            <option value="Protein Purification">Protein Purification</option>
+            <option value="SDS-PAGE">SDS-PAGE</option>
+            <option value="Mass Spectrometry">Mass Spectrometry</option>
+          </optgroup>
+
+          <optgroup label="Cell and Tissue Methods">
+            <option value="Mammalian Cell Culture">
+              Mammalian Cell Culture
+            </option>
+            <option value="Primary Cell Culture">
+              Primary Cell Culture
+            </option>
+            <option value="Tissue Culture">Tissue Culture</option>
+            <option value="Immunohistochemistry">
+              Immunohistochemistry
+            </option>
+            <option value="Flow Cytometry">Flow Cytometry</option>
+          </optgroup>
+
+          <optgroup label="Microscopy and Imaging">
+            <option value="Fluorescence Microscopy">
+              Fluorescence Microscopy
+            </option>
+            <option value="Confocal Microscopy">
+              Confocal Microscopy
+            </option>
+            <option value="Electron Microscopy">
+              Electron Microscopy
+            </option>
+            <option value="Biomedical Imaging">
+              Biomedical Imaging
+            </option>
+          </optgroup>
+
+          <optgroup label="Computational and Data Analysis">
+            <option value="Python">Python</option>
+            <option value="R">R</option>
+            <option value="MATLAB">MATLAB</option>
+            <option value="ImageJ">ImageJ</option>
+            <option value="Statistical Analysis">
+              Statistical Analysis
+            </option>
+            <option value="Bioinformatics">Bioinformatics</option>
+          </optgroup>
+
+          <optgroup label="Clinical and Environmental">
+            <option value="Electronic Health Record Review">
+              Electronic Health Record Review
+            </option>
+            <option value="REDCap">REDCap</option>
+            <option value="Field Sampling">Field Sampling</option>
+            <option value="Water Quality Analysis">
+              Water Quality Analysis
+            </option>
+            <option value="GIS">GIS</option>
+          </optgroup>
+
+          <optgroup label="Engineering and Structural Biology">
+            <option value="CAD">CAD</option>
+            <option value="3D Printing">3D Printing</option>
+            <option value="Cryo-Electron Microscopy">
+              Cryo-Electron Microscopy
+            </option>
+            <option value="X-ray Crystallography">
+              X-ray Crystallography
+            </option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="lab-aim">Lab Aim</label>
+
+        <textarea
+          id="lab-aim"
+          name="labAim"
+          placeholder="Describe the main scientific questions and goals of the lab."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="career-pathways">
+          Primary Career Pathway Supported
+        </label>
+
+        <select
+          id="career-pathways"
+          name="careerPathway"
+        >
+          <option value="">Select a career pathway</option>
+          <option value="Academic Research">
+            Academic Research
+          </option>
+          <option value="PhD Preparation">
+            PhD Preparation
+          </option>
+          <option value="Medical School Preparation">
+            Medical School Preparation
+          </option>
+          <option value="MD-PhD Preparation">
+            MD-PhD Preparation
+          </option>
+          <option value="Biotechnology">
+            Biotechnology
+          </option>
+          <option value="Pharmaceutical Industry">
+            Pharmaceutical Industry
+          </option>
+          <option value="Clinical Research">
+            Clinical Research
+          </option>
+          <option value="Public Health">
+            Public Health
+          </option>
+          <option value="Government Research">
+            Government Research
+          </option>
+          <option value="Environmental Research">
+            Environmental Research
+          </option>
+          <option value="Biomedical Engineering">
+            Biomedical Engineering
+          </option>
+          <option value="Data Science and Bioinformatics">
+            Data Science and Bioinformatics
+          </option>
+          <option value="Multiple Pathways">
+            Multiple Pathways
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="institution-type">Institution Type</label>
+
+        <select
+          id="institution-type"
+          name="institutionType"
+        >
+          <option value="">Select an institution type</option>
+          <option value="University">University</option>
+          <option value="Hospital or Medical Center">
+            Hospital or Medical Center
+          </option>
+          <option value="Research Institute">
+            Research Institute
+          </option>
+          <option value="Biotechnology Company">
+            Biotechnology Company
+          </option>
+          <option value="Pharmaceutical Company">
+            Pharmaceutical Company
+          </option>
+          <option value="Government Laboratory">
+            Government Laboratory
+          </option>
+          <option value="Nonprofit Organization">
+            Nonprofit Organization
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="lab-size">Lab Size</label>
+
+        <select
+          id="lab-size"
+          name="labSize"
+        >
+          <option value="">Select a lab size</option>
+          <option value="Small: 1-5 members">
+            Small: 1–5 members
+          </option>
+          <option value="Medium: 6-15 members">
+            Medium: 6–15 members
+          </option>
+          <option value="Large: 16 or more members">
+            Large: 16 or more members
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="hiree-level">Student Level Sought</label>
+
+        <select
+          id="hiree-level"
+          name="studentLevel"
+        >
+          <option value="">Select a student level</option>
+          <option value="High School Student">
+            High School Student
+          </option>
+          <option value="First-Year Undergraduate">
+            First-Year Undergraduate
+          </option>
+          <option value="Sophomore">Sophomore</option>
+          <option value="Junior">Junior</option>
+          <option value="Senior">Senior</option>
+          <option value="Post-Baccalaureate">
+            Post-Baccalaureate
+          </option>
+          <option value="Graduate Student">
+            Graduate Student
+          </option>
+          <option value="Any Undergraduate Level">
+            Any Undergraduate Level
+          </option>
+          <option value="Multiple Levels">
+            Multiple Levels
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="hours-per-week">Hours Per Week</label>
+
+        <select
+          id="hours-per-week"
+          name="hoursPerWeek"
+        >
+          <option value="">Select weekly availability</option>
+          <option value="Fewer than 5 hours">
+            Fewer than 5 hours
+          </option>
+          <option value="5-10 hours">5–10 hours</option>
+          <option value="10-15 hours">10–15 hours</option>
+          <option value="15-20 hours">15–20 hours</option>
+          <option value="20 or more hours">
+            20 or more hours
+          </option>
+          <option value="Full-time">Full-time</option>
+          <option value="Flexible">Flexible</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="compensation">Compensation</label>
+
+        <select
+          id="compensation"
+          name="compensation"
+        >
+          <option value="">Select a compensation option</option>
+          <option value="Paid">Paid</option>
+          <option value="Academic Credit">Academic Credit</option>
+          <option value="Volunteer">Volunteer</option>
+          <option value="Paid or Academic Credit">
+            Paid or Academic Credit
+          </option>
+          <option value="Multiple Options">
+            Multiple Options
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="remote-option">Work Format</label>
+
+        <select
+          id="remote-option"
+          name="remoteOption"
+        >
+          <option value="">Select a work format</option>
+          <option value="In-person only">
+            In-person only
+          </option>
+          <option value="Hybrid">Hybrid</option>
+          <option value="Remote">Remote</option>
+          <option value="Flexible">Flexible</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="lab-description">Lab Description</label>
+
+        <textarea
+          id="lab-description"
+          name="labDescription"
+          placeholder="Describe the lab's research, current projects, research environment, methods, and the type of student who would be a strong fit."
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit">
+        Create Lab Profile
+      </button>
+
+    </form>
+
+  </main>
+
+  <footer>
+    <p>© 2026 LabLink</p>
+
+    <p>
+      Connecting research laboratories with qualified students.
+    </p>
+  </footer>
+
+  <script>
+    const subDisciplines = {
+      "Neuroscience": [
+        "Molecular Neuroscience",
+        "Cellular Neuroscience",
+        "Behavioral Neuroscience",
+        "Cognitive Neuroscience",
+        "Neural Circuits",
+        "Neurodevelopment",
+        "Neurodegeneration",
+        "Computational Neuroscience"
+      ],
+
+      "Oncology": [
+        "Cancer Biology",
+        "Tumor Immunology",
+        "Cancer Genetics",
+        "Cancer Pharmacology",
+        "Radiation Oncology",
+        "Precision Oncology"
+      ],
+
+      "Genetics and Genomics": [
+        "Human Genetics",
+        "Medical Genetics",
+        "Functional Genomics",
+        "Population Genetics",
+        "Epigenetics",
+        "Genomic Medicine"
+      ],
+
+      "Molecular Biology": [
+        "Gene Expression",
+        "RNA Biology",
+        "DNA Replication and Repair",
+        "Molecular Genetics",
+        "Protein Regulation"
+      ],
+
+      "Cell Biology": [
+        "Cell Signaling",
+        "Cellular Development",
+        "Stem Cell Biology",
+        "Organelle Biology",
+        "Cellular Metabolism"
+      ],
+
+      "Microbiology": [
+        "Bacteriology",
+        "Virology",
+        "Mycology",
+        "Microbial Genetics",
+        "Microbial Ecology"
+      ],
+
+      "Immunology": [
+        "Innate Immunity",
+        "Adaptive Immunity",
+        "Tumor Immunology",
+        "Autoimmune Disease",
+        "Vaccine Research"
+      ],
+
+      "Biochemistry": [
+        "Protein Biochemistry",
+        "Enzymology",
+        "Metabolism",
+        "Chemical Biology",
+        "Molecular Biophysics"
+      ],
+
+      "Structural Biology": [
+        "Cryo-Electron Microscopy",
+        "X-ray Crystallography",
+        "Protein Structure",
+        "Protein Dynamics",
+        "Computational Structural Biology"
+      ],
+
+      "Pharmacology": [
+        "Drug Discovery",
+        "Pharmacokinetics",
+        "Pharmacodynamics",
+        "Toxicology",
+        "Drug Delivery"
+      ],
+
+      "Environmental Science": [
+        "Climate Science",
+        "Environmental Microbiology",
+        "Microbial Ecology",
+        "Water Quality",
+        "Conservation Biology",
+        "Environmental Toxicology"
+      ],
+
+      "Biomedical Engineering": [
+        "Biomaterials",
+        "Tissue Engineering",
+        "Medical Devices",
+        "Biomedical Imaging",
+        "Biomechanics",
+        "Regenerative Medicine"
+      ],
+
+      "Clinical Medicine": [
+        "Clinical Research",
+        "Precision Medicine",
+        "Patient Outcomes",
+        "Epidemiology",
+        "Translational Medicine",
+        "Evidence-Based Medicine"
+      ],
+
+      "Bioinformatics": [
+        "Computational Biology",
+        "Genomic Data Analysis",
+        "Proteomics",
+        "Systems Biology",
+        "Machine Learning in Biology"
+      ],
+
+      "Public Health": [
+        "Epidemiology",
+        "Community Health",
+        "Global Health",
+        "Health Policy",
+        "Biostatistics",
+        "Environmental Health"
+      ]
+    };
+
+    const primaryField =
+      document.getElementById("primary-field");
+
+    const subDiscipline =
+      document.getElementById("sub-disciplines");
+
+    primaryField.addEventListener("change", function () {
+      const selectedField = this.value;
+
+      subDiscipline.innerHTML =
+        '<option value="">Select a sub-discipline</option>';
+
+      if (!selectedField || !subDisciplines[selectedField]) {
+        subDiscipline.disabled = true;
+        return;
+      }
+
+      subDisciplines[selectedField].forEach(function (discipline) {
+        const option = document.createElement("option");
+
+        option.value = discipline;
+        option.textContent = discipline;
+
+        subDiscipline.appendChild(option);
+      });
+
+      subDiscipline.disabled = false;
+    });
+  </script>
+
+</body>
+</html>

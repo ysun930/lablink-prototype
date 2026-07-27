@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Get Started | LabLink</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .choice-hero {
+            background: linear-gradient(135deg, #0f766e, #134e4a);
+            color: white;
+            text-align: center;
+            padding: 80px 20px 130px;
+        }
+
+        .choice-hero h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .choice-hero p {
+            font-size: 18px;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .choice-section {
+            max-width: 950px;
+            margin: -75px auto 80px;
+            padding: 0 20px;
+        }
+
+        .choice-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .choice-card {
+            flex: 1;
+            background-color: white;
+            border-radius: 18px;
+            padding: 45px 35px;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            border: 2px solid transparent;
+            transition: 0.3s ease;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-8px);
+            border-color: #0f766e;
+        }
+
+        .choice-icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            background-color: #dff4f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        .choice-card h2 {
+            color: #16324f;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .choice-card p {
+            color: #5f6f7f;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .choice-button {
+            display: inline-block;
+            background-color: #0f766e;
+            color: white;
+            text-decoration: none;
+            padding: 13px 28px;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+
+        .choice-button:hover {
+            background-color: #115e59;
+        }
+
+        @media (max-width: 750px) {
+            .choice-hero h1 {
+                font-size: 36px;
+            }
+
+            .choice-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <!-- <div class="logo">LabLink</div> -->
+        <h1 class="logo">LabLink</h1>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="pick_form.html">Get Started</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="choice-hero">
+            <h1>Get Started with LabLink</h1>
+
+            <p>
+                Choose the option that best describes you so we can help you
+                find the right research connection.
+            </p>
+        </section>
+
+        <section class="choice-section">
+
+            <div class="choice-container">
+
+                <div class="choice-card">
+                    <div class="choice-icon">🎓</div>
+
+                    <h2>I am a Student</h2>
+
+                    <p>
+                        Create a student profile, share your research interests
+                        and skills, and discover laboratories that match your goals.
+                    </p>
+
+                    <a href="candidate_form.html" class="choice-button">
+                        Continue as a Student
+                    </a>
+                </div>
+
+                <div class="choice-card">
+                    <div class="choice-icon">🔬</div>
+
+                    <h2>I am a Lab</h2>
+
+                    <p>
+                        Create a laboratory profile, describe your research,
+                        and connect with students whose interests and skills match your needs.
+                    </p>
+
+                    <a href="labform.html" class="choice-button">
+                        Continue as a Lab
+                    </a>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>2026 LabLink. Connecting students with research opportunities.</p>
+    </footer>
+
+</body>
+</html>
