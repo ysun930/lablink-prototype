@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In - LabLink</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .auth-wrap { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; background:#E4F7F6; }
+  .auth-card { background:#fff; border-radius:14px; padding:40px; max-width:380px; width:100%; font-family:Arial, Helvetica, sans-serif; }
+  .auth-card h1 { font-size:26px; margin:0 0 8px; }
+  .auth-card .sub { color:#5B6B72; font-size:14px; margin:0 0 28px; }
+  .auth-card label { display:block; font-size:13.5px; font-weight:600; margin-bottom:6px; }
+  .auth-card .field { margin-bottom:18px; }
+  .auth-card input[type="email"], .auth-card input[type="password"] {
+    width:100%; padding:11px 13px; border:1px solid #C9EEEC; border-radius:8px; font-size:14.5px; font-family:inherit;
+  }
+  .auth-card input:focus { outline:none; border-color:#1C9099; }
+  .auth-card button { width:100%; background:#1C9099; color:#fff; border:none; padding:13px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer; margin-top:8px; }
+  .footer-link { text-align:center; margin-top:20px; font-size:13.5px; color:#5B6B72; }
+  .footer-link a { color:#1C9099; font-weight:600; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>Log in</h1>
+    <p class="sub">Welcome back to LabLink.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit">Log In</button>
+    </form>
+
+    <div class="footer-link">Don't have an account? <a href="signup.html">Sign up</a></div>
+  </div>
+</div>
+
+<script type="module">
+import { supabase } from './supabase.js';
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) { alert('Login failed: ' + error.message); return; }
+
+  const role = data.user.user_metadata.role;
+  if (role === 'candidate') window.location.href = 'candidate-dashboard.html';
+  if (role === 'lab_pi') window.location.href = 'lab-dashboard.html';
+});
+</script>
+
+</body>
+</html>
