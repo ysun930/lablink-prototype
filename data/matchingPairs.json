@@ -1,0 +1,74 @@
+[
+  {
+    "pair_id": "PAIR-001",
+    "variable_type": "Field",
+    "dataset_a_var": "primary_field",
+    "dataset_b_var": "primary_field_interest",
+    "weight": 3,
+    "match_type": "Exact or Related Field"
+  },
+  {
+    "pair_id": "PAIR-002",
+    "variable_type": "Field",
+    "dataset_a_var": "sub_disciplines",
+    "dataset_b_var": "sub_discipline_interests",
+    "weight": 2,
+    "match_type": "List Overlap"
+  },
+  {
+    "pair_id": "PAIR-003",
+    "variable_type": "Techniques",
+    "dataset_a_var": "required_techniques",
+    "dataset_b_var": "confirmed_skills",
+    "weight": 12,
+    "match_type": "Required Skills Overlap"
+  },
+  {
+    "pair_id": "PAIR-004",
+    "variable_type": "Techniques",
+    "dataset_a_var": "preferred_techniques",
+    "dataset_b_var": "confirmed_skills",
+    "weight": 6,
+    "match_type": "Preferred Skills Overlap"
+  },
+  {
+    "pair_id": "PAIR-005",
+    "variable_type": "Goals and Logistics",
+    "dataset_a_var": "career_pathways",
+    "dataset_b_var": "career_goal",
+    "weight": 3,
+    "match_type": "List Overlap"
+  },
+  {
+    "pair_id": "PAIR-006",
+    "variable_type": "Goals and Logistics",
+    "dataset_a_var": "hiree_level",
+    "dataset_b_var": "education_level",
+    "weight": 3,
+    "match_type": "Education Level Compatibility"
+  },
+  {
+    "pair_id": "PAIR-007",
+    "variable_type": "Goals and Logistics",
+    "dataset_a_var": "hours_per_week",
+    "dataset_b_var": "hours_available",
+    "weight": 3,
+    "match_type": "Hours Range Overlap"
+  },
+  {
+    "pair_id": "PAIR-008",
+    "variable_type": "Goals and Logistics",
+    "dataset_a_var": "compensation",
+    "dataset_b_var": "compensation_need",
+    "weight": 2,
+    "match_type": "Category Match"
+  },
+  {
+    "pair_id": "PAIR-009",
+    "variable_type": "Goals and Logistics",
+    "dataset_a_var": "remote_option",
+    "dataset_b_var": "remote_preference",
+    "weight": 3,
+    "match_type": "Work Format Compatibility"
+  }
+]

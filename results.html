@@ -11,6 +11,10 @@
   <title>Lab Match Results</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 30px;
@@ -20,36 +24,195 @@
     }
 
     main {
-      max-width: 900px;
+      max-width: 1100px;
       margin: auto;
     }
 
-    h1 {
+    h1,
+    h2 {
       color: #173f8a;
     }
 
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
     .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
       color: #173f8a;
       font-weight: bold;
       text-decoration: none;
+    }
+
+    .sort-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+    }
+
+    .sort-control select {
+      padding: 10px 12px;
+      border: 1px solid #b8c2d1;
+      border-radius: 7px;
+      background: white;
+      font: inherit;
+    }
+
+    .notice {
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      background: #fff8e6;
+      color: #6f4b00;
+      line-height: 1.5;
+    }
+
+    .match-card {
+      padding: 26px;
+      margin-bottom: 24px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: white;
+      box-shadow:
+        0 5px 18px
+        rgba(30, 55, 95, 0.08);
+    }
+
+    .match-card h2 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(3, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .score-grid div {
+      padding: 18px;
+      border-radius: 9px;
+      background: #eef3fb;
+      text-align: center;
+    }
+
+    .score-grid strong,
+    .score-grid span {
+      display: block;
+    }
+
+    .score-grid span {
+      margin-top: 7px;
+      font-size: 25px;
+      font-weight: 700;
+      color: #067647;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 11px 17px;
+      border: none;
+      border-radius: 7px;
+      background: #173f8a;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .why-button {
+      background: #006b5f;
+    }
+
+    .why-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-left: 5px solid #006b5f;
+      border-radius: 7px;
+      background: #effaf7;
+      line-height: 1.6;
+    }
+
+    .why-box h3 {
+      margin-top: 0;
+    }
+
+    .why-box ul {
+      padding-left: 22px;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 18px;
+      }
+
+      .score-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .match-card h2 {
+        font-size: 23px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main>
-    <a
-      class="back-link"
-      href="candidate_form.html"
-    >
-      ← Return to Candidate Form
-    </a>
+    <div class="top-bar">
+      <a
+        class="back-link"
+        href="candidate_form.html"
+      >
+        ← Return to Candidate Form
+      </a>
+
+      <label class="sort-control">
+        Sort by
+
+        <select id="sort-results">
+          <option value="combinedPercent">
+            Combined Score
+          </option>
+
+          <option value="rulePercent">
+            Rule-Based Score
+          </option>
+
+          <option value="semanticPercent">
+            AI / Semantic Score
+          </option>
+        </select>
+      </label>
+    </div>
 
     <h1 id="candidate-heading">
       Lab Match Results
     </h1>
+
+    <div class="notice">
+      AI / Semantic Score measures similarity between
+      the candidate's interests and the laboratory profile.
+      Combined Score uses 80% Rule-Based Score and
+      20% AI / Semantic Score.
+    </div>
 
     <div id="results-container"></div>
   </main>

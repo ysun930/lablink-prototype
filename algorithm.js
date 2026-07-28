@@ -10,56 +10,57 @@
     .pop()
     .toLowerCase();
 
-  const FIELD_GROUPS = [
-    [
-      "molecular biology",
-      "cell biology",
-      "biochemistry"
-    ],
-    [
-      "genetics",
-      "genomics",
-      "genetics and genomics",
-      "bioinformatics",
-      "computational biology"
-    ],
-    [
-      "neuroscience",
-      "neurobiology",
-      "cognitive neuroscience"
-    ],
-    [
-      "immunology",
-      "microbiology",
-      "infectious disease"
-    ],
-    [
-      "oncology",
-      "cancer biology",
-      "tumor biology"
-    ],
-    [
-      "public health",
-      "epidemiology",
-      "global health"
-    ],
-    [
-      "pharmacology",
-      "toxicology",
-      "drug discovery"
-    ],
-    [
-      "biomedical engineering",
-      "bioengineering"
-    ]
-  ];
+  /*
+  ==================================================
+  BASIC HELPERS
+  ==================================================
+  */
 
   function safeJsonParse(value, fallback) {
     try {
-      return JSON.parse(value);
-    } catch {
+      if (!value) {
+        return fallback;
+      }
+
+      const parsed = JSON.parse(value);
+
+      if (
+        parsed === null ||
+        parsed === undefined
+      ) {
+        return fallback;
+      }
+
+      return parsed;
+    } catch (error) {
+      console.warn(
+        "Invalid saved data was ignored:",
+        error
+      );
+
       return fallback;
     }
+  }
+
+  function loadLabs() {
+    const stored = safeJsonParse(
+      localStorage.getItem(LABS_KEY),
+      []
+    );
+
+    /*
+      Fixes the previous null.findIndex error.
+    */
+    if (!Array.isArray(stored)) {
+      localStorage.setItem(
+        LABS_KEY,
+        JSON.stringify([])
+      );
+
+      return [];
+    }
+
+    return stored;
   }
 
   function normalize(value) {
@@ -67,6 +68,7 @@
       .toLowerCase()
       .replace(/&/g, " and ")
       .replace(/[–—-]/g, " ")
+      .replace(/\([^)]*\)/g, " ")
       .replace(/[^a-z0-9+.#\s]/g, " ")
       .replace(
         /\bwestern blotting\b/g,
@@ -125,25 +127,48 @@
     ];
   }
 
-  function valueFromElement(element) {
-    if (!element) {
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function formatList(value) {
+    const items = toList(value);
+
+    return items.length
+      ? items.join(", ")
+      : "Not provided";
+  }
+
+  /*
+  ==================================================
+  READ HTML FORM VALUES
+  ==================================================
+  */
+
+  function controlValue(control) {
+    if (!control) {
       return [];
     }
 
     if (
       typeof RadioNodeList !== "undefined" &&
-      element instanceof RadioNodeList
+      control instanceof RadioNodeList
     ) {
-      return [...element]
+      return [...control]
         .filter(item => item.checked)
         .map(item => item.value);
     }
 
     if (
-      element instanceof HTMLSelectElement &&
-      element.multiple
+      control instanceof HTMLSelectElement &&
+      control.multiple
     ) {
-      return [...element.selectedOptions]
+      return [...control.selectedOptions]
         .map(option =>
           option.value ||
           option.textContent
@@ -151,85 +176,89 @@
     }
 
     if (
-      element instanceof HTMLInputElement &&
+      control instanceof HTMLInputElement &&
       (
-        element.type === "checkbox" ||
-        element.type === "radio"
+        control.type === "checkbox" ||
+        control.type === "radio"
       )
     ) {
-      return element.checked
-        ? [element.value]
+      return control.checked
+        ? [control.value]
         : [];
     }
 
-    return element.value ?? "";
+    return control.value ?? "";
   }
 
   function readField(form, aliases) {
-    const collected = [];
+    const values = [];
 
     for (const alias of aliases) {
-      const named =
+      const namedControl =
         form.elements.namedItem(alias);
 
-      const byId =
+      const idControl =
         document.getElementById(alias);
 
-      if (named) {
-        collected.push(
+      if (namedControl) {
+        values.push(
           ...toList(
-            valueFromElement(named)
+            controlValue(namedControl)
           )
         );
       }
 
       if (
-        byId &&
-        byId.form === form
+        idControl &&
+        idControl.form === form
       ) {
-        collected.push(
+        values.push(
           ...toList(
-            valueFromElement(byId)
+            controlValue(idControl)
           )
         );
       }
 
-      const normalizedAlias =
-        normalize(alias)
-          .replace(/\s/g, "");
+      const target =
+        normalize(alias).replace(/\s/g, "");
 
-      for (
-        const element of form.querySelectorAll(
+      const controls =
+        form.querySelectorAll(
           "input, select, textarea"
-        )
-      ) {
+        );
+
+      for (const control of controls) {
         const identity = normalize(
-          `${element.name || ""} ${element.id || ""}`
+          `${control.name || ""} ${control.id || ""}`
         ).replace(/\s/g, "");
 
-        if (
-          identity === normalizedAlias
-        ) {
-          collected.push(
+        if (identity === target) {
+          values.push(
             ...toList(
-              valueFromElement(element)
+              controlValue(control)
             )
           );
         }
       }
     }
 
-    return unique(collected);
+    return unique(values);
   }
 
   function firstValue(form, aliases) {
-    return (
-      readField(form, aliases)[0] ||
-      ""
-    );
+    return readField(
+      form,
+      aliases
+    )[0] || "";
   }
 
-  function arraysMatch(left, right) {
+  /*
+  ==================================================
+  MATCHING HELPERS
+  ==================================================
+  */
+
+  function valuesMatch(left, right) {
     const leftItems = toList(left)
       .map(normalize)
       .filter(Boolean);
@@ -248,7 +277,7 @@
           }
 
           /*
-            Prevent short values such as "R"
+            Prevent short skills such as R
             from matching PCR or CRISPR.
           */
           if (
@@ -266,7 +295,51 @@
     );
   }
 
-  function relatedField(left, right) {
+  const FIELD_GROUPS = [
+    [
+      "molecular biology",
+      "cell biology",
+      "biochemistry"
+    ],
+    [
+      "genetics",
+      "genomics",
+      "genetics and genomics",
+      "bioinformatics",
+      "computational biology"
+    ],
+    [
+      "neuroscience",
+      "neurobiology",
+      "cognitive neuroscience"
+    ],
+    [
+      "immunology",
+      "microbiology",
+      "infectious disease"
+    ],
+    [
+      "oncology",
+      "cancer biology",
+      "tumor biology"
+    ],
+    [
+      "public health",
+      "epidemiology",
+      "global health"
+    ],
+    [
+      "pharmacology",
+      "toxicology",
+      "drug discovery"
+    ],
+    [
+      "biomedical engineering",
+      "bioengineering"
+    ]
+  ];
+
+  function fieldsRelated(left, right) {
     const leftField =
       normalize(left);
 
@@ -293,15 +366,15 @@
         group.map(normalize);
 
       const containsLeft =
-        normalizedGroup.some(item =>
-          leftField.includes(item) ||
-          item.includes(leftField)
+        normalizedGroup.some(field =>
+          leftField.includes(field) ||
+          field.includes(leftField)
         );
 
       const containsRight =
-        normalizedGroup.some(item =>
-          rightField.includes(item) ||
-          item.includes(rightField)
+        normalizedGroup.some(field =>
+          rightField.includes(field) ||
+          field.includes(rightField)
         );
 
       return (
@@ -311,18 +384,18 @@
     });
   }
 
-  function overlapRatio(
-    candidateValues,
-    labValues
+  function techniqueOverlap(
+    candidateSkills,
+    labSkills
   ) {
     const candidate = unique(
-      toList(candidateValues)
+      toList(candidateSkills)
         .map(normalize)
         .filter(Boolean)
     );
 
     const lab = unique(
-      toList(labValues)
+      toList(labSkills)
         .map(normalize)
         .filter(Boolean)
     );
@@ -333,25 +406,25 @@
 
     let matched = 0;
 
-    for (const labItem of lab) {
+    for (const labSkill of lab) {
       const found =
-        candidate.some(candidateItem => {
+        candidate.some(candidateSkill => {
           if (
-            candidateItem === labItem
+            candidateSkill === labSkill
           ) {
             return true;
           }
 
           if (
-            candidateItem.length < 4 ||
-            labItem.length < 4
+            candidateSkill.length < 4 ||
+            labSkill.length < 4
           ) {
             return false;
           }
 
           return (
-            candidateItem.includes(labItem) ||
-            labItem.includes(candidateItem)
+            candidateSkill.includes(labSkill) ||
+            labSkill.includes(candidateSkill)
           );
         });
 
@@ -364,42 +437,43 @@
   }
 
   function educationMatch(
-    candidateValue,
-    labValues
+    candidateEducation,
+    labEducation
   ) {
     const candidate =
-      normalize(candidateValue);
+      normalize(candidateEducation);
 
-    const labs =
-      toList(labValues)
+    const labLevels =
+      toList(labEducation)
         .map(normalize);
 
     if (
       !candidate ||
-      labs.length === 0
+      labLevels.length === 0
     ) {
       return false;
     }
 
     if (
-      labs.some(value =>
-        value.includes("any") ||
-        value.includes("all")
+      labLevels.some(level =>
+        level.includes("any") ||
+        level.includes("all")
       )
     ) {
       return true;
     }
 
     if (
-      labs.some(value =>
-        value.includes(candidate) ||
-        candidate.includes(value)
+      labLevels.some(level =>
+        level.includes(candidate) ||
+        candidate.includes(level)
       )
     ) {
       return true;
     }
 
     const undergraduateLevels = [
+      "high school",
       "freshman",
       "sophomore",
       "junior",
@@ -415,26 +489,30 @@
       "graduate"
     ];
 
-    if (
+    const candidateIsUndergraduate =
       undergraduateLevels.some(level =>
         candidate.includes(level)
-      )
-    ) {
-      return labs.some(value =>
-        undergraduateLevels.some(level =>
-          value.includes(level)
+      );
+
+    if (candidateIsUndergraduate) {
+      return labLevels.some(level =>
+        undergraduateLevels.some(
+          undergraduate =>
+            level.includes(undergraduate)
         )
       );
     }
 
-    if (
+    const candidateIsGraduate =
       graduateLevels.some(level =>
         candidate.includes(level)
-      )
-    ) {
-      return labs.some(value =>
-        graduateLevels.some(level =>
-          value.includes(level)
+      );
+
+    if (candidateIsGraduate) {
+      return labLevels.some(level =>
+        graduateLevels.some(
+          graduate =>
+            level.includes(graduate)
         )
       );
     }
@@ -447,8 +525,7 @@
       normalize(value);
 
     const numbers =
-      text.match(/\d+/g)
-        ?.map(Number) || [];
+      text.match(/\d+/g)?.map(Number) || [];
 
     if (
       text.includes("full time") ||
@@ -484,9 +561,7 @@
       };
     }
 
-    if (
-      text.includes("part time")
-    ) {
+    if (text.includes("part time")) {
       return {
         min: 10,
         max: 20
@@ -497,22 +572,22 @@
   }
 
   function hoursMatch(
-    candidateValue,
-    labValue
+    candidateHours,
+    labHours
   ) {
     const candidate =
-      parseHours(candidateValue);
+      parseHours(candidateHours);
 
     const lab =
-      parseHours(labValue);
+      parseHours(labHours);
 
     if (
       !candidate ||
       !lab
     ) {
-      return arraysMatch(
-        candidateValue,
-        labValue
+      return valuesMatch(
+        candidateHours,
+        labHours
       );
     }
 
@@ -523,14 +598,14 @@
   }
 
   function workFormatMatch(
-    candidateValue,
-    labValue
+    candidateFormat,
+    labFormat
   ) {
     const candidate =
-      normalize(candidateValue);
+      normalize(candidateFormat);
 
     const lab =
-      normalize(labValue);
+      normalize(labFormat);
 
     if (
       !candidate ||
@@ -557,24 +632,28 @@
       return true;
     }
 
-    return arraysMatch(
+    return valuesMatch(
       candidate,
       lab
     );
   }
 
   /*
-  ================================================
-  READ LAB FORM
-  ================================================
+  ==================================================
+  BUILD LAB PROFILE
+  ==================================================
   */
 
   function buildLab(form) {
+    const hasRandomUUID =
+      typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID ===
+        "function";
+
     return {
-      id:
-        crypto.randomUUID
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random()}`,
+      id: hasRandomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`,
 
       labName: firstValue(
         form,
@@ -717,9 +796,9 @@
   }
 
   /*
-  ================================================
-  READ CANDIDATE FORM
-  ================================================
+  ==================================================
+  BUILD CANDIDATE PROFILE
+  ==================================================
   */
 
   function buildCandidate(form) {
@@ -833,15 +912,12 @@
   }
 
   /*
-  ================================================
-  MATCHING ALGORITHM
-  ================================================
+  ==================================================
+  SCORING ALGORITHM
+  ==================================================
   */
 
-  function scoreLab(
-    candidate,
-    lab
-  ) {
+  function scoreLab(candidate, lab) {
     let fieldScore = 0;
     let techniqueScore = 0;
     let goalScore = 0;
@@ -856,7 +932,7 @@
     ) {
       fieldScore += 3;
     } else if (
-      relatedField(
+      fieldsRelated(
         candidate.primaryField,
         lab.primaryField
       )
@@ -865,7 +941,7 @@
     }
 
     if (
-      arraysMatch(
+      valuesMatch(
         candidate.subDisciplines,
         lab.subDisciplines
       )
@@ -874,10 +950,10 @@
     }
 
     /*
-      Techniques score: maximum 18
+      Technique score: maximum 18
     */
 
-    const allTechniques = [
+    const allLabTechniques = [
       ...toList(
         lab.requiredTechniques
       ),
@@ -887,9 +963,9 @@
     ];
 
     techniqueScore =
-      overlapRatio(
+      techniqueOverlap(
         candidate.skills,
-        allTechniques
+        allLabTechniques
       ) * 18;
 
     /*
@@ -897,7 +973,7 @@
     */
 
     if (
-      arraysMatch(
+      valuesMatch(
         candidate.careerGoal,
         lab.careerPathways
       )
@@ -924,7 +1000,7 @@
     }
 
     if (
-      arraysMatch(
+      valuesMatch(
         candidate.compensationPreference,
         lab.compensation
       )
@@ -959,9 +1035,7 @@
       ...lab,
 
       fieldScore:
-        Number(
-          fieldScore.toFixed(2)
-        ),
+        Number(fieldScore.toFixed(2)),
 
       techniqueScore:
         Number(
@@ -969,58 +1043,61 @@
         ),
 
       goalScore:
-        Number(
-          goalScore.toFixed(2)
-        ),
+        Number(goalScore.toFixed(2)),
 
       rawScore:
-        Number(
-          rawScore.toFixed(2)
-        ),
+        Number(rawScore.toFixed(2)),
 
       matchPercent:
-        Number(
-          matchPercent.toFixed(1)
-        )
+        Number(matchPercent.toFixed(1))
     };
   }
+
+  /*
+  ==================================================
+  STATUS MESSAGE
+  ==================================================
+  */
 
   function showMessage(
     form,
     message,
     isError = false
   ) {
-    let target =
+    let messageBox =
       form.querySelector(
         "#status-message, .status-message, [data-status]"
       );
 
-    if (!target) {
-      target =
+    if (!messageBox) {
+      messageBox =
         document.createElement("p");
 
-      target.id =
+      messageBox.id =
         "status-message";
 
-      form.appendChild(target);
+      form.appendChild(messageBox);
     }
 
-    target.textContent =
+    messageBox.textContent =
       message;
 
-    target.style.color =
+    messageBox.style.marginTop =
+      "15px";
+
+    messageBox.style.fontWeight =
+      "700";
+
+    messageBox.style.color =
       isError
         ? "#b42318"
         : "#067647";
-
-    target.style.fontWeight =
-      "600";
   }
 
   /*
-  ================================================
-  LAB SUBMISSION
-  ================================================
+  ==================================================
+  LAB FORM SUBMISSION
+  ==================================================
   */
 
   function setupLabForm() {
@@ -1031,6 +1108,10 @@
       document.querySelector("form");
 
     if (!form) {
+      console.error(
+        "Lab form was not found."
+      );
+
       return;
     }
 
@@ -1038,11 +1119,6 @@
       "submit",
       event => {
         event.preventDefault();
-
-        /*
-          Prevent old form scripts
-          from performing another submission.
-        */
         event.stopImmediatePropagation();
 
         const lab =
@@ -1061,23 +1137,19 @@
           return;
         }
 
-        const labs =
-          safeJsonParse(
-            localStorage.getItem(
-              LABS_KEY
-            ),
-            []
-          );
+        /*
+          Always returns an array.
+          This fixes null.findIndex.
+        */
+        const labs = loadLabs();
 
         const duplicateIndex =
-          labs.findIndex(item =>
-            normalize(item.labName) ===
+          labs.findIndex(existingLab =>
+            normalize(existingLab.labName) ===
             normalize(lab.labName)
           );
 
-        if (
-          duplicateIndex >= 0
-        ) {
+        if (duplicateIndex >= 0) {
           labs[duplicateIndex] = {
             ...labs[duplicateIndex],
             ...lab,
@@ -1095,7 +1167,7 @@
 
         showMessage(
           form,
-          `Lab saved. ${labs.length} lab profile(s) are available for matching.`
+          `Lab saved successfully. ${labs.length} lab profile(s) are ready for matching.`
         );
       },
       true
@@ -1103,9 +1175,9 @@
   }
 
   /*
-  ================================================
-  CANDIDATE SUBMISSION
-  ================================================
+  ==================================================
+  CANDIDATE FORM SUBMISSION
+  ==================================================
   */
 
   function setupCandidateForm() {
@@ -1116,6 +1188,10 @@
       document.querySelector("form");
 
     if (!form) {
+      console.error(
+        "Candidate form was not found."
+      );
+
       return;
     }
 
@@ -1141,45 +1217,27 @@
           return;
         }
 
-        const labs =
-          safeJsonParse(
-            localStorage.getItem(
-              LABS_KEY
-            ),
-            []
-          );
+        const labs = loadLabs();
 
-        if (
-          !Array.isArray(labs) ||
-          labs.length === 0
-        ) {
+        if (labs.length === 0) {
           showMessage(
             form,
-            "No labs have been submitted. Submit at least one lab form first.",
+            "No labs have been saved. Submit at least one lab profile first.",
             true
           );
 
           return;
         }
 
-        /*
-          Calculate every Lab score
-          and sort highest to lowest.
-        */
-
-        const results =
-          labs
-            .map(lab =>
-              scoreLab(
-                candidate,
-                lab
-              )
-            )
-            .sort(
-              (first, second) =>
-                second.matchPercent -
-                first.matchPercent
-            );
+        const results = labs
+          .map(lab =>
+            scoreLab(candidate, lab)
+          )
+          .sort(
+            (first, second) =>
+              second.matchPercent -
+              first.matchPercent
+          );
 
         sessionStorage.setItem(
           RESULTS_KEY,
@@ -1199,28 +1257,10 @@
   }
 
   /*
-  ================================================
+  ==================================================
   RESULTS PAGE
-  ================================================
+  ==================================================
   */
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function formatList(value) {
-    const values =
-      toList(value);
-
-    return values.length
-      ? values.join(", ")
-      : "Not provided";
-  }
 
   function renderResultsPage() {
     let container =
@@ -1235,18 +1275,32 @@
       container.id =
         "results-container";
 
+      container.style.maxWidth =
+        "900px";
+
+      container.style.margin =
+        "30px auto";
+
+      container.style.padding =
+        "20px";
+
       document.body.appendChild(
         container
       );
     }
 
-    const results =
+    const savedResults =
       safeJsonParse(
         sessionStorage.getItem(
           RESULTS_KEY
         ),
         []
       );
+
+    const results =
+      Array.isArray(savedResults)
+        ? savedResults
+        : [];
 
     const candidate =
       safeJsonParse(
@@ -1256,15 +1310,12 @@
         {}
       );
 
-    if (
-      !Array.isArray(results) ||
-      results.length === 0
-    ) {
+    if (results.length === 0) {
       container.innerHTML = `
         <p>
-          No results found.
-          Return to the candidate form
-          and submit again.
+          No match results were found.
+          Return to the Candidate Form
+          and submit your profile again.
         </p>
       `;
 
@@ -1281,23 +1332,45 @@
       candidate.candidateName
     ) {
       heading.textContent =
-        `Matches for ${candidate.candidateName}`;
+        `Matches for ${escapeHtml(
+          candidate.candidateName
+        )}`;
     }
+
+    /*
+      Sort again to guarantee highest first.
+    */
+    results.sort(
+      (first, second) =>
+        Number(
+          second.matchPercent || 0
+        ) -
+        Number(
+          first.matchPercent || 0
+        )
+    );
 
     container.innerHTML =
       results.map(
         (result, index) => `
           <article
-            class="match-card"
             style="
-              padding: 20px;
-              margin: 16px 0;
+              padding: 22px;
+              margin-bottom: 20px;
               border: 1px solid #d0d5dd;
               border-radius: 10px;
               background: white;
+              box-shadow:
+                0 4px 12px
+                rgba(0, 0, 0, 0.06);
             "
           >
-            <h2>
+            <h2
+              style="
+                margin-top: 0;
+                color: #173f8a;
+              "
+            >
               Rank ${index + 1}:
               ${escapeHtml(
                 result.labName ||
@@ -1307,22 +1380,34 @@
 
             <p
               style="
-                font-size: 1.35rem;
+                font-size: 24px;
                 font-weight: 700;
+                color: #067647;
               "
             >
               Match:
-              ${result.matchPercent.toFixed(1)}%
+              ${Number(
+                result.matchPercent || 0
+              ).toFixed(1)}%
             </p>
 
             <p>
-              <strong>Field:</strong>
-              ${result.fieldScore} / 5
+              <strong>Field Score:</strong>
+              ${Number(
+                result.fieldScore || 0
+              ).toFixed(1)}
+              / 5
             </p>
 
             <p>
-              <strong>Techniques:</strong>
-              ${result.techniqueScore} / 18
+              <strong>
+                Technique Score:
+              </strong>
+
+              ${Number(
+                result.techniqueScore || 0
+              ).toFixed(1)}
+              / 18
             </p>
 
             <p>
@@ -1330,11 +1415,34 @@
                 Goals and Logistics:
               </strong>
 
-              ${result.goalScore} / 14
+              ${Number(
+                result.goalScore || 0
+              ).toFixed(1)}
+              / 14
             </p>
 
             <p>
-              <strong>Primary Field:</strong>
+              <strong>Institution:</strong>
+
+              ${escapeHtml(
+                result.institution ||
+                "Not provided"
+              )}
+            </p>
+
+            <p>
+              <strong>PI:</strong>
+
+              ${escapeHtml(
+                result.piName ||
+                "Not provided"
+              )}
+            </p>
+
+            <p>
+              <strong>
+                Primary Field:
+              </strong>
 
               ${escapeHtml(
                 result.primaryField ||
@@ -1355,15 +1463,6 @@
             </p>
 
             <p>
-              <strong>Institution:</strong>
-
-              ${escapeHtml(
-                result.institution ||
-                "Not provided"
-              )}
-            </p>
-
-            <p>
               <strong>Description:</strong>
 
               ${escapeHtml(
@@ -1377,9 +1476,9 @@
   }
 
   /*
-  ================================================
+  ==================================================
   DETECT CURRENT PAGE
-  ================================================
+  ==================================================
   */
 
   if (
