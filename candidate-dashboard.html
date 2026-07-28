@@ -62,28 +62,32 @@ if (profile) {
     'Welcome back, ' + (profile.candidate_name || currentUser.email);
 }
 
-const { data: matches, error } = await supabase
-  .from('matches')
-  .select('*, labs(lab_name, institution)')
-  .eq('candidate_id', profile ? profile.id : null)
-  .order('combined_percent', { ascending: false });
-
-if (error) {
-  container.innerHTML = '<p class="empty-state">Could not load matches: ' + error.message + '</p>';
-} else if (!matches || matches.length === 0) {
-  container.innerHTML = '<p class="empty-state">No saved matches yet. Run a match to see your results here.</p>';
+if (!profile) {
+  container.innerHTML = '<p class="empty-state">No profile yet. Fill out the candidate form to get your first matches.</p>';
 } else {
-  container.innerHTML = matches.map(m => `
-    <div class="match-card">
-      <div class="lab-name">${m.labs ? m.labs.lab_name : 'Lab'}</div>
-      <div class="institution">${m.labs ? m.labs.institution : ''}</div>
-      <div class="scores">
-        <div class="score"><div class="n">${Math.round((m.rule_percent || 0) * 100)}%</div><div class="l">Rule</div></div>
-        <div class="score"><div class="n">${Math.round((m.semantic_percent || 0) * 100)}%</div><div class="l">Semantic</div></div>
-        <div class="score"><div class="n">${Math.round((m.combined_percent || 0) * 100)}%</div><div class="l">Combined</div></div>
+  const { data: matches, error } = await supabase
+    .from('matches')
+    .select('*, labs(lab_name, institution)')
+    .eq('candidate_id', profile.id)
+    .order('combined_percent', { ascending: false });
+
+  if (error) {
+    container.innerHTML = '<p class="empty-state">Could not load matches: ' + error.message + '</p>';
+  } else if (!matches || matches.length === 0) {
+    container.innerHTML = '<p class="empty-state">No saved matches yet. Run a match to see your results here.</p>';
+  } else {
+    container.innerHTML = matches.map(m => `
+      <div class="match-card">
+        <div class="lab-name">${m.labs ? m.labs.lab_name : 'Lab'}</div>
+        <div class="institution">${m.labs ? m.labs.institution : ''}</div>
+        <div class="scores">
+          <div class="score"><div class="n">${Math.round((m.rule_percent || 0) * 100)}%</div><div class="l">Rule</div></div>
+          <div class="score"><div class="n">${Math.round((m.semantic_percent || 0) * 100)}%</div><div class="l">Semantic</div></div>
+          <div class="score"><div class="n">${Math.round((m.combined_percent || 0) * 100)}%</div><div class="l">Combined</div></div>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+  }
 }
 </script>
 
