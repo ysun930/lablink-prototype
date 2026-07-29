@@ -301,7 +301,7 @@ module.exports = async function handler(req, res) {
     }
 
     const requestBody = parseBody(req);
-    const candidate = normalizeCandidate(requestBody);
+    const candidate = normalizeCandidate(requestBody.candidate || requestBody);
 
     if (!candidate.candidateName || !candidate.primaryField) {
       return res.status(400).json({ error: "Candidate name and primary field are required." });
