@@ -42,26 +42,36 @@
     }
   }
 
-  function loadLabs() {
-    const stored = safeJsonParse(
-      localStorage.getItem(LABS_KEY),
-      []
-    );
-
-    /*
-      Fixes the previous null.findIndex error.
-    */
-    if (!Array.isArray(stored)) {
-      localStorage.setItem(
-        LABS_KEY,
-        JSON.stringify([])
-      );
-
+  async function loadLabs() {
+  try {
+    const response = await fetch('/api/labs');
+    if (!response.ok) {
+      console.error('Failed to fetch labs from API');
       return [];
     }
-
-    return stored;
+    const supabaseLabs = await response.json();
+    return supabaseLabs.map(lab => ({
+      id:                  lab.id,
+      labName:             lab.lab_name,
+      piName:              lab.pi_name,
+      institution:         lab.institution,
+      institutionType:     lab.institution_type,
+      primaryField:        lab.primary_field,
+      subDisciplines:      lab.sub_disciplines || [],
+      requiredTechniques:  lab.required_techniques || [],
+      preferredTechniques: lab.preferred_techniques || [],
+      careerPathways:      lab.career_pathways || [],
+      hireeLevel:          lab.hiree_level || [],
+      hoursPerWeek:        lab.hours_per_week,
+      compensation:        lab.compensation,
+      workFormat:          lab.remote_option,
+      description:         lab.description
+    }));
+  } catch (error) {
+    console.error('Error loading labs:', error);
+    return [];
   }
+}
 
   function normalize(value) {
     return String(value ?? "")
@@ -1117,62 +1127,67 @@
 
     form.addEventListener(
       "submit",
-      event => {
+      async event => {
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        const lab =
-          buildLab(form);
+        const lab = buildLab(form);
 
-        if (
-          !lab.labName ||
-          !lab.primaryField
-        ) {
-          showMessage(
-            form,
-            "Please enter the lab name and primary field.",
-            true
-          );
+    if (!lab.labName || !lab.primaryField) {
+      showMessage(
+        form,
+        "Please enter the lab name and primary field.",
+        true
+      );
+      return;
+    }
 
-          return;
-        }
+    try {
+      showMessage(form, "Saving lab profile...");
 
-        /*
-          Always returns an array.
-          This fixes null.findIndex.
-        */
-        const labs = loadLabs();
+      const response = await fetch('/api/register-lab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lab_name:             lab.labName,
+          pi_name:              lab.piName,
+          institution:          lab.institution,
+          primary_field:        lab.primaryField,
+          sub_disciplines:      lab.subDisciplines,
+          required_techniques:  lab.requiredTechniques,
+          preferred_techniques: lab.preferredTechniques,
+          career_pathways:      lab.careerPathways,
+          hiree_level:          lab.hireeLevel,
+          hours_per_week:       lab.hoursPerWeek,
+          compensation:         lab.compensation,
+          remote_option:        lab.workFormat,
+          description:          lab.description
+        })
+      });
 
-        const duplicateIndex =
-          labs.findIndex(existingLab =>
-            normalize(existingLab.labName) ===
-            normalize(lab.labName)
-          );
+      const result = await response.json();
 
-        if (duplicateIndex >= 0) {
-          labs[duplicateIndex] = {
-            ...labs[duplicateIndex],
-            ...lab,
-            id:
-              labs[duplicateIndex].id
-          };
-        } else {
-          labs.push(lab);
-        }
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to save lab');
+      }
 
-        localStorage.setItem(
-          LABS_KEY,
-          JSON.stringify(labs)
-        );
+      showMessage(
+        form,
+        "Lab profile saved successfully and is now live on LabLink."
+      );
 
-        showMessage(
-          form,
-          `Lab saved successfully. ${labs.length} lab profile(s) are ready for matching.`
-        );
-      },
-      true
-    );
-  }
+    } catch (error) {
+      console.error('Error saving lab:', error);
+      showMessage(
+        form,
+        "Error saving lab profile: " + error.message,
+        true
+      );
+    }
+  },
+  true
+);
+}
 
   /*
   ==================================================
@@ -1180,7 +1195,7 @@
   ==================================================
   */
 
-  function setupCandidateForm() {
+  async function setupCandidateForm() {
     const form =
       document.getElementById(
         "candidate-form"
@@ -1197,7 +1212,7 @@
 
     form.addEventListener(
       "submit",
-      event => {
+      async event => {
         event.preventDefault();
         event.stopImmediatePropagation();
 
@@ -1217,7 +1232,7 @@
           return;
         }
 
-        const labs = loadLabs();
+        const labs = await loadLabs();
 
         if (labs.length === 0) {
           showMessage(
