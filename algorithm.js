@@ -49,7 +49,8 @@
       console.error('Failed to fetch labs from API');
       return [];
     }
-    const supabaseLabs = await response.json();
+    const json = await response.json();
+    const supabaseLabs = json.labs || json || [];
     return supabaseLabs.map(lab => ({
       id:                  lab.id,
       labName:             lab.lab_name,
