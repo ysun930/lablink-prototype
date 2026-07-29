@@ -375,38 +375,60 @@
         return;
       }
 
-      const results = labs
-        .map(lab => scoreLab(candidate, lab))
-        .sort((first, second) => second.matchPercent - first.matchPercent);
+      showMessage(form, "Finding your best lab matches...");
 
-      sessionStorage.setItem(RESULTS_KEY, JSON.stringify(results));
-      sessionStorage.setItem(CANDIDATE_KEY, JSON.stringify(candidate));
-      location.href = "results.html";
+const response = await fetch('/api/match', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ candidate })
+});
+
+const json = await response.json();
+const results = (json.results || json || []).sort(
+  (a, b) => Number(b.combinedPercent || 0) - Number(a.combinedPercent || 0)
+);
+
+sessionStorage.setItem(RESULTS_KEY, JSON.stringify(results));
+sessionStorage.setItem(CANDIDATE_KEY, JSON.stringify(candidate));
+location.href = "results.html";
     }, true);
   }
 
   function generateCard(result, index) {
-    return `
-      <article style="padding: 22px; margin-bottom: 20px; border: 1px solid #d0d5dd; border-radius: 10px; background: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);">
-        <h2 style="margin-top: 0; color: #173f8a;">
-          Rank ${index + 1}: ${escapeHtml(result.labName || "Unnamed Lab")}
-        </h2>
-        <p style="font-size: 24px; font-weight: 700; color: #067647;">
-          Match: ${Number(result.matchPercent || 0).toFixed(1)}%
-        </p>
-        <p><strong>Rule-Based Score:</strong> ${Number(result.rulePercent || 0).toFixed(1)}%</p>
-        <p><strong>AI Semantic Score:</strong> ${Number(result.semanticPercent || 0).toFixed(1)}%</p>
-        <p><strong>Field Score:</strong> ${Number(result.fieldScore || 0).toFixed(1)} / 5</p>
-        <p><strong>Technique Score:</strong> ${Number(result.techniqueScore || 0).toFixed(1)} / 18</p>
-        <p><strong>Goals and Logistics:</strong> ${Number(result.goalScore || 0).toFixed(1)} / 14</p>
-        <p><strong>Institution:</strong> ${escapeHtml(result.institution || "Not provided")}</p>
-        <p><strong>PI:</strong> ${escapeHtml(result.piName || "Not provided")}</p>
-        <p><strong>Primary Field:</strong> ${escapeHtml(result.primaryField || "Not provided")}</p>
-        <p><strong>Required Techniques:</strong> ${escapeHtml(formatList(result.requiredTechniques))}</p>
-        <p><strong>Description:</strong> ${escapeHtml(result.description || "Not provided")}</p>
-      </article>
-    `;
-  }
+  const lab = result.labProfile || result;
+  const matchPercent = Number(result.combinedPercent || result.matchPercent || 0).toFixed(1);
+  const rulePercent = Number(result.rulePercent || 0).toFixed(1);
+  const semanticPercent = Number(result.semanticPercent || 0).toFixed(1);
+
+  return `
+    <article style="padding: 22px; margin-bottom: 20px; border: 1px solid #d0d5dd; border-radius: 10px; background: white; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);">
+      <h2 style="margin-top: 0; color: #173f8a;">
+        Rank ${index + 1}: ${escapeHtml(result.labName || lab.lab_name || "Unnamed Lab")}
+      </h2>
+      <p style="font-size: 24px; font-weight: 700; color: #067647;">
+        Match: ${matchPercent}%
+      </p>
+      <p><strong>Rule-Based Score:</strong> ${rulePercent}%</p>
+      <p><strong>AI Semantic Score:</strong> ${semanticPercent}%</p>
+      <p><strong>Field Score:</strong> ${Number(result.fieldScore || 0).toFixed(1)} / 5</p>
+      <p><strong>Technique Score:</strong> ${Number(result.techniqueScore || 0).toFixed(1)} / 18</p>
+      <p><strong>Goals and Logistics:</strong> ${Number(result.goalScore || 0).toFixed(1)} / 14</p>
+      <p><strong>Institution:</strong> ${escapeHtml(lab.institution || "Not provided")}</p>
+      <p><strong>PI:</strong> ${escapeHtml(lab.pi_name || "Not provided")}</p>
+      <p><strong>Primary Field:</strong> ${escapeHtml(lab.primary_field || "Not provided")}</p>
+      <p><strong>Required Techniques:</strong> ${escapeHtml(formatList(lab.required_techniques))}</p>
+      <p><strong>Description:</strong> ${escapeHtml(lab.description || "Not provided")}</p>
+      ${result.whyItMatches ? `
+        <details style="margin-top: 16px;">
+          <summary style="cursor: pointer; font-weight: bold; color: #006b5f;">Why this match?</summary>
+          <ul style="margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            ${result.whyItMatches.map(reason => `<li>${escapeHtml(reason)}</li>`).join('')}
+          </ul>
+        </details>
+      ` : ''}
+    </article>
+  `;
+}
 
   function renderResultsPage() {
     let container = document.getElementById("results-container");
@@ -433,7 +455,7 @@
       heading.textContent = `Matches for ${escapeHtml(candidate.candidateName)}`;
     }
 
-    results.sort((a, b) => Number(b.matchPercent || 0) - Number(a.matchPercent || 0));
+    results.sort((a, b) => Number(b.combinedPercent || b.matchPercent || 0) - Number(a.combinedPercent || a.matchPercent || 0));
     container.innerHTML = results.map((result, index) => generateCard(result, index)).join('');
 
     // Wire up sort dropdown
