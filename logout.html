@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Log Out | LabLink</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #f4f8f7;
+      color: #213547;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 7%;
+      background-color: white;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      color: #0f766e;
+      font-size: 27px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav a {
+      color: #334155;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover {
+      color: #0f766e;
+    }
+
+    main {
+      min-height: calc(100vh - 134px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #0f766e, #134e4a);
+    }
+
+    .logout-card {
+      width: 100%;
+      max-width: 460px;
+      padding: 45px 38px;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+      text-align: center;
+    }
+
+    .logout-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 22px;
+      background-color: #edf8f6;
+      color: #0f766e;
+      border-radius: 50%;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .logout-card h1 {
+      margin-bottom: 12px;
+      color: #16324f;
+      font-size: 30px;
+    }
+
+    .logout-card p {
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .status-message {
+      margin-top: 24px;
+      padding: 14px 16px;
+      background-color: #edf8f6;
+      border: 1px solid #d8ebe8;
+      border-radius: 10px;
+      color: #0f766e;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .login-link {
+      display: none;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px 24px;
+      background-color: #0f766e;
+      color: white;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: bold;
+      transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .login-link:hover {
+      background-color: #115e59;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.25);
+    }
+
+    .error-message {
+      background-color: #fff1f2;
+      border-color: #fecdd3;
+      color: #be123c;
+    }
+
+    footer {
+      padding: 25px 20px;
+      background-color: #134e4a;
+      color: #d7f5f1;
+      text-align: center;
+    }
+
+    footer p {
+      font-size: 14px;
+    }
+
+    @media (max-width: 750px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+      }
+
+      .logout-card {
+        padding: 36px 24px;
+      }
+
+      .logout-card h1 {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1 class="logo">LabLink</h1>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="logout-card">
+      <div class="logout-icon">
+        ↪
+      </div>
+
+      <h1>Logging You Out</h1>
+
+      <p>
+        Your LabLink session is being securely closed.
+        You will be redirected to the login page shortly.
+      </p>
+
+      <div
+        id="status-message"
+        class="status-message"
+        role="status"
+        aria-live="polite"
+      >
+        Signing out...
+      </div>
+
+      <a
+        href="login.html"
+        id="login-link"
+        class="login-link"
+      >
+        Return to Login
+      </a>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      © 2026 LabLink. A research matching prototype.
+    </p>
+  </footer>
+
+  <script type="module">
+    import { supabase } from "./supabase.js";
+
+    const statusMessage =
+      document.getElementById("status-message");
+
+    const loginLink =
+      document.getElementById("login-link");
+
+    async function logOutUser() {
+      try {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          throw error;
+        }
+
+        statusMessage.textContent =
+          "You have been signed out successfully.";
+
+        setTimeout(function () {
+          window.location.replace("login.html");
+        }, 1200);
+      } catch (error) {
+        console.error("Logout error:", error);
+
+        statusMessage.textContent =
+          "We could not complete the sign-out request. Please try again.";
+
+        statusMessage.classList.add("error-message");
+        loginLink.style.display = "inline-block";
+      }
+    }
+
+    logOutUser();
+  </script>
+
+</body>
+</html>
