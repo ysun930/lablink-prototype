@@ -249,6 +249,93 @@
         padding: 30px 22px;
       }
     }
+
+    /* Research skills checkbox group */
+    .skills-checkbox-group {
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background-color: #fbfdfd;
+    }
+
+    .skills-checkbox-group:focus-within {
+      border-color: #0f766e;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .skills-checkbox-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: normal;
+    }
+
+    .skills-checkbox-item:hover {
+      background-color: #eef8f6;
+    }
+
+    .skills-checkbox-item input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      padding: 0;
+      accent-color: #0f766e;
+      flex-shrink: 0;
+    }
+
+    .skills-checkbox-item span {
+      line-height: 1.4;
+    }
+
+    .skills-category-heading {
+      margin: 16px 0 7px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #dbe5e3;
+      color: #16324f;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .skills-category-heading:first-child {
+      margin-top: 0;
+    }
+
+    /* Final bold typography for Research Skills and Techniques */
+    .skills-checkbox-group,
+    .skills-checkbox-group * {
+      font-family: Arial, sans-serif !important;
+    }
+
+    .skills-checkbox-item {
+      margin-bottom: 0 !important;
+      color: #213547 !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      line-height: 1.4 !important;
+    }
+
+    .skills-checkbox-item span {
+      color: #213547 !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      line-height: 1.4 !important;
+    }
+
+    .skills-category-heading {
+      color: #334155 !important;
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      line-height: 1.4 !important;
+    }
+
   </style>
 </head>
 
@@ -405,8 +492,7 @@
               Research Skills and Techniques
 
               <span class="field-note">
-                Hold Command on Mac or Control on Windows while clicking
-                to select more than one skill.
+                Select all research skills and techniques that apply.
               </span>
             </label>
 
@@ -912,6 +998,94 @@
     </p>
   </footer>
 
+
+<script>
+  function addSkillCheckbox(container, inputName, option) {
+    const value = String(
+      option.value || option.textContent || ""
+    ).trim();
+
+    if (!value) return;
+
+    const label = document.createElement("label");
+    label.className = "skills-checkbox-item";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.name = inputName;
+    checkbox.value = value;
+    checkbox.checked = option.selected;
+
+    const text = document.createElement("span");
+    text.textContent = option.textContent.trim();
+
+    label.appendChild(checkbox);
+    label.appendChild(text);
+    container.appendChild(label);
+  }
+
+  function convertSkillsSelectToCheckboxes() {
+    const select = document.getElementById("skills-select");
+    const hiddenInput = document.getElementById("skills");
+    const form = document.getElementById("candidate-form");
+
+    if (!select || !hiddenInput || !form) return;
+
+    const checkboxGroup = document.createElement("div");
+    checkboxGroup.id = "skills-checkboxes";
+    checkboxGroup.className = "skills-checkbox-group";
+    checkboxGroup.setAttribute(
+      "aria-label",
+      "Research Skills and Techniques"
+    );
+
+    select.querySelectorAll("optgroup").forEach(function (group) {
+      const heading = document.createElement("div");
+      heading.className = "skills-category-heading";
+      heading.textContent = group.label;
+      checkboxGroup.appendChild(heading);
+
+      group.querySelectorAll("option").forEach(function (option) {
+        addSkillCheckbox(
+          checkboxGroup,
+          select.name,
+          option
+        );
+      });
+    });
+
+    select.replaceWith(checkboxGroup);
+
+    function updateSkillsValue() {
+      const selectedSkills = Array.from(
+        checkboxGroup.querySelectorAll(
+          'input[type="checkbox"]:checked'
+        )
+      ).map(function (checkbox) {
+        return checkbox.value;
+      });
+
+      hiddenInput.value = selectedSkills.join(", ");
+    }
+
+    checkboxGroup.addEventListener(
+      "change",
+      updateSkillsValue
+    );
+
+    form.addEventListener(
+      "submit",
+      updateSkillsValue,
+      true
+    );
+  }
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    convertSkillsSelectToCheckboxes
+  );
+</script>
+
 <script type="module">
   import { supabase } from './supabase.js';
 
@@ -1056,15 +1230,6 @@
     const subDiscipline =
       document.getElementById("sub-discipline");
 
-    const skillsSelect =
-      document.getElementById("skills-select");
-
-    const skillsInput =
-      document.getElementById("skills");
-
-    const candidateForm =
-      document.getElementById("candidate-form");
-
     primaryField.addEventListener("change", function () {
       const selectedField = this.value;
 
@@ -1088,21 +1253,6 @@
       subDiscipline.disabled = false;
     });
 
-    function updateSkillsValue() {
-      const selectedSkills = Array.from(
-        skillsSelect.selectedOptions
-      ).map(function (option) {
-        return option.value;
-      });
-
-      skillsInput.value = selectedSkills.join(", ");
-    }
-
-    skillsSelect.addEventListener("change", updateSkillsValue);
-
-    candidateForm.addEventListener("submit", function () {
-  updateSkillsValue();
-}, true);
   </script>
 
 
