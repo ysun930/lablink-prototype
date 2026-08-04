@@ -496,6 +496,13 @@
               </span>
             </label>
 
+            <input
+              id="skill-search"
+              type="text"
+              placeholder="Search skills and techniques..."
+              style="margin-bottom: 12px;"
+            >
+
             <select
               id="skills-select"
               name="skillsSelection"
@@ -724,10 +731,19 @@
               This hidden input preserves the original "skills" ID
               that app.js may already use.
             -->
+            <label for="other-skill" style="margin-top: 16px;">
+              Other (enter):
+
+              <span class="field-note">
+                Add any skills or techniques not listed above. Separate multiple entries with commas.
+              </span>
+            </label>
+
             <input
-              id="skills"
-              name="skills"
-              type="hidden"
+              id="other-skill"
+              name="otherSkill"
+              type="text"
+              placeholder="Example: Patch clamp electrophysiology, Seurat"
             >
           </div>
 
@@ -837,6 +853,22 @@
 
               <option value="Graduate Student">
                 Graduate Student
+              </option>
+
+              <option value="Master's Student">
+                Master's Student
+              </option>
+
+              <option value="Master's Degree Completed">
+                Master's Degree Completed
+              </option>
+
+              <option value="Post-Master's">
+                Post-Master's
+              </option>
+
+              <option value="Postdoctoral Researcher">
+                Postdoctoral Researcher
               </option>
 
               <option value="Other">
@@ -1053,8 +1085,43 @@
         );
       });
     });
+  
+select.replaceWith(checkboxGroup);
 
-    select.replaceWith(checkboxGroup);
+    const searchInput = document.getElementById("skill-search");
+    const otherInput = document.getElementById("other-skill");
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        const query = this.value.toLowerCase().trim();
+        const nodes = Array.from(checkboxGroup.children);
+
+        nodes.forEach(function (node) {
+          if (node.classList.contains("skills-checkbox-item")) {
+            const match = node.textContent.toLowerCase().includes(query);
+            node.style.display = match ? "flex" : "none";
+          }
+        });
+
+        let heading = null;
+        let visible = 0;
+
+        nodes.forEach(function (node) {
+          if (node.classList.contains("skills-category-heading")) {
+            if (heading) heading.style.display = visible ? "" : "none";
+            heading = node;
+            visible = 0;
+          } else if (
+            node.classList.contains("skills-checkbox-item") &&
+            node.style.display !== "none"
+          ) {
+            visible++;
+          }
+        });
+
+        if (heading) heading.style.display = visible ? "" : "none";
+      });
+    }
 
     function updateSkillsValue() {
       const selectedSkills = Array.from(
@@ -1065,19 +1132,25 @@
         return checkbox.value;
       });
 
+      if (otherInput && otherInput.value.trim()) {
+        otherInput.value
+          .split(",")
+          .map(function (entry) { return entry.trim(); })
+          .filter(Boolean)
+          .forEach(function (entry) { selectedSkills.push(entry); });
+      }
+
       hiddenInput.value = selectedSkills.join(", ");
     }
 
-    checkboxGroup.addEventListener(
-      "change",
-      updateSkillsValue
-    );
+    checkboxGroup.addEventListener("change", updateSkillsValue);
 
-    form.addEventListener(
-      "submit",
-      updateSkillsValue,
-      true
-    );
+    if (otherInput) {
+      otherInput.addEventListener("input", updateSkillsValue);
+    }
+
+    form.addEventListener("submit", updateSkillsValue, true);
+  
   }
 
   document.addEventListener(
