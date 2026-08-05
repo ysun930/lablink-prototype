@@ -1,85 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lab Dashboard - LabLink</title>
-<link rel="stylesheet" href="style.css">
-<style>
-  .dash-header { background:#E4F7F6; padding:50px 24px; text-align:center; font-family:Arial, Helvetica, sans-serif; }
-  .dash-header h1 { font-size:30px; margin:0 0 8px; }
-  .dash-header p { color:#5B6B72; margin:0; }
-  .dash-main { max-width:900px; margin:0 auto; padding:50px 24px; font-family:Arial, Helvetica, sans-serif; }
-  .dash-main h2 { font-size:22px; margin:0 0 20px; }
-  table { width:100%; border-collapse:collapse; }
-  th, td { text-align:left; padding:14px 16px; font-size:14px; }
-  th { color:#5B6B72; font-size:12px; text-transform:uppercase; border-bottom:2px solid #C9EEEC; }
-  tr:not(:last-child) td { border-bottom:1px solid #C9EEEC; }
-  .score-pill { display:inline-block; background:#E4F7F6; color:#1C9099; font-weight:700; padding:4px 10px; border-radius:20px; font-size:13px; }
-  .empty-state { color:#5B6B72; font-size:14.5px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recruit Students | LabLink</title>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background-color: #f4f8f7; color: #213547; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 18px 7%; background-color: white; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .logo { color: #0f766e; font-size: 27px; font-weight: bold; }
+    nav { display: flex; gap: 28px; }
+    nav a { color: #334155; text-decoration: none; font-size: 15px; font-weight: bold; }
+    nav a:hover { color: #0f766e; }
+    .hero { background: linear-gradient(135deg, #0f766e, #134e4a); color: white; text-align: center; padding: 65px 20px 110px; }
+    .hero h1 { font-size: 42px; margin-bottom: 14px; }
+    .hero p { max-width: 680px; margin: 0 auto; font-size: 17px; line-height: 1.6; color: #e6fffb; }
+    .content { max-width: 950px; margin: -65px auto 80px; padding: 0 20px; }
+    .panel { background-color: white; padding: 32px; border-radius: 18px; box-shadow: 0 15px 45px rgba(15,118,110,.14); }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px; }
+    .toolbar h2 { color: #16324f; font-size: 24px; }
+    .toolbar label { font-size: 14px; font-weight: bold; color: #334155; }
+    select { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #fbfdfd; font: inherit; }
+    .candidate-card { border: 1px solid #dbe5e3; border-radius: 14px; padding: 24px; margin-bottom: 18px; background-color: #fbfdfd; }
+    .candidate-card h3 { color: #0f766e; font-size: 20px; margin-bottom: 4px; }
+    .rank-label { font-size: 13px; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .match-score { font-size: 26px; font-weight: bold; color: #067647; margin: 10px 0 16px; }
+    .detail-row { font-size: 15px; line-height: 1.7; margin-bottom: 4px; }
+    .detail-row strong { color: #334155; }
+    .statement { margin-top: 14px; padding: 14px 16px; background-color: #eef8f6; border-left: 4px solid #0f766e; border-radius: 7px; font-size: 15px; line-height: 1.65; }
+    .empty-state { padding: 40px 10px; text-align: center; color: #64748b; line-height: 1.7; }
+    .empty-state a { color: #0f766e; font-weight: bold; }
+    footer { background-color: #134e4a; color: #d7f5f1; text-align: center; padding: 25px 20px; font-size: 14px; }
+    @media (max-width: 750px) {
+      header { flex-direction: column; gap: 15px; }
+      nav { flex-wrap: wrap; justify-content: center; gap: 16px; }
+      .hero h1 { font-size: 30px; }
+      .panel { padding: 22px; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="dash-header">
-  <h1 id="lab-title">Lab Dashboard</h1>
-  <a href="logout.html">Sign Out</a>
-  <p>Candidates matched to your lab, ranked by combined score.</p>
-</div>
+  <header>
+    <h1 class="logo">LabLink</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="labform.html">My Lab Profile</a>
+      <a href="contact.html">Contact</a>
+      <a href="logout.html">Sign Out</a>
+    </nav>
+  </header>
 
-<div class="dash-main">
-  <h2>Matched candidates</h2>
-  <div id="results-container"><p class="empty-state">Loading matches...</p></div>
-</div>
+  <main>
+    <section class="hero">
+      <h1 id="lab-heading">Recruit Students</h1>
+      <p>Browse the students who best match your laboratory, ranked by compatibility across research field, techniques, goals, and logistics.</p>
+    </section>
 
-<script type="module">
-import { supabase } from './supabase.js';
+    <section class="content">
+      <div class="panel">
+        <div class="toolbar">
+          <h2 id="result-count">Best student matches</h2>
+          <label>
+            Sort by
+            <select id="sort-students">
+              <option value="total">Overall Match</option>
+              <option value="field">Field Score</option>
+              <option value="technique">Technique Score</option>
+              <option value="goal">Goals and Logistics</option>
+            </select>
+          </label>
+        </div>
+        <div id="students-container">
+          <p class="empty-state">Loading student matches...</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-const { data: { session } } = await supabase.auth.getSession();
-if (!session) window.location.href = 'login.html';
-const currentUser = session.user;
+  <footer>
+    <p>© 2026 LabLink. Semantic matching powered by Cohere Embed AI.</p>
+  </footer>
 
-const container = document.getElementById('results-container');
+  <script src="algorithm.js"></script>
 
-const { data: lab } = await supabase
-  .from('labs').select('*').eq('user_id', currentUser.id).single();
+  <script type="module">
+    import { supabase } from './supabase.js';
 
-if (lab) document.getElementById('lab-title').textContent = lab.lab_name;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) window.location.href = 'login.html';
+    const currentUser = session.user;
 
-if (!lab) {
-  container.innerHTML = '<p class="empty-state">No lab found for this account. <a href="labform.html">Register your lab</a>.</p>';
-} else {
-  const { data: matches, error } = await supabase
-    .from('matches')
-    .select('*, candidates(candidate_name, education_level, confirmed_skills)')
-    .eq('lab_id', lab.id)
-    .order('combined_percent', { ascending: false });
+    const container = document.getElementById('students-container');
+    const countEl = document.getElementById('result-count');
+    const sortEl = document.getElementById('sort-students');
 
-  if (error) {
-    container.innerHTML = '<p class="empty-state">Could not load matches: ' + error.message + '</p>';
-  } else if (!matches || matches.length === 0) {
-    container.innerHTML = '<p class="empty-state">No candidates have been matched to your lab yet.</p>';
-  } else {
-    const rows = matches.map(m => {
-      const c = m.candidates || {};
-      const skills = c.confirmed_skills ? Object.keys(c.confirmed_skills).slice(0, 3).join(', ') : '-';
-      return `
-        <tr>
-          <td>${c.candidate_name || 'Candidate'}</td>
-          <td>${c.education_level || '-'}</td>
-          <td>${skills}</td>
-          <td><span class="score-pill">${Math.round((m.combined_percent || 0) * 100)}%</span></td>
-        </tr>`;
-    }).join('');
+    function toList(value) {
+      if (Array.isArray(value)) return value;
+      if (!value) return [];
+      return String(value).split(',').map(s => s.trim()).filter(Boolean);
+    }
 
-    container.innerHTML = `
-      <table>
-        <thead><tr><th>Candidate</th><th>Education</th><th>Top Skills</th><th>Combined Score</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-  }
-}
-</script>
+    function mapLab(row) {
+      return {
+        id: row.id,
+        labName: row.lab_name,
+        piName: row.pi_name,
+        institution: row.institution,
+        primaryField: row.primary_field,
+        subDisciplines: toList(row.sub_disciplines),
+        requiredTechniques: toList(row.required_techniques),
+        preferredTechniques: toList(row.preferred_techniques),
+        careerPathways: toList(row.career_pathways),
+        hireeLevel: toList(row.hiree_level),
+        hoursPerWeek: row.hours_per_week,
+        compensation: row.compensation,
+        workFormat: row.remote_option,
+        description: row.description
+      };
+    }
+
+    function mapCandidate(row) {
+      return {
+        id: row.id,
+        candidateName: row.candidate_name,
+        primaryField: row.primary_field_interest,
+        subDisciplines: toList(row.sub_discipline_interests),
+        skills: toList(row.confirmed_skills),
+        careerGoal: row.career_goal,
+        educationLevel: row.education_level,
+        hoursAvailable: row.hours_available,
+        compensationPreference: row.compensation_need,
+        workFormatPreference: row.remote_preference,
+        researchStatement: row.research_statement
+      };
+    }
+
+    function num(value) {
+      return typeof value === 'number' && !Number.isNaN(value) ? value : 0;
+    }
+
+    function readScores(result) {
+      return {
+        field: num(result.fieldScore),
+        technique: num(result.techniqueScore),
+        goal: num(result.goalScore),
+        total: num(result.matchPercent)
+      };
+    }
+
+    const { data: labRows, error: labError } = await supabase
+      .from('labs').select('*').eq('user_id', currentUser.id).limit(1);
+
+    if (labError) {
+      container.innerHTML = '<p class="empty-state">Could not load your lab: ' + labError.message + '</p>';
+    } else if (!labRows || labRows.length === 0) {
+      container.innerHTML = '<p class="empty-state">No lab profile found for this account.<br><a href="labform.html">Create your lab profile</a> to start seeing student matches.</p>';
+    } else {
+      const lab = mapLab(labRows[0]);
+      document.getElementById('lab-heading').textContent = 'Students for ' + (lab.labName || 'Your Lab');
+
+      const { data: candidateRows, error: candError } = await supabase
+        .from('candidates').select('*');
+
+      if (candError) {
+        container.innerHTML = '<p class="empty-state">Could not load candidates: ' + candError.message + '</p>';
+      } else if (!candidateRows || candidateRows.length === 0) {
+        container.innerHTML = '<p class="empty-state">No student profiles have been submitted yet.<br>Students appear here once they complete the candidate form.</p>';
+      } else if (typeof window.scoreLab !== 'function') {
+        container.innerHTML = '<p class="empty-state">Scoring function unavailable. Check that algorithm.js exposes scoreLab.</p>';
+      } else {
+        const scored = candidateRows.map(row => {
+          const candidate = mapCandidate(row);
+          const raw = window.scoreLab(candidate, lab) || {};
+          return { candidate, scores: readScores(raw) };
+        });
+
+        function render() {
+          const key = sortEl.value;
+          const sorted = [...scored].sort((a, b) => b.scores[key] - a.scores[key]);
+
+          countEl.textContent = sorted.length + ' student' + (sorted.length === 1 ? '' : 's') + ' matched';
+
+          container.innerHTML = sorted.map((entry, index) => {
+            const c = entry.candidate;
+            const s = entry.scores;
+            const skills = c.skills.length ? c.skills.join(', ') : 'Not provided';
+            return `
+              <div class="candidate-card">
+                <div class="rank-label">Rank ${index + 1}</div>
+                <h3>${c.candidateName || 'Unnamed candidate'}</h3>
+                <div class="match-score">Match: ${s.total.toFixed(1)}%</div>
+                <div class="detail-row"><strong>Field Score:</strong> ${s.field.toFixed(1)} / 5</div>
+                <div class="detail-row"><strong>Technique Score:</strong> ${s.technique.toFixed(1)} / 18</div>
+                <div class="detail-row"><strong>Goals and Logistics:</strong> ${s.goal.toFixed(1)} / 14</div>
+                <div class="detail-row"><strong>Education Level:</strong> ${c.educationLevel || 'Not provided'}</div>
+                <div class="detail-row"><strong>Primary Field:</strong> ${c.primaryField || 'Not provided'}</div>
+                <div class="detail-row"><strong>Career Goal:</strong> ${c.careerGoal || 'Not provided'}</div>
+                <div class="detail-row"><strong>Hours Available:</strong> ${c.hoursAvailable || 'Not provided'}</div>
+                <div class="detail-row"><strong>Work Format:</strong> ${c.workFormatPreference || 'Not provided'}</div>
+                <div class="detail-row"><strong>Skills:</strong> ${skills}</div>
+                ${c.researchStatement ? `<div class="statement"><strong>Research Statement:</strong><br>${c.researchStatement}</div>` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+
+        sortEl.addEventListener('change', render);
+        render();
+      }
+    }
+  </script>
 
 </body>
 </html>
