@@ -244,6 +244,8 @@
     };
   }
 
+window.scoreLab = scoreLab;
+
   function buildCandidate(form) {
     return {
       candidateName: firstValue(form, ["candidateName", "candidate_name", "candidate-name", "name"]),
