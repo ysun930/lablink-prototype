@@ -332,6 +332,7 @@ window.scoreLab = scoreLab;
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            user_id: window.currentUserId,
             lab_name:             lab.labName,
             pi_name:              lab.piName,
             institution:          lab.institution,
