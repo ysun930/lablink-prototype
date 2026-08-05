@@ -1171,6 +1171,8 @@ select.replaceWith(checkboxGroup);
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) window.location.href = 'login.html';
   const currentUser = session.user;
+  window.supabaseClient = supabase;
+  window.currentUserId = currentUser.id;
     
     const subDisciplines = {
       "Neuroscience": [

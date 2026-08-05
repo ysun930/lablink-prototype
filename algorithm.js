@@ -369,6 +369,33 @@
         return;
       }
 
+if (window.supabaseClient && window.currentUserId) {
+      const subs = Array.isArray(candidate.subDisciplines)
+        ? candidate.subDisciplines
+        : String(candidate.subDisciplines || "")
+            .split(",").map(s => s.trim()).filter(Boolean);
+
+      const { error: saveError } = await window.supabaseClient
+        .from("candidates")
+        .insert({
+          user_id: window.currentUserId,
+          candidate_name: candidate.candidateName,
+          education_level: candidate.educationLevel,
+          primary_field_interest: candidate.primaryField,
+          sub_discipline_interests: subs,
+          confirmed_skills: candidate.skills,
+          career_goal: candidate.careerGoal,
+          hours_available: candidate.hoursAvailable,
+          compensation_need: candidate.compensationPreference,
+          remote_preference: candidate.workFormatPreference,
+          research_statement: candidate.researchStatement
+        });
+
+      if (saveError) {
+        console.error("Could not save candidate:", saveError.message);
+      }
+    }
+
       const labs = await loadLabs();
       if (labs.length === 0) {
         showMessage(form, "No labs have been saved. Submit at least one lab profile first.", true);
