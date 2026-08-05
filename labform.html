@@ -196,54 +196,156 @@
         padding: 25px 20px;
       }
     }
+    
 
-    /* Technique checkbox groups */
-    .technique-checkbox-group {
-      max-height: 330px;
+    /* Searchable technique checkbox interface */
+    .technique-picker {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background-color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .technique-search {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      background-color: #ffffff;
+      color: #333333;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+    }
+
+    .technique-search:focus {
+      border-color: #0f766e;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    .technique-list {
+      max-height: 360px;
       overflow-y: auto;
-      padding: 16px;
-      border: 1px solid #b8c7d9;
-      border-radius: 10px;
-      background: #ffffff;
+      padding: 4px 4px 4px 0;
     }
 
-    .technique-checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 7px 4px;
-      cursor: pointer;
+    .technique-category {
+      margin: 14px 0 7px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #dbe5e3;
+      color: #0f766e;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 16px;
-    }
-
-    .technique-checkbox-item:hover {
-      background: #f3f8f7;
-      border-radius: 6px;
-    }
-
-    .technique-checkbox-item input {
-      width: 18px;
-      height: 18px;
-      margin: 0;
-      accent-color: #087f72;
-      flex-shrink: 0;
-    }
-
-    .technique-checkbox-item span {
-      line-height: 1.4;
-    }
-
-    .technique-category-heading {
-      margin: 15px 0 7px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #d9e2ec;
-      color: #173f8a;
-      font-size: 17px;
       font-weight: 700;
     }
 
-    .technique-category-heading:first-child {
+    .technique-category:first-child {
       margin-top: 0;
+    }
+
+    .technique-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      padding: 7px 6px;
+      border-radius: 6px;
+      color: #333333;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .technique-option:hover {
+      background-color: #eef8f6;
+    }
+
+    .technique-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      padding: 0;
+      accent-color: #0f766e;
+      flex-shrink: 0;
+    }
+
+    .technique-option span {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .technique-no-results {
+      display: none;
+      padding: 18px 8px;
+      color: #64748b;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .custom-technique-area {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #dbe5e3;
+    }
+
+    .custom-technique-label {
+      margin-bottom: 7px;
+      color: #333333;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .custom-technique-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .custom-technique-input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .add-technique-button {
+      width: auto;
+      min-width: 115px;
+      margin: 0;
+      padding: 11px 18px;
+      border-radius: 7px;
+      background-color: #0f766e;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .add-technique-button:hover {
+      background-color: #0b5f59;
+    }
+
+    .custom-select-input {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .custom-select-input.is-visible {
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .custom-technique-row {
+        flex-direction: column;
+      }
+
+      .add-technique-button {
+        width: 100%;
+      }
     }
 
   </style>
@@ -693,11 +795,32 @@
           <option value="Sophomore">Sophomore</option>
           <option value="Junior">Junior</option>
           <option value="Senior">Senior</option>
-          <option value="Post-Baccalaureate">
-            Post-Baccalaureate
+          <option value="Post-Baccalaureate Researcher">
+            Post-Baccalaureate Researcher
           </option>
-          <option value="Graduate Student">
-            Graduate Student
+          <option value="Master's Degree Student">
+            Master's Degree Student
+          </option>
+          <option value="Post-Master's Researcher">
+            Post-Master's Researcher
+          </option>
+          <option value="PhD Student">
+            PhD Student
+          </option>
+          <option value="MD Student">
+            MD Student
+          </option>
+          <option value="MD/PhD Student">
+            MD/PhD Student
+          </option>
+          <option value="Postdoctoral Fellow">
+            Postdoctoral Fellow
+          </option>
+          <option value="Visiting Scholar">
+            Visiting Scholar
+          </option>
+          <option value="Volunteer">
+            Volunteer
           </option>
           <option value="Any Undergraduate Level">
             Any Undergraduate Level
@@ -705,7 +828,18 @@
           <option value="Multiple Levels">
             Multiple Levels
           </option>
+          <option value="__other__" data-custom-option>
+            Other / Custom Level
+          </option>
         </select>
+
+        <input
+          id="custom-student-level"
+          class="custom-select-input"
+          type="text"
+          placeholder="Enter another education or career level"
+          aria-label="Custom student level"
+        >
       </div>
 
       <div class="form-group">
@@ -793,6 +927,400 @@
       Connecting research laboratories with qualified students.
     </p>
   </footer>
+
+
+<script>
+  /*
+    Searchable technique pickers.
+    The original <select multiple> elements remain in the form but are
+    visually hidden. This preserves compatibility with the existing
+    algorithm and form-submission code.
+  */
+
+  function createTechniquePicker(selectId, configuration) {
+    const select = document.getElementById(selectId);
+
+    if (!select || select.dataset.pickerReady === "true") {
+      return;
+    }
+
+    select.dataset.pickerReady = "true";
+    select.style.display = "none";
+
+    const picker = document.createElement("div");
+    picker.className = "technique-picker";
+
+    const search = document.createElement("input");
+    search.type = "search";
+    search.className = "technique-search";
+    search.placeholder = configuration.searchPlaceholder;
+    search.setAttribute(
+      "aria-label",
+      configuration.searchPlaceholder
+    );
+
+    const list = document.createElement("div");
+    list.className = "technique-list";
+
+    const noResults = document.createElement("div");
+    noResults.className = "technique-no-results";
+    noResults.textContent =
+      "No matching techniques found. Add a custom technique below.";
+
+    list.appendChild(noResults);
+
+    const optionRows = [];
+    const categoryRows = [];
+
+    function addVisibleOption(option, categoryContainer) {
+      const label = document.createElement("label");
+      label.className = "technique-option";
+      label.dataset.searchText =
+        option.textContent.trim().toLowerCase();
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = option.selected;
+      checkbox.value = option.value;
+
+      const text = document.createElement("span");
+      text.textContent = option.textContent.trim();
+
+      checkbox.addEventListener("change", function () {
+        option.selected = checkbox.checked;
+
+        select.dispatchEvent(
+          new Event("change", {
+            bubbles: true
+          })
+        );
+      });
+
+      label.appendChild(checkbox);
+      label.appendChild(text);
+      categoryContainer.appendChild(label);
+
+      optionRows.push({
+        label,
+        option,
+        categoryContainer
+      });
+    }
+
+    Array.from(select.children).forEach(function (child) {
+      if (child.tagName === "OPTGROUP") {
+        const categoryWrapper = document.createElement("div");
+        categoryWrapper.className = "technique-category-group";
+
+        const heading = document.createElement("div");
+        heading.className = "technique-category";
+        heading.textContent = child.label;
+
+        categoryWrapper.appendChild(heading);
+
+        Array.from(child.querySelectorAll("option")).forEach(
+          function (option) {
+            addVisibleOption(option, categoryWrapper);
+          }
+        );
+
+        list.insertBefore(categoryWrapper, noResults);
+
+        categoryRows.push({
+          wrapper: categoryWrapper,
+          heading
+        });
+      } else if (child.tagName === "OPTION") {
+        addVisibleOption(child, list);
+      }
+    });
+
+    function filterOptions() {
+      const query = search.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      optionRows.forEach(function (row) {
+        const visible =
+          !query ||
+          row.label.dataset.searchText.includes(query);
+
+        row.label.style.display = visible ? "flex" : "none";
+
+        if (visible) {
+          visibleCount += 1;
+        }
+      });
+
+      categoryRows.forEach(function (category) {
+        const hasVisibleOption = Array.from(
+          category.wrapper.querySelectorAll(".technique-option")
+        ).some(function (item) {
+          return item.style.display !== "none";
+        });
+
+        category.wrapper.style.display =
+          hasVisibleOption ? "block" : "none";
+      });
+
+      noResults.style.display =
+        visibleCount === 0 ? "block" : "none";
+    }
+
+    search.addEventListener("input", filterOptions);
+
+    const customArea = document.createElement("div");
+    customArea.className = "custom-technique-area";
+
+    const customLabel = document.createElement("div");
+    customLabel.className = "custom-technique-label";
+    customLabel.textContent =
+      configuration.customLabel;
+
+    const customRow = document.createElement("div");
+    customRow.className = "custom-technique-row";
+
+    const customInput = document.createElement("input");
+    customInput.type = "text";
+    customInput.className =
+      "custom-technique-input";
+    customInput.placeholder =
+      configuration.customPlaceholder;
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "add-technique-button";
+    addButton.textContent = "Add Technique";
+
+    function addCustomTechnique() {
+      const value = customInput.value.trim();
+
+      if (!value) {
+        customInput.focus();
+        return;
+      }
+
+      const duplicateOption = Array.from(
+        select.options
+      ).find(function (option) {
+        return option.value.toLowerCase() ===
+          value.toLowerCase();
+      });
+
+      if (duplicateOption) {
+        duplicateOption.selected = true;
+
+        const duplicateRow = optionRows.find(
+          function (row) {
+            return row.option === duplicateOption;
+          }
+        );
+
+        if (duplicateRow) {
+          const checkbox =
+            duplicateRow.label.querySelector(
+              'input[type="checkbox"]'
+            );
+
+          checkbox.checked = true;
+        }
+
+        customInput.value = "";
+        search.value = "";
+        filterOptions();
+        return;
+      }
+
+      const customOption =
+        document.createElement("option");
+
+      customOption.value = value;
+      customOption.textContent = value;
+      customOption.selected = true;
+      customOption.dataset.customTechnique = "true";
+
+      select.appendChild(customOption);
+
+      let customGroup = picker.querySelector(
+        ".custom-technique-group"
+      );
+
+      if (!customGroup) {
+        customGroup = document.createElement("div");
+        customGroup.className =
+          "technique-category-group custom-technique-group";
+
+        const customHeading =
+          document.createElement("div");
+
+        customHeading.className =
+          "technique-category";
+
+        customHeading.textContent =
+          "Custom Techniques";
+
+        customGroup.appendChild(customHeading);
+        list.insertBefore(customGroup, noResults);
+
+        categoryRows.push({
+          wrapper: customGroup,
+          heading: customHeading
+        });
+      }
+
+      addVisibleOption(customOption, customGroup);
+
+      customInput.value = "";
+      search.value = "";
+      filterOptions();
+
+      select.dispatchEvent(
+        new Event("change", {
+          bubbles: true
+        })
+      );
+    }
+
+    addButton.addEventListener(
+      "click",
+      addCustomTechnique
+    );
+
+    customInput.addEventListener(
+      "keydown",
+      function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addCustomTechnique();
+        }
+      }
+    );
+
+    customRow.appendChild(customInput);
+    customRow.appendChild(addButton);
+
+    customArea.appendChild(customLabel);
+    customArea.appendChild(customRow);
+
+    picker.appendChild(search);
+    picker.appendChild(list);
+    picker.appendChild(customArea);
+
+    select.insertAdjacentElement("afterend", picker);
+  }
+
+  function setUpCustomStudentLevel() {
+    const levelSelect =
+      document.getElementById("hiree-level");
+
+    const customInput =
+      document.getElementById(
+        "custom-student-level"
+      );
+
+    if (!levelSelect || !customInput) {
+      return;
+    }
+
+    const customOption = levelSelect.querySelector(
+      "[data-custom-option]"
+    );
+
+    function customLevelSelected() {
+      return Boolean(
+        customOption && customOption.selected
+      );
+    }
+
+    function updateCustomLevelVisibility() {
+      const isCustom = customLevelSelected();
+
+      customInput.classList.toggle(
+        "is-visible",
+        isCustom
+      );
+
+      customInput.required = isCustom;
+
+      if (isCustom) {
+        customInput.focus();
+      }
+    }
+
+    function synchronizeCustomLevel() {
+      if (!customLevelSelected()) {
+        return;
+      }
+
+      const value = customInput.value.trim();
+
+      customOption.value = value || "__other__";
+    }
+
+    levelSelect.addEventListener(
+      "change",
+      updateCustomLevelVisibility
+    );
+
+    customInput.addEventListener(
+      "input",
+      synchronizeCustomLevel
+    );
+
+    const form =
+      document.getElementById("lab-form");
+
+    form.addEventListener(
+      "submit",
+      function (event) {
+        if (
+          customLevelSelected() &&
+          !customInput.value.trim()
+        ) {
+          event.preventDefault();
+          customInput.focus();
+          customInput.reportValidity();
+          return;
+        }
+
+        synchronizeCustomLevel();
+      },
+      true
+    );
+
+    updateCustomLevelVisibility();
+  }
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+      createTechniquePicker(
+        "required-techniques",
+        {
+          searchPlaceholder:
+            "Search required techniques...",
+          customLabel:
+            "Other / Custom Required Technique",
+          customPlaceholder:
+            "Enter a technique not listed above"
+        }
+      );
+
+      createTechniquePicker(
+        "preferred-techniques",
+        {
+          searchPlaceholder:
+            "Search preferred techniques...",
+          customLabel:
+            "Other / Custom Preferred Technique",
+          customPlaceholder:
+            "Enter a technique not listed above"
+        }
+      );
+
+      setUpCustomStudentLevel();
+    }
+  );
+</script>
 
 <script type="module">
   import { supabase } from './supabase.js';
@@ -961,91 +1489,6 @@
       subDiscipline.disabled = false;
     });
   </script>
-
-<script>
-  /*
-    Convert the two existing multi-select technique fields into
-    checkbox groups while preserving their original field names.
-  */
-  function addTechniqueCheckbox(container, inputName, option) {
-    const value = String(
-      option.value || option.textContent || ""
-    ).trim();
-
-    if (!value) {
-      return;
-    }
-
-    const label = document.createElement("label");
-    label.className = "technique-checkbox-item";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.name = inputName;
-    checkbox.value = value;
-    checkbox.checked = option.selected;
-
-    const text = document.createElement("span");
-    text.textContent = option.textContent.trim();
-
-    label.appendChild(checkbox);
-    label.appendChild(text);
-    container.appendChild(label);
-  }
-
-  function convertTechniqueSelectToCheckboxes(select) {
-    if (!select) {
-      return;
-    }
-
-    const checkboxGroup = document.createElement("div");
-    checkboxGroup.id = select.id;
-    checkboxGroup.className = "technique-checkbox-group";
-    checkboxGroup.setAttribute(
-      "aria-label",
-      select.getAttribute("aria-label") || select.id
-    );
-
-    const inputName = select.name;
-    const optgroups = select.querySelectorAll("optgroup");
-
-    if (optgroups.length > 0) {
-      optgroups.forEach(group => {
-        const heading = document.createElement("div");
-        heading.className = "technique-category-heading";
-        heading.textContent = group.label;
-        checkboxGroup.appendChild(heading);
-
-        group.querySelectorAll("option").forEach(option => {
-          addTechniqueCheckbox(
-            checkboxGroup,
-            inputName,
-            option
-          );
-        });
-      });
-    } else {
-      select.querySelectorAll("option").forEach(option => {
-        addTechniqueCheckbox(
-          checkboxGroup,
-          inputName,
-          option
-        );
-      });
-    }
-
-    select.replaceWith(checkboxGroup);
-  }
-
-  convertTechniqueSelectToCheckboxes(
-    document.getElementById("required-techniques")
-  );
-
-  convertTechniqueSelectToCheckboxes(
-    document.getElementById("preferred-techniques")
-  );
-</script>
-
 <script src="algorithm.js"></script>
 </body>
 </html>
