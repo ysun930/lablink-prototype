@@ -129,6 +129,14 @@
     return readField(form, aliases)[0] || "";
   }
 
+function rawValue(form, aliases) {
+    for (const alias of aliases) {
+      const el = form.elements.namedItem(alias) || document.getElementById(alias);
+      if (el && typeof el.value === "string" && el.value.trim()) return el.value.trim();
+    }
+    return "";
+  }
+
   function valuesMatch(left, right) {
     const leftItems = toList(left).map(normalize).filter(Boolean);
     const rightItems = toList(right).map(normalize).filter(Boolean);
@@ -239,7 +247,7 @@
       hoursPerWeek: firstValue(form, ["hoursPerWeek", "hours", "hours_per_week", "hours-per-week"]),
       compensation: readField(form, ["compensation", "compensationType", "compensation_type"]),
       workFormat: firstValue(form, ["workFormat", "remoteOption", "work_format", "remote_option", "work-format", "remote-option"]),
-      description: firstValue(form, ["description", "labDescription", "researchDescription", "lab_description", "research_description"]),
+      description: rawValue(form, ["description", "labDescription", "researchDescription", "lab_description", "research_description"]),
       createdAt: new Date().toISOString()
     };
   }
@@ -257,7 +265,7 @@ window.scoreLab = scoreLab;
       hoursAvailable: firstValue(form, ["hoursAvailable", "hours_available", "hours-available", "hours"]),
       compensationPreference: firstValue(form, ["compensationPreference", "compensation_need", "compensation-preference", "compensation"]),
       workFormatPreference: firstValue(form, ["workFormatPreference", "remotePreference", "work_format_preference", "remote_preference", "work-format-preference", "workFormat"]),
-      researchStatement: firstValue(form, ["researchStatement", "research_statement", "research-statement", "statement", "description"])
+      researchStatement: rawValue(form, ["researchStatement", "research_statement", "research-statement", "statement", "description"])
     };
   }
 
