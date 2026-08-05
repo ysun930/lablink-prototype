@@ -2,106 +2,243 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Get Started | LabLink</title>
 
     <link rel="stylesheet" href="style.css">
 
     <style>
+        /*
+          This page opens after the user clicks
+          Get Started on index.html.
+        */
+
         .choice-hero {
-            background: linear-gradient(135deg, #0f766e, #134e4a);
-            color: white;
+            padding: 75px 20px 140px;
+            background: linear-gradient(
+                135deg,
+                #0f766e,
+                #134e4a
+            );
+            color: #ffffff;
             text-align: center;
-            padding: 80px 20px 130px;
         }
 
         .choice-hero h1 {
+            margin: 0 0 16px;
+            color: #ffffff;
             font-size: 48px;
-            margin-bottom: 15px;
+            line-height: 1.2;
         }
 
         .choice-hero p {
-            font-size: 18px;
-            max-width: 650px;
+            max-width: 720px;
             margin: 0 auto;
+            color: #ffffff;
+            font-size: 18px;
             line-height: 1.6;
         }
 
         .choice-section {
-            max-width: 950px;
-            margin: -75px auto 80px;
-            padding: 0 20px;
+            max-width: 1100px;
+            margin: -85px auto 80px;
+            padding: 0 24px;
         }
 
         .choice-container {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 30px;
-            justify-content: center;
         }
 
         .choice-card {
-            flex: 1;
-            background-color: white;
-            border-radius: 18px;
-            padding: 45px 35px;
-            text-align: center;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            padding: 42px 36px;
+            background-color: #ffffff;
             border: 2px solid transparent;
-            transition: 0.3s ease;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
         }
 
         .choice-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-7px);
             border-color: #0f766e;
+            box-shadow:
+                0 18px 42px rgba(15, 118, 110, 0.18);
         }
 
         .choice-icon {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 25px;
-            border-radius: 50%;
-            background-color: #dff4f1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 34px;
+            width: 78px;
+            height: 78px;
+            margin: 0 auto 22px;
+            background-color: #dff4f1;
+            border-radius: 50%;
+            font-size: 35px;
         }
 
         .choice-card h2 {
+            margin: 0 0 14px;
             color: #16324f;
-            font-size: 28px;
-            margin-bottom: 15px;
+            font-size: 29px;
         }
 
-        .choice-card p {
+        .role-description {
+            min-height: 105px;
+            margin: 0 0 22px;
             color: #5f6f7f;
+            font-size: 16px;
             line-height: 1.7;
-            margin-bottom: 28px;
+        }
+
+        .information-box {
+            margin-bottom: 22px;
+            padding: 20px;
+            background-color: #f4f8f7;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .information-box h3 {
+            margin: 0 0 13px;
+            color: #0f766e;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .information-box ul {
+            margin: 0;
+            padding-left: 22px;
+            color: #334155;
+        }
+
+        .information-box li {
+            margin-bottom: 9px;
+            line-height: 1.5;
+        }
+
+        .information-box li:last-child {
+            margin-bottom: 0;
+        }
+
+        .next-step-box {
+            margin-bottom: 22px;
+            padding: 20px;
+            background-color: #eef7f5;
+            border-left: 4px solid #0f766e;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .next-step-box h3 {
+            margin: 0 0 12px;
+            color: #0f766e;
+            font-size: 18px;
+        }
+
+        .next-step-box ol {
+            margin: 0;
+            padding-left: 22px;
+            color: #334155;
+        }
+
+        .next-step-box li {
+            margin-bottom: 9px;
+            line-height: 1.5;
+        }
+
+        .next-step-box li:last-child {
+            margin-bottom: 0;
+        }
+
+        .account-message {
+            margin: 0 0 22px;
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .choice-button {
             display: inline-block;
+            align-self: center;
+            margin-top: auto;
+            padding: 13px 30px;
             background-color: #0f766e;
-            color: white;
-            text-decoration: none;
-            padding: 13px 28px;
+            color: #ffffff;
             border-radius: 30px;
+            font-size: 16px;
             font-weight: bold;
-            transition: 0.3s ease;
+            text-decoration: none;
+            transition:
+                background-color 0.25s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
         .choice-button:hover {
+            transform: translateY(-2px);
             background-color: #115e59;
+            box-shadow:
+                0 8px 20px rgba(15, 118, 110, 0.22);
         }
 
-        @media (max-width: 750px) {
+        .login-section {
+            margin-top: 32px;
+            padding: 24px;
+            background-color: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .login-section p {
+            margin: 0 0 10px;
+            color: #5f6f7f;
+            font-size: 15px;
+        }
+
+        .login-link {
+            color: #0f766e;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 800px) {
+            .choice-hero {
+                padding: 60px 20px 120px;
+            }
+
             .choice-hero h1 {
-                font-size: 36px;
+                font-size: 37px;
             }
 
             .choice-container {
-                flex-direction: column;
+                grid-template-columns: 1fr;
+            }
+
+            .choice-card {
+                padding: 35px 25px;
+            }
+
+            .role-description {
+                min-height: auto;
             }
         }
     </style>
@@ -110,8 +247,10 @@
 <body>
 
     <header>
-        <!-- <div class="logo">LabLink</div> -->
-        <h1 class="logo">LabLink</h1>
+
+        <h1 class="logo">
+            LabLink
+        </h1>
 
         <nav>
             <a href="index.html">Home</a>
@@ -120,52 +259,223 @@
             <a href="contact.html">Contact</a>
             <a href="logout.html">Sign Out</a>
         </nav>
+
     </header>
 
     <main>
 
         <section class="choice-hero">
-            <h1>Get Started with LabLink</h1>
+
+            <h1>
+                Get Started with LabLink
+            </h1>
 
             <p>
-                Choose the option that best describes you so we can help you
-                find the right research connection.
+                Choose the role that best describes you. Review what information
+                you will provide and how LabLink will use your profile before
+                creating your account.
             </p>
+
         </section>
 
         <section class="choice-section">
 
             <div class="choice-container">
 
-                <div class="choice-card">
-                    <div class="choice-icon">🎓</div>
+                <!-- Student card -->
+                <article class="choice-card">
 
-                    <h2>I am a Student</h2>
+                    <div
+                        class="choice-icon"
+                        aria-hidden="true"
+                    >
+                        🎓
+                    </div>
 
-                    <p>
-                        Create a student profile, share your research interests
-                        and skills, and discover laboratories that match your goals.
+                    <h2>
+                        I am a Student
+                    </h2>
+
+                    <p class="role-description">
+                        Create a student research profile that highlights your
+                        interests, technical skills, experience, career goals,
+                        availability, and preferred type of laboratory position.
                     </p>
 
-                    <a href="index.html" class="choice-button">
-                        Continue as a Student
-                    </a>
-                </div>
+                    <div class="information-box">
 
-                <div class="choice-card">
-                    <div class="choice-icon">🔬</div>
+                        <h3>
+                            Information you will provide
+                        </h3>
 
-                    <h2>I am a Lab</h2>
+                        <ul>
+                            <li>
+                                Primary research field and sub-discipline
+                            </li>
 
-                    <p>
-                        Create a laboratory profile, describe your research,
-                        and connect with students whose interests and skills match your needs.
+                            <li>
+                                Research skills and laboratory techniques
+                            </li>
+
+                            <li>
+                                Education level and previous experience
+                            </li>
+
+                            <li>
+                                Career goals and research statement
+                            </li>
+
+                            <li>
+                                Availability, compensation, and work preferences
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="next-step-box">
+
+                        <h3>
+                            What happens next?
+                        </h3>
+
+                        <ol>
+                            <li>
+                                Create your LabLink login information.
+                            </li>
+
+                            <li>
+                                Complete your student research profile.
+                            </li>
+
+                            <li>
+                                LabLink compares your profile with available labs.
+                            </li>
+
+                            <li>
+                                Review ranked matches, scores, and explanations.
+                            </li>
+                        </ol>
+
+                    </div>
+
+                    <p class="account-message">
+                        Your account allows you to save your information,
+                        return later, and review previously generated matches.
                     </p>
 
-                    <a href="labform.html" class="choice-button">
-                        Continue as a Lab
+                    <a
+                        href="signup.html?role=candidate"
+                        class="choice-button"
+                    >
+                        Create Student Profile
                     </a>
-                </div>
+
+                </article>
+
+                <!-- Laboratory card -->
+                <article class="choice-card">
+
+                    <div
+                        class="choice-icon"
+                        aria-hidden="true"
+                    >
+                        🔬
+                    </div>
+
+                    <h2>
+                        I am a Lab
+                    </h2>
+
+                    <p class="role-description">
+                        Create a laboratory profile that describes your research
+                        focus, required techniques, preferred qualifications,
+                        career pathways, and student recruitment needs.
+                    </p>
+
+                    <div class="information-box">
+
+                        <h3>
+                            Information you will provide
+                        </h3>
+
+                        <ul>
+                            <li>
+                                Laboratory name, institution, and principal investigator
+                            </li>
+
+                            <li>
+                                Primary field, sub-disciplines, and laboratory aims
+                            </li>
+
+                            <li>
+                                Required and preferred research techniques
+                            </li>
+
+                            <li>
+                                Candidate education and experience preferences
+                            </li>
+
+                            <li>
+                                Hours, compensation, and work format
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="next-step-box">
+
+                        <h3>
+                            What happens next?
+                        </h3>
+
+                        <ol>
+                            <li>
+                                Create your LabLink login information.
+                            </li>
+
+                            <li>
+                                Complete your laboratory research profile.
+                            </li>
+
+                            <li>
+                                Identify the qualifications you need from students.
+                            </li>
+
+                            <li>
+                                Make your laboratory available for candidate matching.
+                            </li>
+                        </ol>
+
+                    </div>
+
+                    <p class="account-message">
+                        Your account allows you to manage your laboratory
+                        information and update recruitment requirements later.
+                    </p>
+
+                    <a
+                        href="signup.html?role=lab"
+                        class="choice-button"
+                    >
+                        Create Lab Profile
+                    </a>
+
+                </article>
+
+            </div>
+
+            <div class="login-section">
+
+                <p>
+                    Already have a LabLink account?
+                </p>
+
+                <a
+                    href="login.html"
+                    class="login-link"
+                >
+                    Sign in to continue
+                </a>
 
             </div>
 
@@ -174,7 +484,11 @@
     </main>
 
     <footer>
-        <p>2026 LabLink. Connecting students with research opportunities.</p>
+
+        <p>
+            © 2026 LabLink. Connecting students with research opportunities.
+        </p>
+
     </footer>
 
 </body>
