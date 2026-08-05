@@ -359,6 +359,7 @@ window.scoreLab = scoreLab;
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Failed to save lab');
         showMessage(form, "Lab profile saved successfully and is now live on LabLink.");
+        setTimeout(() => { window.location.href = "lab-dashboard.html"; }, 1200);
       } catch (error) {
         console.error('Error saving lab:', error);
         showMessage(form, "Error saving lab profile: " + error.message, true);
